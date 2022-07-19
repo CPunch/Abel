@@ -13,7 +13,7 @@
 #include <SDL2/SDL_image.h>
 
 /* broadly used types */
-typedef struct _tAbelT_tileSet tAbelT_tileSet;
+typedef struct _tAbelL_layer tAbelL_layer;
 typedef struct _tAbelR_texture tAbelR_texture;
 
 #endif

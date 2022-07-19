@@ -18,6 +18,6 @@ void AbelA_quit(void);
 /* on error, returns ABEL_INVALID_ASSET */
 ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type);
 
-tAbelT_tileSet *AbelA_getTileSet(ASSET_ID id);
+tAbelL_layer *AbelA_getTileSet(ASSET_ID id);
 
 #endif

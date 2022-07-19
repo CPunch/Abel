@@ -1,10 +1,11 @@
 #include "abel.h"
+#include "core/init.h"
 #include "render.h"
 
 int main()
 {
-    AbelR_init();
-    AbelR_quit();
+    Abel_init();
 
+    Abel_quit();
     return 0;
 }

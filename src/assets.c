@@ -1,9 +1,9 @@
 #include "assets.h"
 
 #include "core/hashmap.h"
-#include "render.h"
 #include "core/serror.h"
-#include "tileset.h"
+#include "layer.h"
+#include "render.h"
 #include "vec2.h"
 
 ASSET_ID nextAssetID = 0;
@@ -74,8 +74,9 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
         if (rawText == NULL)
             ABEL_ERROR("Failed to load texture from '%s': %s\n", filePath, SDL_GetError());
 
-        /* create tileset */
-        data = AbelT_newTileSet(AbelR_newTexture(rawText), AbelV_newVec2(16, 16));
+        /* create tileset (16x16 map grid) */
+        data = AbelL_newLayer(AbelR_newTexture(rawText), AbelV_newVec2(16, 16));
+        break;
     }
     default:
         ABEL_ERROR("Invalid asset type provided: %d!\n", type);
