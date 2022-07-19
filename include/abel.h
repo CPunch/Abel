@@ -11,6 +11,7 @@
 /* SDL includes */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 /* broadly used types */
 typedef struct _tAbelL_layer tAbelL_layer;

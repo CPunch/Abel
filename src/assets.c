@@ -32,6 +32,22 @@ uint64_t assetHash(const void *item, uint64_t seed0, uint64_t seed1)
     return (uint64_t)(u->id);
 }
 
+void assetFree(void *rawItem)
+{
+    tAbelA_assetElem *elem = (tAbelA_assetElem *)rawItem;
+    
+    switch (elem->type) {
+    case ASSET_TEXTURE:
+        AbelR_freeTexture((tAbelR_texture *)elem->data);
+        break;
+    case ASSET_FONT:
+        TTF_CloseFont((TTF_Font *)elem->data);
+        break;
+    default:
+        ABEL_ERROR("Invalid asset type found while freeing: %d\n", elem->type);
+    }
+}
+
 /* returned pointer is valid until an entry is added/removed from the hashmap */
 tAbelA_assetElem *getAsset(ASSET_ID id)
 {
@@ -41,6 +57,11 @@ tAbelA_assetElem *getAsset(ASSET_ID id)
         ABEL_ERROR("Failed to get asset with invalid id: %d!\n", id);
 
     return asset;
+}
+
+void *getAssetData(ASSET_ID id)
+{
+    return getAsset(id)->data;
 }
 
 ASSET_ID getNextID(void)
@@ -58,6 +79,8 @@ void AbelA_init(void)
 
 void AbelA_quit(void)
 {
+    /* free assets */
+    hashmap_free(AbelA_assetMap);
 }
 
 ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
@@ -66,7 +89,7 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
     ASSET_ID id = getNextID();
 
     switch (type) {
-    case ASSET_TILESET: {
+    case ASSET_TEXTURE: {
         SDL_Texture *rawText;
 
         /* load raw texture */
@@ -74,8 +97,18 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
         if (rawText == NULL)
             ABEL_ERROR("Failed to load texture from '%s': %s\n", filePath, SDL_GetError());
 
-        /* create tileset (16x16 map grid) */
-        data = AbelL_newLayer(AbelR_newTexture(rawText), AbelV_newVec2(16, 16));
+        data = (void *)AbelR_newTexture(rawText);
+        break;
+    }
+    case ASSET_FONT: {
+        TTF_Font *rawFont;
+
+        /* load raw font */
+        rawFont = TTF_OpenFont(filePath, 11);
+        if (rawFont == NULL)
+            ABEL_ERROR("Failed to load font from '%s': %s\n", filePath, SDL_GetError());
+
+        data = (void *)rawFont;
         break;
     }
     default:
@@ -87,6 +120,7 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
     return id;
 }
 
-SDL_Texture *AbelA_getTexture(ASSET_ID id)
+tAbelR_texture *AbelA_getTexture(ASSET_ID id)
 {
+    return (tAbelR_texture *)getAssetData(id);
 }

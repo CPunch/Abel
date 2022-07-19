@@ -7,7 +7,8 @@ typedef uint16_t ASSET_ID;
 
 typedef enum
 {
-    ASSET_TILESET
+    ASSET_TEXTURE,
+    ASSET_FONT
 } ASSET_TYPE;
 
 void AbelA_init(void);
@@ -18,6 +19,6 @@ void AbelA_quit(void);
 /* on error, returns ABEL_INVALID_ASSET */
 ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type);
 
-tAbelL_layer *AbelA_getTileSet(ASSET_ID id);
+tAbelR_texture *AbelA_getTexture(ASSET_ID id);
 
 #endif
