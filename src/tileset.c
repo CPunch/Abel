@@ -1,8 +1,8 @@
 #include "tileset.h"
 
-#include "mem.h"
+#include "core/mem.h"
 #include "render.h"
-#include "serror.h"
+#include "core/serror.h"
 #include "vec2.h"
 
 /* ======================================[[ TileSet API ]]====================================== */

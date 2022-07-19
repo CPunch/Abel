@@ -2,7 +2,7 @@
 #define ABEL_TILESET_H
 
 #include "abel.h"
-#include "hashmap.h"
+#include "core/hashmap.h"
 #include "vec2.h"
 
 typedef struct _tAbelT_tileSet

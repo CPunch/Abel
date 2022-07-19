@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "hashmap.h"
+#include "core/hashmap.h"
 
 static void *(*_malloc)(size_t) = NULL;
 static void *(*_realloc)(void *, size_t) = NULL;
@@ -601,7 +601,7 @@ static size_t deepcount(struct hashmap *map) {
 #include <time.h>
 #include <assert.h>
 #include <stdio.h>
-#include "hashmap.h"
+#include "core/hashmap.h"
 
 static bool rand_alloc_fail = false;
 static int rand_alloc_fail_odds = 3; // 1 in 3 chance malloc will fail.

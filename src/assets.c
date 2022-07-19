@@ -1,8 +1,8 @@
 #include "assets.h"
 
-#include "hashmap.h"
+#include "core/hashmap.h"
 #include "render.h"
-#include "serror.h"
+#include "core/serror.h"
 #include "tileset.h"
 #include "vec2.h"
 

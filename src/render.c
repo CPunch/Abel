@@ -1,7 +1,7 @@
 #include "render.h"
 
-#include "mem.h"
-#include "serror.h"
+#include "core/mem.h"
+#include "core/serror.h"
 
 SDL_Window *AbelR_window = NULL;
 SDL_Renderer *AbelR_renderer = NULL;

@@ -1,7 +1,7 @@
-#include "mem.h"
+#include "core/mem.h"
 
 #include "abel.h"
-#include "serror.h"
+#include "core/serror.h"
 
 /* ======================================[[ Memory API ]]======================================= */
 
