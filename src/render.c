@@ -1,9 +1,11 @@
 #include "render.h"
-#include "serror.h"
+
 #include "mem.h"
+#include "serror.h"
 
 SDL_Window *AbelR_window = NULL;
 SDL_Renderer *AbelR_renderer = NULL;
+SDL_Rect AbelR_camera;
 
 void AbelR_init(void)
 {
@@ -11,17 +13,13 @@ void AbelR_init(void)
         ABEL_ERROR("Failed to initialize SDL: %s\n", SDL_GetError());
 
     /* open window */
-    AbelR_window = SDL_CreateWindow("Abel",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        800, 200,
-        SDL_WINDOW_SHOWN
-    );
+    AbelR_window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800,
+                                    200, SDL_WINDOW_SHOWN);
     if (AbelR_window == NULL)
         ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 
     /* create & set rendering target */
-    AbelR_renderer =  SDL_CreateRenderer(AbelR_window, -1, SDL_RENDERER_ACCELERATED);
+    AbelR_renderer = SDL_CreateRenderer(AbelR_window, -1, SDL_RENDERER_ACCELERATED);
     if (AbelR_renderer == NULL)
         ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
 
@@ -43,7 +41,7 @@ tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture)
     texture->texture = rawTexture;
 
     /* grab texture size */
-    if (SDL_QueryTexture(rawTexture, NULL, NULL, &texture->size.x, &texture->size.y) != 0) 
+    if (SDL_QueryTexture(rawTexture, NULL, NULL, &texture->size.x, &texture->size.y) != 0)
         ABEL_ERROR("Failed to query texture information: %s\n", SDL_GetError());
 
     return texture;

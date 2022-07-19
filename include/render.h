@@ -4,7 +4,8 @@
 #include "abel.h"
 #include "vec2.h"
 
-typedef struct _tAbelR_texture {
+typedef struct _tAbelR_texture
+{
     SDL_Texture *texture;
     tAbel_vec2 size;
 } tAbelR_texture;

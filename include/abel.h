@@ -2,11 +2,11 @@
 #define ABEL_H
 
 /* STL includes */
-#include <stdlib.h>
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <inttypes.h>
+#include <stdlib.h>
 
 /* SDL includes */
 #include <SDL2/SDL.h>
@@ -14,6 +14,6 @@
 
 /* broadly used types */
 typedef struct _tAbelT_tileSet tAbelT_tileSet;
-typedef struct _tAbelR_texture tAbelR_texture; 
+typedef struct _tAbelR_texture tAbelR_texture;
 
 #endif

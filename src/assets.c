@@ -1,17 +1,18 @@
 #include "assets.h"
 
 #include "hashmap.h"
-#include "vec2.h"
-#include "serror.h"
 #include "render.h"
+#include "serror.h"
 #include "tileset.h"
+#include "vec2.h"
 
 ASSET_ID nextAssetID = 0;
 struct hashmap *AbelA_assetMap = NULL;
 
 /* ===================================[[ Helper Functions ]]==================================== */
 
-typedef struct {
+typedef struct
+{
     ASSET_ID id;
     ASSET_TYPE type;
     void *data;
@@ -34,7 +35,8 @@ uint64_t assetHash(const void *item, uint64_t seed0, uint64_t seed1)
 /* returned pointer is valid until an entry is added/removed from the hashmap */
 tAbelA_assetElem *getAsset(ASSET_ID id)
 {
-    tAbelA_assetElem *asset = (tAbelA_assetElem *)hashmap_get(AbelA_assetMap, &(tAbelA_assetElem){.id = id});
+    tAbelA_assetElem *asset =
+        (tAbelA_assetElem *)hashmap_get(AbelA_assetMap, &(tAbelA_assetElem){.id = id});
     if (asset == NULL)
         ABEL_ERROR("Failed to get asset with invalid id: %d!\n", id);
 
@@ -50,16 +52,12 @@ ASSET_ID getNextID(void)
 
 void AbelA_init(void)
 {
-    AbelA_assetMap = hashmap_new(
-        sizeof(tAbelA_assetElem), 4, 0, 0,
-        assetHash, assetCompare,
-        NULL, NULL
-    );
+    AbelA_assetMap =
+        hashmap_new(sizeof(tAbelA_assetElem), 4, 0, 0, assetHash, assetCompare, NULL, NULL);
 }
 
 void AbelA_quit(void)
 {
-
 }
 
 ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
@@ -90,5 +88,4 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
 
 SDL_Texture *AbelA_getTexture(ASSET_ID id)
 {
-
 }

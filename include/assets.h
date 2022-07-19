@@ -3,11 +3,10 @@
 
 #include "abel.h"
 
-#define ABEL_INVALID_ASSET UINT16_MAX
-
 typedef uint16_t ASSET_ID;
 
-typedef enum {
+typedef enum
+{
     ASSET_TILESET
 } ASSET_TYPE;
 

@@ -1,3 +1,3 @@
 # Abel
 
-Abel (or Story-driven game maker)
+Abel is a lightweight game engine.
