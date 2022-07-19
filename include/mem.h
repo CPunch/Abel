@@ -17,28 +17,31 @@
 #define AbelM_malloc(sz) AbelM_realloc(NULL, sz)
 #define AbelM_free(buf)  AbelM_realloc(buf, 0)
 
-#define AbelM_growarray(type, buf, needed, count, capacity)                                        \
-    if (count + needed >= capacity || buf == NULL) {                                               \
-        capacity = (capacity + needed) * GROW_FACTOR;                                              \
-        buf = (type *)AbelM_realloc(buf, sizeof(type) * capacity);                                \
+#define AbelM_newVector(type, name) type* name; int name##_COUNT; int name##_CAP;
+#define AbelM_initVector(name, startCap) name = NULL; name##_COUNT = 0; name##_CAP = startCap;
+
+#define AbelM_growVector(type, name, needed)                                                      \
+    if (name##_COUNT + needed >= name##_CAP || buf == NULL) {                                     \
+        name##_CAP = (name##_CAP + needed) * GROW_FACTOR;                                         \
+        buf = (type *)AbelM_realloc(buf, sizeof(type) * name##_CAP);                              \
     }
 
-/* moves array elements above indx down by numElem, removing numElem elements at indx */
-#define AbelM_rmvArray(buf, count, indx, numElem)                                                  \
+/* moves vector elements above indx down by numElem, removing numElem elements at indx */
+#define AbelM_rmvVector(name, indx, numElem)                                                        \
     do {                                                                                           \
-        int _i, _sz = ((count - indx) - numElem);                                                  \
+        int _i, _sz = ((name##_COUNT - indx) - numElem);                                           \
         for (_i = 0; _i < _sz; _i++)                                                               \
             buf[indx + _i] = buf[indx + numElem + _i];                                             \
-        count -= numElem;                                                                          \
+        name##_COUNT -= numElem;                                                                   \
     } while (0);
 
-/* moves array elements above indx up by numElem, inserting numElem elements at indx */
-#define AbelM_insertArray(buf, count, indx, numElem)                                              \
+/* moves vector elements above indx up by numElem, inserting numElem elements at indx */
+#define AbelM_insertVector(buf, indx, numElem)                                                      \
     do {                                                                                           \
         int _i;                                                                                    \
-        for (_i = count; _i > indx; _i--)                                                          \
+        for (_i = name##_COUNT; _i > indx; _i--)                                                   \
             buf[_i] = buf[_i - 1];                                                                 \
-        count += numElem;                                                                          \
+        name##_COUNT += numElem;                                                                   \
     } while (0);
 
 void *AbelM_realloc(void *buf, size_t sz);
