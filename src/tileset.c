@@ -2,7 +2,10 @@
 #include "render.h"
 
 #include "mem.h"
+#include "serror.h"
 #include "vec2.h"
+
+/* ======================================[[ TileSet API ]]====================================== */
 
 tAbelT_tileSet *AbelT_newTileSet(tAbelR_texture *texture, tAbel_vec2 tileSize)
 {
@@ -18,7 +21,33 @@ void AbelT_freeTileSet(tAbelT_tileSet *tileSet)
     AbelM_free(tileSet);
 }
 
-SDL_Texture *AbelT_getTileByID(tAbelT_tileSet *tileSet, uint32_t id)
+void AbelT_renderTileByID(tAbelT_tileSet *tileSet, SDL_Renderer *renderer, tAbel_vec2 pos, uint32_t id)
 {
-    
+    SDL_Rect src, dest;
+    tAbel_vec2 cordSize;
+    int x, y;
+
+    /* grabs the x/y cords of our tile in our texture */
+    cordSize = AbelV_divVec2(tileSet->texture->size, tileSet->tileSize);
+    y = id / cordSize.x;
+    x = id % cordSize.x;
+
+    if (y > cordSize.y)
+        ABEL_ERROR("Invalid tile id: %d\n", id);
+
+    /* get clip of texture */
+    src = (SDL_Rect){
+        .x = x * tileSet->tileSize.x, .y = y * tileSet->tileSize.y,
+        .w = tileSet->tileSize.x, .h = tileSet->tileSize.y
+    };
+
+    /* get clip of render target */
+    dest = (SDL_Rect){
+        .x = pos.x * tileSet->tileSize.x, .y = pos.y * tileSet->tileSize.y,
+        .w = tileSet->tileSize.x, .h = tileSet->tileSize.y
+    };
+
+    /* render to target */
+    if (SDL_RenderCopy(renderer, tileSet->texture, &src, &dest) != 0)
+        ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
 }
