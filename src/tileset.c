@@ -48,6 +48,6 @@ void AbelT_renderTileByID(tAbelT_tileSet *tileSet, SDL_Renderer *renderer, tAbel
     };
 
     /* render to target */
-    if (SDL_RenderCopy(renderer, tileSet->texture, &src, &dest) != 0)
+    if (SDL_RenderCopy(renderer, tileSet->texture->texture, &src, &dest) != 0)
         ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
 }
