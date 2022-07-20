@@ -14,6 +14,7 @@
 #include <SDL2/SDL_ttf.h>
 
 /* broadly used types */
+typedef struct _tAbelG_game tAbelG_game;
 typedef struct _tAbelL_layer tAbelL_layer;
 typedef struct _tAbelR_texture tAbelR_texture;
 

@@ -10,12 +10,16 @@
 typedef struct _tAbelL_layer
 {
     tAbelR_texture *tileSet;
-    tAbelR_texture *frame;
+    tAbelR_texture *tileFrame;
+    tAbelR_texture *spriteFrame;
+    tAbel_vec2 pos;
 } tAbelL_layer;
 
 tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_vec2 size);
-void AbelL_freeLayer(tAbelL_layer *tileSet);
+void AbelL_freeLayer(tAbelL_layer *layer);
 
-void AbelL_renderTileByID(tAbelL_layer *tileSet, tAbel_vec2 pos, uint32_t id);
+void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera);
+
+void AbelL_addBGTile(tAbelL_layer *layer, tAbel_vec2 pos, uint32_t id);
 
 #endif

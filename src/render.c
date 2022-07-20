@@ -5,6 +5,7 @@
 
 SDL_Window *AbelR_window = NULL;
 SDL_Renderer *AbelR_renderer = NULL;
+tAbel_vec2 AbelR_windowSize;
 SDL_Rect AbelR_camera;
 
 void AbelR_init(void)
@@ -13,8 +14,9 @@ void AbelR_init(void)
         ABEL_ERROR("Failed to initialize SDL: %s\n", SDL_GetError());
 
     /* open window */
-    AbelR_window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800,
-                                    200, SDL_WINDOW_SHOWN);
+    AbelR_windowSize = AbelV_newVec2(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
+    AbelR_window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                    AbelR_windowSize.x, AbelR_windowSize.y, SDL_WINDOW_SHOWN);
     if (AbelR_window == NULL)
         ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 
@@ -51,4 +53,22 @@ void AbelR_freeTexture(tAbelR_texture *texture)
 {
     SDL_DestroyTexture(texture->texture);
     AbelM_free(texture);
+}
+
+tAbelR_texture *AbelR_newBlankTexture(tAbel_vec2 size)
+{
+    tAbelR_texture *texture;
+    SDL_Texture *rawTexture;
+
+    /* create SDL texture */
+    rawTexture = SDL_CreateTexture(AbelR_renderer, SDL_PIXELFORMAT_RGBA8888,
+                                   SDL_TEXTUREACCESS_TARGET, size.x, size.y);
+    if (rawTexture == NULL)
+        ABEL_ERROR("Failed to make blank texture: %s\n", SDL_GetError());
+
+    /* create Abel texture */
+    texture = (tAbelR_texture *)AbelM_malloc(sizeof(tAbelR_texture));
+    texture->texture = rawTexture;
+    texture->size = size;
+    return texture;
 }

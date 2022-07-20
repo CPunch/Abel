@@ -6,8 +6,8 @@
 #include "render.h"
 #include "vec2.h"
 
-ASSET_ID nextAssetID = 0;
-struct hashmap *AbelA_assetMap = NULL;
+static ASSET_ID nextAssetID = 0;
+static struct hashmap *AbelA_assetMap = NULL;
 
 /* ===================================[[ Helper Functions ]]==================================== */
 
@@ -18,7 +18,7 @@ typedef struct
     void *data;
 } tAbelA_assetElem;
 
-int assetCompare(const void *a, const void *b, void *udata)
+static int assetCompare(const void *a, const void *b, void *udata)
 {
     const tAbelA_assetElem *ua = a;
     const tAbelA_assetElem *ub = b;
@@ -26,13 +26,13 @@ int assetCompare(const void *a, const void *b, void *udata)
     return ua->id != ub->id;
 }
 
-uint64_t assetHash(const void *item, uint64_t seed0, uint64_t seed1)
+static uint64_t assetHash(const void *item, uint64_t seed0, uint64_t seed1)
 {
     const tAbelA_assetElem *u = item;
     return (uint64_t)(u->id);
 }
 
-void assetFree(void *rawItem)
+static void assetFree(void *rawItem)
 {
     tAbelA_assetElem *elem = (tAbelA_assetElem *)rawItem;
     
@@ -49,7 +49,7 @@ void assetFree(void *rawItem)
 }
 
 /* returned pointer is valid until an entry is added/removed from the hashmap */
-tAbelA_assetElem *getAsset(ASSET_ID id)
+static tAbelA_assetElem *getAsset(ASSET_ID id)
 {
     tAbelA_assetElem *asset =
         (tAbelA_assetElem *)hashmap_get(AbelA_assetMap, &(tAbelA_assetElem){.id = id});
@@ -59,12 +59,12 @@ tAbelA_assetElem *getAsset(ASSET_ID id)
     return asset;
 }
 
-void *getAssetData(ASSET_ID id)
+static void *getAssetData(ASSET_ID id)
 {
     return getAsset(id)->data;
 }
 
-ASSET_ID getNextID(void)
+static ASSET_ID getNextID(void)
 {
     return nextAssetID++;
 }
@@ -123,4 +123,9 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
 tAbelR_texture *AbelA_getTexture(ASSET_ID id)
 {
     return (tAbelR_texture *)getAssetData(id);
+}
+
+TTF_Font *AbelA_getFont(ASSET_ID id)
+{
+    return (TTF_Font *)getAssetData(id);
 }
