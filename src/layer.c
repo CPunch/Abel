@@ -27,8 +27,8 @@ void AbelL_freeLayer(tAbelL_layer *layer)
 
 void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
 {
-    SDL_Rect windowRect = (SDL_Rect){.x = layer->pos.x,
-                                     .y = layer->pos.y,
+    SDL_Rect windowRect = (SDL_Rect){.x = layer->pos.x - AbelR_camera.x,
+                                     .y = layer->pos.y - AbelR_camera.y,
                                      .w = AbelR_windowSize.x / 4,
                                      .h = AbelR_windowSize.y / 4};
 

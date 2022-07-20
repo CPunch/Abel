@@ -24,5 +24,6 @@ tAbelR_texture *AbelR_newBlankTexture(tAbel_vec2 size);
 extern SDL_Window *AbelR_window;
 extern SDL_Renderer *AbelR_renderer;
 extern tAbel_vec2 AbelR_windowSize;
+extern tAbel_vec2 AbelR_camera;
 
 #endif

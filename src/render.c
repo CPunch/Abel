@@ -6,7 +6,7 @@
 SDL_Window *AbelR_window = NULL;
 SDL_Renderer *AbelR_renderer = NULL;
 tAbel_vec2 AbelR_windowSize;
-SDL_Rect AbelR_camera;
+tAbel_vec2 AbelR_camera;
 
 void AbelR_init(void)
 {
@@ -24,6 +24,9 @@ void AbelR_init(void)
     AbelR_renderer = SDL_CreateRenderer(AbelR_window, -1, SDL_RENDERER_ACCELERATED);
     if (AbelR_renderer == NULL)
         ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
+
+    /* init camera */
+    AbelR_camera = AbelV_newVec2(0, 0);
 
     SDL_SetRenderTarget(AbelR_renderer, NULL);
 }
