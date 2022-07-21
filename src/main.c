@@ -19,9 +19,15 @@ int main()
     for (x = 0; x < 16; x++) {
         for (y = 0; y < 16; y++) {
             switch (rand() % 6) {
-            case 0: AbelL_addBGTile(layer, AbelV_newVec2(x, y), 0); break; /* grass */
-            case 1: AbelL_addBGTile(layer, AbelV_newVec2(x, y), 2); break; /* weed */
-            default:AbelL_addBGTile(layer, AbelV_newVec2(x, y), 1); break; /* empty grass */
+            case 0:
+                AbelL_drawTile(layer, AbelL_gridToPos(AbelV_newVec2(x, y)), 0, FRAME_BG);
+                break; /* grass */
+            case 1:
+                AbelL_drawTile(layer, AbelL_gridToPos(AbelV_newVec2(x, y)), 2, FRAME_BG);
+                break; /* weed */
+            default:
+                AbelL_drawTile(layer, AbelL_gridToPos(AbelV_newVec2(x, y)), 1, FRAME_BG);
+                break; /* empty grass */
             }
         }
     }

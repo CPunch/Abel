@@ -13,7 +13,7 @@ tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_vec2 size)
 {
     tAbelL_layer *layer = (tAbelL_layer *)AbelM_malloc(sizeof(tAbelL_layer));
     layer->tileSet = tileSet;
-    layer->tileFrame = AbelR_newBlankTexture(AbelV_mulVec2(size, AbelL_tileSize));
+    layer->bgFrame = AbelR_newBlankTexture(AbelV_mulVec2(size, AbelL_tileSize));
     layer->spriteFrame = AbelR_newBlankTexture(AbelV_mulVec2(size, AbelL_tileSize));
     layer->pos = AbelV_newVec2(0, 0);
     return layer;
@@ -25,6 +25,8 @@ void AbelL_freeLayer(tAbelL_layer *layer)
     AbelM_free(layer);
 }
 
+/* ========================================[[ Drawing ]]======================================== */
+
 void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
 {
     SDL_Rect windowRect = (SDL_Rect){.x = layer->pos.x - AbelR_camera.x,
@@ -32,13 +34,48 @@ void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
                                      .w = AbelR_windowSize.x / 4,
                                      .h = AbelR_windowSize.y / 4};
 
-    /* render tile frame */
-    SDL_RenderCopy(AbelR_renderer, layer->tileFrame->texture, &windowRect, NULL);
+    /* render bg frame */
+    SDL_RenderCopy(AbelR_renderer, layer->bgFrame->texture, &windowRect, NULL);
 }
 
-void AbelL_addBGTile(tAbelL_layer *layer, tAbel_vec2 pos, uint32_t id)
+void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, uint32_t id, LAYER_FRAME frame)
 {
-    SDL_Rect src, dest;
+    SDL_Rect src;
+
+    /* get tileset clip */
+    src = AbelL_getTileRect(layer, id);
+
+    /* draw to frame */
+    AbelL_drawTileClip(layer, src, pos, frame);
+}
+
+void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_vec2 pos, LAYER_FRAME frame)
+{
+    SDL_Rect dest;
+
+    /* get clip of render target */
+    dest = (SDL_Rect){.x = pos.x, .y = pos.y, .w = AbelL_tileSize.x, .h = AbelL_tileSize.y};
+
+    /* render to selected frame */
+    switch (frame) {
+    case FRAME_BG:
+        SDL_SetRenderTarget(AbelR_renderer, layer->bgFrame->texture);
+        break;
+    case FRAME_SPRITE:
+        SDL_SetRenderTarget(AbelR_renderer, layer->spriteFrame->texture);
+        break;
+    default:
+        ABEL_ERROR("Invalid frame type passed: %d!\n", frame);
+    }
+
+    /* draw clipped texture */
+    if (SDL_RenderCopy(AbelR_renderer, layer->tileSet->texture, &tileClip, &dest) != 0)
+        ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
+    SDL_SetRenderTarget(AbelR_renderer, NULL);
+}
+
+SDL_Rect AbelL_getTileRect(tAbelL_layer *layer, uint32_t id)
+{
     tAbel_vec2 cordSize;
     int x, y;
 
@@ -50,21 +87,14 @@ void AbelL_addBGTile(tAbelL_layer *layer, tAbel_vec2 pos, uint32_t id)
     if (y > cordSize.y)
         ABEL_ERROR("Invalid tile id: %d\n", id);
 
-    /* get clip of texture */
-    src = (SDL_Rect){.x = x * AbelL_tileSize.x,
-                     .y = y * AbelL_tileSize.y,
-                     .w = AbelL_tileSize.x,
-                     .h = AbelL_tileSize.y};
-
-    /* get clip of render target */
-    dest = (SDL_Rect){.x = pos.x * AbelL_tileSize.x,
-                      .y = pos.y * AbelL_tileSize.y,
+    /* return clip of texture */
+    return (SDL_Rect){.x = x * AbelL_tileSize.x,
+                      .y = y * AbelL_tileSize.y,
                       .w = AbelL_tileSize.x,
                       .h = AbelL_tileSize.y};
+}
 
-    /* render to target */
-    SDL_SetRenderTarget(AbelR_renderer, layer->tileFrame->texture);
-    if (SDL_RenderCopy(AbelR_renderer, layer->tileSet->texture, &src, &dest) != 0)
-        ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
-    SDL_SetRenderTarget(AbelR_renderer, NULL);
+tAbel_vec2 AbelL_gridToPos(tAbel_vec2 gridPos)
+{
+    return AbelV_mulVec2(gridPos, AbelL_tileSize);
 }
