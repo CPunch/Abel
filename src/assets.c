@@ -69,7 +69,7 @@ static ASSET_ID getNextID(void)
     return nextAssetID++;
 }
 
-/* =======================================[[ Asset API ]]======================================= */
+/* =====================================[[ Initializers ]]====================================== */
 
 void AbelA_init(void)
 {
@@ -82,6 +82,8 @@ void AbelA_quit(void)
     /* free assets */
     hashmap_free(AbelA_assetMap);
 }
+
+/* =======================================[[ Asset API ]]======================================= */
 
 ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
 {
@@ -119,6 +121,17 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
     hashmap_set(AbelA_assetMap, &(tAbelA_assetElem){.id = id, .type = type, .data = data});
     return id;
 }
+
+void AbelA_freeAsset(ASSET_ID id)
+{
+    void *elem = hashmap_delete(AbelA_assetMap, &(tAbelA_assetElem){.id = id});
+
+    /* if the asset was found in the asset map, free it */
+    if (elem)
+        assetFree(elem);
+}
+
+/* =======================================[[ Getters ]]========================================= */
 
 tAbelR_texture *AbelA_getTexture(ASSET_ID id)
 {

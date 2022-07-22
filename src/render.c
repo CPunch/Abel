@@ -8,6 +8,8 @@ SDL_Renderer *AbelR_renderer = NULL;
 tAbel_vec2 AbelR_windowSize;
 tAbel_vec2 AbelR_camera;
 
+/* =====================================[[ Initializers ]]====================================== */
+
 void AbelR_init(void)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -21,7 +23,8 @@ void AbelR_init(void)
         ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 
     /* create & set rendering target */
-    AbelR_renderer = SDL_CreateRenderer(AbelR_window, -1, SDL_RENDERER_ACCELERATED);
+    AbelR_renderer =
+        SDL_CreateRenderer(AbelR_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
     if (AbelR_renderer == NULL)
         ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
 
@@ -49,6 +52,8 @@ tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture)
     if (SDL_QueryTexture(rawTexture, NULL, NULL, &texture->size.x, &texture->size.y) != 0)
         ABEL_ERROR("Failed to query texture information: %s\n", SDL_GetError());
 
+    /* make sure we can render textures *on top of* others, keep transparency */
+    SDL_SetTextureBlendMode(rawTexture, SDL_BLENDMODE_BLEND);
     return texture;
 }
 
@@ -60,7 +65,6 @@ void AbelR_freeTexture(tAbelR_texture *texture)
 
 tAbelR_texture *AbelR_newBlankTexture(tAbel_vec2 size)
 {
-    tAbelR_texture *texture;
     SDL_Texture *rawTexture;
 
     /* create SDL texture */
@@ -70,8 +74,5 @@ tAbelR_texture *AbelR_newBlankTexture(tAbel_vec2 size)
         ABEL_ERROR("Failed to make blank texture: %s\n", SDL_GetError());
 
     /* create Abel texture */
-    texture = (tAbelR_texture *)AbelM_malloc(sizeof(tAbelR_texture));
-    texture->texture = rawTexture;
-    texture->size = size;
-    return texture;
+    return AbelR_newTexture(rawTexture);
 }

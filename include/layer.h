@@ -21,14 +21,16 @@ typedef struct _tAbelL_layer
     tAbel_vec2 pos;
 } tAbelL_layer;
 
+/* layers */
 tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_vec2 size);
 void AbelL_freeLayer(tAbelL_layer *layer);
-
 void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera);
 
+/* drawing */
 void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, uint32_t id, LAYER_FRAME frame);
 void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_vec2 pos, LAYER_FRAME frame);
 
+/* utils */
 SDL_Rect AbelL_getTileRect(tAbelL_layer *layer, uint32_t id);
 tAbel_vec2 AbelL_gridToPos(tAbel_vec2 gridPos);
 
