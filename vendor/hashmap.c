@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "core/hashmap.h"
+#include "hashmap.h"
 
 static void *(*_malloc)(size_t) = NULL;
 static void *(*_realloc)(void *, size_t) = NULL;
@@ -23,7 +23,7 @@ void hashmap_set_allocator(void *(*malloc)(size_t), void (*free)(void*))
 }
 
 #define panic(_msg_) { \
-    /*fprintf(stderr, "panic: %s (%s:%d)\n", (_msg_), __FILE__, __LINE__);*/ \
+    fprintf(stderr, "panic: %s (%s:%d)\n", (_msg_), __FILE__, __LINE__); \
     exit(1); \
 }
 
@@ -248,7 +248,7 @@ static bool resize(struct hashmap *map, size_t new_cap) {
 // replaced then it is returned otherwise NULL is returned. This operation
 // may allocate memory. If the system is unable to allocate additional
 // memory then NULL is returned and hashmap_oom() returns true.
-void *hashmap_set(struct hashmap *map, void *item) {
+void *hashmap_set(struct hashmap *map, const void *item) {
     if (!item) {
         panic("item is null");
     }
@@ -407,6 +407,42 @@ bool hashmap_scan(struct hashmap *map,
     }
     return true;
 }
+
+
+// hashmap_iter iterates one key at a time yielding a reference to an
+// entry at each iteration. Useful to write simple loops and avoid writing
+// dedicated callbacks and udata structures, as in hashmap_scan.
+//
+// map is a hash map handle. i is a pointer to a size_t cursor that
+// should be initialized to 0 at the beginning of the loop. item is a void
+// pointer pointer that is populated with the retrieved item. Note that this
+// is NOT a copy of the item stored in the hash map and can be directly
+// modified.
+//
+// Note that if hashmap_delete() is called on the hashmap being iterated,
+// the buckets are rearranged and the iterator must be reset to 0, otherwise
+// unexpected results may be returned after deletion.
+//
+// This function has not been tested for thread safety.
+//
+// The function returns true if an item was retrieved; false if the end of the
+// iteration has been reached.
+bool hashmap_iter(struct hashmap *map, size_t *i, void **item)
+{
+    struct bucket *bucket;
+
+    do {
+        if (*i >= map->nbuckets) return false;
+
+        bucket = bucket_at(map, *i);
+        (*i)++;
+    } while (!bucket->dib);
+
+    *item = bucket_item(bucket);
+
+    return true;
+}
+
 
 //-----------------------------------------------------------------------------
 // SipHash reference C implementation
@@ -601,7 +637,7 @@ static size_t deepcount(struct hashmap *map) {
 #include <time.h>
 #include <assert.h>
 #include <stdio.h>
-#include "core/hashmap.h"
+#include "hashmap.h"
 
 static bool rand_alloc_fail = false;
 static int rand_alloc_fail_odds = 3; // 1 in 3 chance malloc will fail.
@@ -738,6 +774,13 @@ static void all() {
     while (!(vals2 = xmalloc(N * sizeof(int)))) {}
     memset(vals2, 0, N * sizeof(int));
     assert(hashmap_scan(map, iter_ints, &vals2));
+
+    // Test hashmap_iter. This does the same as hashmap_scan above.
+    size_t iter = 0;
+    void *iter_val;
+    while (hashmap_iter (map, &iter, &iter_val)) {
+        assert (iter_ints(iter_val, &vals2));
+    }
     for (int i = 0; i < N; i++) {
         assert(vals2[i] == 1);
     }
