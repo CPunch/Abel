@@ -8,6 +8,8 @@ SDL_Renderer *AbelR_renderer = NULL;
 tAbel_vec2 AbelR_windowSize;
 tAbel_vec2 AbelR_camera;
 
+#define SDL_IMG_FLAGS IMG_INIT_PNG
+
 /* =====================================[[ Initializers ]]====================================== */
 
 void AbelR_init(void)
@@ -17,7 +19,8 @@ void AbelR_init(void)
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         ABEL_ERROR("Failed to initialize SDL: %s\n", SDL_GetError());
 
-    if (IMG_Init(IMG_INIT_PNG) != 0)
+    /* IMG_Init() returns the flags set, make sure they match */
+    if (IMG_Init(SDL_IMG_FLAGS) != SDL_IMG_FLAGS)
         ABEL_ERROR("Failed to initialize SDL_IMG: %s\n", IMG_GetError());
 
     if (TTF_Init() != 0)

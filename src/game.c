@@ -6,6 +6,7 @@
 
 tAbelL_layer *AbelG_layers[ABEL_MAX_LAYERS];
 ASSET_ID tilesetID;
+ASSET_ID debugFontID;
 
 /* =====================================[[ Initializers ]]====================================== */
 
@@ -15,6 +16,7 @@ void AbelG_init(void)
 
     /* TODO: load this data from game file */
     tilesetID = AbelA_loadAsset("res/tileset.png", ASSET_TEXTURE);
+    debugFontID = AbelA_loadAsset("res/kongtext.ttf", ASSET_FONT);
     for (i = 0; i < (sizeof(AbelG_layers) / sizeof(tAbelL_layer *)); i++) {
         AbelG_layers[i] = AbelL_newLayer(AbelA_getTexture(tilesetID), AbelV_newVec2(16, 16));
     }
@@ -47,11 +49,13 @@ void AbelG_quit(void)
         AbelL_freeLayer(AbelG_layers[i]);
     }
     AbelA_freeAsset(tilesetID);
+    AbelA_freeAsset(debugFontID);
 }
 
 void AbelG_run(void)
 {
     SDL_Event evnt;
+    TTF_Font *font = AbelA_getFont(debugFontID);
     int i;
     bool quit = false;
 

@@ -21,6 +21,8 @@ tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_vec2 size)
 
 void AbelL_freeLayer(tAbelL_layer *layer)
 {
+    AbelR_freeTexture(layer->spriteFrame);
+    AbelR_freeTexture(layer->bgFrame);
     AbelM_free(layer);
 }
 

@@ -7,8 +7,9 @@ typedef uint16_t ASSET_ID;
 
 typedef enum
 {
+    ASSET_NONE,
     ASSET_TEXTURE,
-    ASSET_FONT
+    ASSET_FONT,
 } ASSET_TYPE;
 
 /* initalizers */

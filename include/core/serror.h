@@ -27,7 +27,7 @@
     otherwise program is exit()'d. if ABEL_QUITE is defined printf is called with passed args, else
     arguments are ignored.
 */
-#ifndef ABEL_QUITE
+#ifdef ABEL_QUITE
 #    define ABEL_ERROR(...)                                                                        \
         do {                                                                                       \
             if (ABEL_ISPROTECTED)                                                                  \

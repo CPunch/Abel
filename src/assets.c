@@ -1,103 +1,125 @@
 #include "assets.h"
 
 #include "core/hashmap.h"
+#include "core/mem.h"
 #include "core/serror.h"
 #include "layer.h"
 #include "render.h"
 #include "vec2.h"
 
-static ASSET_ID nextAssetID = 0;
-static struct hashmap *AbelA_assetMap = NULL;
-
 /* ===================================[[ Helper Functions ]]==================================== */
 
 typedef struct
 {
-    ASSET_ID id;
-    ASSET_TYPE type;
     void *data;
-} tAbelA_assetElem;
+    const char *path;
+    ASSET_TYPE type;
+    ASSET_ID id;
+} tAbelA_asset;
 
-static int assetCompare(const void *a, const void *b, void *udata)
+AbelM_newVector(tAbelA_asset, AbelA_assetTable);
+
+/* valid until asset is added/removed */
+static tAbelA_asset *getAssetByID(ASSET_ID id)
 {
-    const tAbelA_assetElem *ua = a;
-    const tAbelA_assetElem *ub = b;
+    if (id >= AbelA_assetTable_COUNT)
+        return NULL;
 
-    return ua->id != ub->id;
+    /* make sure we don't return an invalid asset */
+    return AbelA_assetTable[id].type != ASSET_NONE ? &AbelA_assetTable[id] : NULL;
 }
 
-static uint64_t assetHash(const void *item, uint64_t seed0, uint64_t seed1)
+static tAbelA_asset *getAssetByPath(const char *path)
 {
-    const tAbelA_assetElem *u = item;
-    return (uint64_t)(u->id);
-}
+    int id;
 
-static void assetFree(void *rawItem)
-{
-    tAbelA_assetElem *elem = (tAbelA_assetElem *)rawItem;
-    
-    switch (elem->type) {
-    case ASSET_TEXTURE:
-        AbelR_freeTexture((tAbelR_texture *)elem->data);
-        break;
-    case ASSET_FONT:
-        TTF_CloseFont((TTF_Font *)elem->data);
-        break;
-    default:
-        ABEL_ERROR("Invalid asset type found while freeing: %d\n", elem->type);
-    }
-}
+    /* search loaded assets */
+    for (id = 0; id < AbelA_assetTable_COUNT; id++)
+        if (strcmp(AbelA_assetTable[id].path, path) == 0)
+            return &AbelA_assetTable[id];
 
-/* returned pointer is valid until an entry is added/removed from the hashmap */
-static tAbelA_assetElem *getAsset(ASSET_ID id)
-{
-    tAbelA_assetElem *asset =
-        (tAbelA_assetElem *)hashmap_get(AbelA_assetMap, &(tAbelA_assetElem){.id = id});
-    if (asset == NULL)
-        ABEL_ERROR("Failed to get asset with invalid id: %d!\n", id);
-
-    return asset;
+    return NULL;
 }
 
 static void *getAssetData(ASSET_ID id)
 {
-    return getAsset(id)->data;
+    tAbelA_asset *asset = getAssetByID(id);
+    if (asset == NULL)
+        ABEL_ERROR("Failed to get loaded asset with invalid ID: %d\n", id);
+
+    return asset->data;
 }
 
 static ASSET_ID getNextID(void)
 {
-    return nextAssetID++;
+    int id;
+
+    /* search for empty spot in asset table */
+    for (id = 0; id < AbelA_assetTable_COUNT; id++)
+        if (AbelA_assetTable[id].type == ASSET_NONE)
+            break;
+
+    return id;
+}
+
+static ASSET_ID AbelA_insertAsset(void *data, const char *path, ASSET_TYPE type)
+{
+    ASSET_ID nextID = getNextID();
+
+    /* check if we need to grow the asset table */
+    if (nextID == AbelA_assetTable_COUNT) {
+        AbelM_growVector(tAbelA_asset, AbelA_assetTable, 1);
+        ++AbelA_assetTable_COUNT;
+    }
+
+    /* insert into asset table */
+    AbelA_assetTable[nextID] = (tAbelA_asset){
+        .path = path,
+        .data = data,
+        .type = type,
+        .id = nextID,
+    };
+
+    /* return id */
+    return nextID;
 }
 
 /* =====================================[[ Initializers ]]====================================== */
 
 void AbelA_init(void)
 {
-    AbelA_assetMap =
-        hashmap_new(sizeof(tAbelA_assetElem), 4, 0, 0, assetHash, assetCompare, NULL, NULL);
+    AbelM_initVector(AbelA_assetTable, 4);
 }
 
 void AbelA_quit(void)
 {
-    /* free assets */
-    hashmap_free(AbelA_assetMap);
+    int i;
+
+    for (i = 0; i < AbelA_assetTable_COUNT; i++) {
+        if (AbelA_assetTable[i].type != ASSET_NONE)
+            AbelA_freeAsset(i);
+    }
 }
 
 /* =======================================[[ Asset API ]]======================================= */
 
-ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
+ASSET_ID AbelA_loadAsset(const char *path, ASSET_TYPE type)
 {
+    tAbelA_asset *asset;
     void *data;
-    ASSET_ID id = getNextID();
+
+    /* first, check if we already loaded this asset */
+    if ((asset = getAssetByPath(path)) != NULL)
+        return asset->id;
 
     switch (type) {
     case ASSET_TEXTURE: {
         SDL_Texture *rawText;
 
         /* load raw texture */
-        rawText = IMG_LoadTexture(AbelR_renderer, filePath);
+        rawText = IMG_LoadTexture(AbelR_renderer, path);
         if (rawText == NULL)
-            ABEL_ERROR("Failed to load texture from '%s': %s\n", filePath, SDL_GetError());
+            ABEL_ERROR("Failed to load texture from '%s': %s\n", path, SDL_GetError());
 
         data = (void *)AbelR_newTexture(rawText);
         break;
@@ -106,9 +128,9 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
         TTF_Font *rawFont;
 
         /* load raw font */
-        rawFont = TTF_OpenFont(filePath, 11);
+        rawFont = TTF_OpenFont(path, 11);
         if (rawFont == NULL)
-            ABEL_ERROR("Failed to load font from '%s': %s\n", filePath, SDL_GetError());
+            ABEL_ERROR("Failed to load font from '%s': %s\n", path, SDL_GetError());
 
         data = (void *)rawFont;
         break;
@@ -117,18 +139,32 @@ ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type)
         ABEL_ERROR("Invalid asset type provided: %d!\n", type);
     }
 
-    /* insert into assetMap & return id*/
-    hashmap_set(AbelA_assetMap, &(tAbelA_assetElem){.id = id, .type = type, .data = data});
-    return id;
+    /* insert into asset table & return id*/
+    return AbelA_insertAsset(data, path, type);
 }
 
 void AbelA_freeAsset(ASSET_ID id)
 {
-    void *elem = hashmap_delete(AbelA_assetMap, &(tAbelA_assetElem){.id = id});
+    tAbelA_asset *asset = getAssetByID(id);
 
-    /* if the asset was found in the asset map, free it */
-    if (elem)
-        assetFree(elem);
+    if (asset == NULL)
+        ABEL_ERROR("Failed to free invalid asset ID: %d\n", id);
+
+    switch (asset->type) {
+    case ASSET_TEXTURE:
+        AbelR_freeTexture((tAbelR_texture *)asset->data);
+        break;
+    case ASSET_FONT:
+        TTF_CloseFont((TTF_Font *)asset->data);
+        break;
+    default:
+        ABEL_ERROR("Invalid asset type found while freeing: %d\n", asset->type);
+    }
+
+    printf("free'd asset %d\n", id);
+
+    /* mark id as unused */
+    asset->type = ASSET_NONE;
 }
 
 /* =======================================[[ Getters ]]========================================= */

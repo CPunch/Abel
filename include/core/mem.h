@@ -27,9 +27,9 @@
     name##_CAP = startCap;
 
 #define AbelM_growVector(type, name, needed)                                                       \
-    if (name##_COUNT + needed >= name##_CAP || buf == NULL) {                                      \
+    if (name##_COUNT + needed >= name##_CAP || name == NULL) {                                     \
         name##_CAP = (name##_CAP + needed) * GROW_FACTOR;                                          \
-        buf = (type *)AbelM_realloc(buf, sizeof(type) * name##_CAP);                               \
+        name = (type *)AbelM_realloc(name, sizeof(type) * name##_CAP);                             \
     }
 
 /* moves vector elements above indx down by numElem, removing numElem elements at indx */
@@ -37,16 +37,16 @@
     do {                                                                                           \
         int _i, _sz = ((name##_COUNT - indx) - numElem);                                           \
         for (_i = 0; _i < _sz; _i++)                                                               \
-            buf[indx + _i] = buf[indx + numElem + _i];                                             \
+            name[indx + _i] = name[indx + numElem + _i];                                           \
         name##_COUNT -= numElem;                                                                   \
     } while (0);
 
 /* moves vector elements above indx up by numElem, inserting numElem elements at indx */
-#define AbelM_insertVector(buf, indx, numElem)                                                     \
+#define AbelM_insertVector(name, indx, numElem)                                                    \
     do {                                                                                           \
         int _i;                                                                                    \
         for (_i = name##_COUNT; _i > indx; _i--)                                                   \
-            buf[_i] = buf[_i - 1];                                                                 \
+            name[_i] = name[_i - 1];                                                               \
         name##_COUNT += numElem;                                                                   \
     } while (0);
 
