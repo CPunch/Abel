@@ -12,8 +12,16 @@ tAbel_vec2 AbelR_camera;
 
 void AbelR_init(void)
 {
+    /* pretty sure sdl_img & ttf_img are initalized with this,,, but i think the API is for
+        previous versions of SDL so... we'll go ahead and do it anyways */
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         ABEL_ERROR("Failed to initialize SDL: %s\n", SDL_GetError());
+
+    if (IMG_Init(IMG_INIT_PNG) != 0)
+        ABEL_ERROR("Failed to initialize SDL_IMG: %s\n", IMG_GetError());
+
+    if (TTF_Init() != 0)
+        ABEL_ERROR("Failed to initialize: SDL_TTF: %s\n", TTF_GetError());
 
     /* open window */
     AbelR_windowSize = AbelV_newVec2(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
@@ -38,6 +46,8 @@ void AbelR_quit(void)
 {
     SDL_DestroyRenderer(AbelR_renderer);
     SDL_DestroyWindow(AbelR_window);
+    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
 }
 
