@@ -17,6 +17,11 @@
 #define AbelM_malloc(sz) AbelM_realloc(NULL, sz)
 #define AbelM_free(buf)  AbelM_realloc(buf, 0)
 
+/* ========================================[[ Vectors ]]======================================== */
+
+#define AbelM_countVector(name) name##_COUNT
+#define AbelM_capVector(name)   name##_CAP
+
 #define AbelM_newVector(type, name)                                                                \
     type *name;                                                                                    \
     int name##_COUNT;                                                                              \

@@ -33,7 +33,7 @@ void AbelL_freeLayer(tAbelL_layer *layer)
 void AbelL_addSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
 {
     AbelM_growVector(tAbelS_sprite *, layer->sprites, 1);
-    layer->sprites[layer->sprites_COUNT++] = sprite;
+    layer->sprites[AbelM_countVector(layer->sprites)++] = sprite;
 }
 
 void AbelL_rmvSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
@@ -41,7 +41,7 @@ void AbelL_rmvSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
     int i;
 
     /* search for sprite in layer */
-    for (i = 0; i < layer->sprites_COUNT; i++) {
+    for (i = 0; i < AbelM_countVector(layer->sprites); i++) {
         /* found sprite, remove it */
         if (layer->sprites[i] == sprite) {
             AbelM_rmvVector(layer->sprites, i, 1);
@@ -68,7 +68,7 @@ void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
     SDL_RenderClear(AbelR_renderer);
 
     /* render each sprite */
-    for (i = 0; i < layer->sprites_COUNT; i++) {
+    for (i = 0; i < AbelM_countVector(layer->sprites); i++) {
         AbelS_drawSprite(layer->sprites[i]);
     }
 

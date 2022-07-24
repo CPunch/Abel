@@ -22,7 +22,7 @@ AbelM_newVector(tAbelA_asset, AbelA_assetTable);
 /* valid until asset is added/removed */
 static tAbelA_asset *getAssetByID(ASSET_ID id)
 {
-    if (id >= AbelA_assetTable_COUNT)
+    if (id >= AbelM_countVector(AbelA_assetTable))
         return NULL;
 
     /* make sure we don't return an invalid asset */
@@ -36,7 +36,7 @@ static tAbelA_asset *getAssetByPath(const char *path)
     /* search loaded assets (this is the *only* compromise for this approach imo,
         this is only called when AbelA_loadAsset() is called basically. since this
         is only ran on startup, using something like a hashmap is overkill.) */
-    for (id = 0; id < AbelA_assetTable_COUNT; id++)
+    for (id = 0; id < AbelM_countVector(AbelA_assetTable); id++)
         if (strcmp(AbelA_assetTable[id].path, path) == 0)
             return &AbelA_assetTable[id];
 
@@ -57,7 +57,7 @@ static ASSET_ID getNextID(void)
     int id;
 
     /* search for empty spot in asset table */
-    for (id = 0; id < AbelA_assetTable_COUNT; id++)
+    for (id = 0; id < AbelM_countVector(AbelA_assetTable); id++)
         if (AbelA_assetTable[id].type == ASSET_NONE)
             break;
 
@@ -69,9 +69,9 @@ static ASSET_ID AbelA_insertAsset(void *data, const char *path, ASSET_TYPE type)
     ASSET_ID nextID = getNextID();
 
     /* check if we need to grow the asset table */
-    if (nextID == AbelA_assetTable_COUNT) {
+    if (nextID == AbelM_countVector(AbelA_assetTable)) {
         AbelM_growVector(tAbelA_asset, AbelA_assetTable, 1);
-        ++AbelA_assetTable_COUNT;
+        ++AbelM_countVector(AbelA_assetTable);
     }
 
     /* insert into asset table */
@@ -97,7 +97,7 @@ void AbelA_quit(void)
 {
     int i;
 
-    for (i = 0; i < AbelA_assetTable_COUNT; i++) {
+    for (i = 0; i < AbelM_countVector(AbelA_assetTable); i++) {
         if (AbelA_assetTable[i].type != ASSET_NONE)
             AbelA_freeAsset(i);
     }

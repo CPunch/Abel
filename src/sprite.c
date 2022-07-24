@@ -10,7 +10,7 @@ uint32_t animationTimer(uint32_t tick, void *uData)
     tAbelS_sprite *sprite = (tAbelS_sprite *)uData;
 
     /* wrap around animation */
-    if (++sprite->animationID >= sprite->animation_COUNT)
+    if (++sprite->animationID >= AbelM_countVector(sprite->animation))
         sprite->animationID = 0;
 
     /* delay until *next* frame */
@@ -47,15 +47,15 @@ void AbelS_freeSprite(tAbelS_sprite *sprite)
 
 void AbelS_addSprite(tAbelS_sprite *sprite, TILE_ID id, uint32_t delay)
 {
-    sprite->animationID = sprite->animation_COUNT;
+    sprite->animationID = AbelM_countVector(sprite->animation);
 
     /* add animation frame */
     AbelM_growVector(tAbelS_animationData, sprite->animation, 1);
-    sprite->animation[sprite->animation_COUNT++] =
+    sprite->animation[AbelM_countVector(sprite->animation)++] =
         (tAbelS_animationData){.clip = AbelL_getTileClip(sprite->layer, id), .delay = delay};
 
     /* if the timer is NOT running, start our timer (if we have more than 1 frame) */
-    if (sprite->animationTimer == 0 && sprite->animation_COUNT > 1) {
+    if (sprite->animationTimer == 0 && AbelM_countVector(sprite->animation) > 1) {
         /* start the timer at the *next* frame */
         sprite->animationTimer = SDL_AddTimer(animationTimer(SDL_GetTicks(), (void *)sprite),
                                               animationTimer, (void *)sprite);
