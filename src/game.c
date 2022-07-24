@@ -3,6 +3,7 @@
 #include "assets.h"
 #include "layer.h"
 #include "render.h"
+#include "sprite.h"
 
 tAbelL_layer *AbelG_layers[ABEL_MAX_LAYERS];
 ASSET_ID tilesetID;
@@ -56,8 +57,12 @@ void AbelG_run(void)
 {
     SDL_Event evnt;
     TTF_Font *font = AbelA_getFont(debugFontID);
-    int i;
+    tAbelS_sprite *testSprite;
+    int i, id = 0;
     bool quit = false;
+
+    testSprite = AbelS_newSprite(AbelG_layers[0], id);
+    AbelS_setSpritePos(testSprite, AbelL_gridToPos(AbelV_newVec2(4, 4)));
 
     /* main engine loop */
     while (!quit) {
@@ -72,6 +77,8 @@ void AbelG_run(void)
             }
         }
 
+        AbelS_setSpriteTile(testSprite, id++);
+
         /* clear layers */
         SDL_RenderClear(AbelR_renderer);
 
@@ -82,5 +89,6 @@ void AbelG_run(void)
 
         /* render to window */
         SDL_RenderPresent(AbelR_renderer);
+        SDL_Delay(1000);
     }
 }

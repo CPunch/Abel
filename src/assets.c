@@ -33,7 +33,9 @@ static tAbelA_asset *getAssetByPath(const char *path)
 {
     int id;
 
-    /* search loaded assets */
+    /* search loaded assets (this is the *only* compromise for this approach imo,
+        this is only called when AbelA_loadAsset() is called basically. since this
+        is only ran on startup, using something like a hashmap is overkill.) */
     for (id = 0; id < AbelA_assetTable_COUNT; id++)
         if (strcmp(AbelA_assetTable[id].path, path) == 0)
             return &AbelA_assetTable[id];
@@ -160,8 +162,6 @@ void AbelA_freeAsset(ASSET_ID id)
     default:
         ABEL_ERROR("Invalid asset type found while freeing: %d\n", asset->type);
     }
-
-    printf("free'd asset %d\n", id);
 
     /* mark id as unused */
     asset->type = ASSET_NONE;

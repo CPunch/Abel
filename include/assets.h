@@ -3,8 +3,6 @@
 
 #include "abel.h"
 
-typedef uint16_t ASSET_ID;
-
 typedef enum
 {
     ASSET_NONE,

@@ -3,6 +3,7 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "render.h"
+#include "sprite.h"
 #include "vec2.h"
 
 const tAbel_vec2 AbelL_tileSize = AbelV_newVec2(TILESET_SIZE, TILESET_SIZE);
@@ -16,6 +17,7 @@ tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_vec2 size)
     layer->bgFrame = AbelR_newBlankTexture(AbelV_mulVec2(size, AbelL_tileSize));
     layer->spriteFrame = AbelR_newBlankTexture(AbelV_mulVec2(size, AbelL_tileSize));
     layer->pos = AbelV_newVec2(0, 0);
+    AbelM_initVector(layer->sprites, 4);
     return layer;
 }
 
@@ -26,6 +28,28 @@ void AbelL_freeLayer(tAbelL_layer *layer)
     AbelM_free(layer);
 }
 
+/* ========================================[[ Sprites ]]======================================== */
+
+void AbelL_addSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
+{
+    AbelM_growVector(tAbelS_sprite *, layer->sprites, 1);
+    layer->sprites[layer->sprites_COUNT++] = sprite;
+}
+
+void AbelL_rmvSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
+{
+    int i;
+
+    /* search for sprite in layer */
+    for (i = 0; i < layer->sprites_COUNT; i++) {
+        /* found sprite, remove it */
+        if (layer->sprites[i] == sprite) {
+            AbelM_rmvVector(layer->sprites, i, 1);
+            break;
+        }
+    }
+}
+
 /* ========================================[[ Drawing ]]======================================== */
 
 void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
@@ -34,17 +58,30 @@ void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
                                      .y = layer->pos.y - AbelR_camera.y,
                                      .w = AbelR_windowSize.x / 4,
                                      .h = AbelR_windowSize.y / 4};
+    int i;
 
     /* render bg frame */
     SDL_RenderCopy(AbelR_renderer, layer->bgFrame->texture, &windowRect, NULL);
+
+    /* clear sprite frame */
+    SDL_SetRenderTarget(AbelR_renderer, layer->spriteFrame->texture);
+    SDL_RenderClear(AbelR_renderer);
+
+    /* render each sprite */
+    for (i = 0; i < layer->sprites_COUNT; i++) {
+        AbelS_drawSprite(layer->sprites[i]);
+    }
+
+    SDL_SetRenderTarget(AbelR_renderer, NULL);
+    SDL_RenderCopy(AbelR_renderer, layer->spriteFrame->texture, &windowRect, NULL);
 }
 
-void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, uint32_t id, LAYER_FRAME frame)
+void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, TILE_ID id, LAYER_FRAME frame)
 {
     SDL_Rect src;
 
     /* get tileset clip */
-    src = AbelL_getTileRect(layer, id);
+    src = AbelL_getTileClip(layer, id);
 
     /* draw to frame */
     AbelL_drawTileClip(layer, src, pos, frame);
@@ -75,7 +112,7 @@ void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_vec2 pos, 
     SDL_SetRenderTarget(AbelR_renderer, NULL);
 }
 
-SDL_Rect AbelL_getTileRect(tAbelL_layer *layer, uint32_t id)
+SDL_Rect AbelL_getTileClip(tAbelL_layer *layer, TILE_ID id)
 {
     tAbel_vec2 cordSize;
     int x, y;

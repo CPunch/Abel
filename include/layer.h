@@ -3,6 +3,7 @@
 
 #include "abel.h"
 #include "core/hashmap.h"
+#include "core/mem.h"
 #include "vec2.h"
 
 #define TILESET_SIZE 16
@@ -18,20 +19,25 @@ typedef struct _tAbelL_layer
     tAbelR_texture *tileSet;
     tAbelR_texture *bgFrame;
     tAbelR_texture *spriteFrame;
+    AbelM_newVector(tAbelS_sprite *, sprites);
     tAbel_vec2 pos;
 } tAbelL_layer;
 
 /* layers */
 tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_vec2 size);
 void AbelL_freeLayer(tAbelL_layer *layer);
-void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera);
+
+/* sprites */
+void AbelL_addSprite(tAbelL_layer *layer, tAbelS_sprite *sprite);
+void AbelL_rmvSprite(tAbelL_layer *layer, tAbelS_sprite *sprite);
 
 /* drawing */
-void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, uint32_t id, LAYER_FRAME frame);
+void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera);
+void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, TILE_ID id, LAYER_FRAME frame);
 void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_vec2 pos, LAYER_FRAME frame);
 
 /* utils */
-SDL_Rect AbelL_getTileRect(tAbelL_layer *layer, uint32_t id);
+SDL_Rect AbelL_getTileClip(tAbelL_layer *layer, TILE_ID id);
 tAbel_vec2 AbelL_gridToPos(tAbel_vec2 gridPos);
 
 #endif
