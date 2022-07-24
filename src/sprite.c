@@ -24,7 +24,8 @@ tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_vec2 pos)
     tAbelS_sprite *sprite = (tAbelS_sprite *)AbelM_malloc(sizeof(tAbelS_sprite));
     sprite->layer = layer;
     sprite->animationID = -1;
-    sprite->animationTimer = false;
+    /* 0 is a reserved timerID error result, so it should be safe to use as an "invalid timer ID" */
+    sprite->animationTimer = 0;
     AbelM_initVector(sprite->animation, 2);
 
     /* setup sprite in layer */
@@ -34,9 +35,15 @@ tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_vec2 pos)
 
 void AbelS_freeSprite(tAbelS_sprite *sprite)
 {
+    /* if we have an animation timer running, remove it */
+    if (sprite->animationTimer == 0)
+        SDL_RemoveTimer(sprite->animationTimer);
+
     AbelL_rmvSprite(sprite->layer, sprite);
     AbelM_free(sprite);
 }
+
+/* =======================================[[ Setters ]]========================================= */
 
 void AbelS_addSprite(tAbelS_sprite *sprite, TILE_ID id, uint32_t delay)
 {
@@ -48,12 +55,10 @@ void AbelS_addSprite(tAbelS_sprite *sprite, TILE_ID id, uint32_t delay)
         (tAbelS_animationData){.clip = AbelL_getTileClip(sprite->layer, id), .delay = delay};
 
     /* if the timer is NOT running, start our timer (if we have more than 1 frame) */
-    if (!sprite->animationTimer && sprite->animation_COUNT > 1) {
-        sprite->animationTimer = true;
-
+    if (sprite->animationTimer == 0 && sprite->animation_COUNT > 1) {
         /* start the timer at the *next* frame */
-        SDL_AddTimer(animationTimer(SDL_GetTicks(), (void *)sprite), animationTimer,
-                     (void *)sprite);
+        sprite->animationTimer = SDL_AddTimer(animationTimer(SDL_GetTicks(), (void *)sprite),
+                                              animationTimer, (void *)sprite);
     }
 }
 
@@ -70,11 +75,4 @@ void AbelS_drawSprite(tAbelS_sprite *sprite)
 
     AbelL_drawTileClip(sprite->layer, sprite->animation[sprite->animationID].clip, sprite->pos,
                        FRAME_SPRITE);
-}
-
-tAbelS_sprite *AbelS_getSprite(SPRITE_ID id)
-{
-    tAbelS_sprite *sprite;
-
-    return sprite;
 }

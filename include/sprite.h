@@ -17,7 +17,7 @@ typedef struct _tAbelS_sprite
     tAbelL_layer *layer;
     AbelM_newVector(tAbelS_animationData, animation);
     int animationID;
-    bool animationTimer;
+    SDL_TimerID animationTimer;
 } tAbelS_sprite;
 
 tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_vec2 pos);
@@ -25,8 +25,6 @@ void AbelS_freeSprite(tAbelS_sprite *sprite);
 
 void AbelS_addSprite(tAbelS_sprite *sprite, TILE_ID id, uint32_t delay);
 void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_vec2 pos);
-
-tAbelS_sprite *AbelS_getSprite(SPRITE_ID id);
 
 void AbelS_drawSprite(tAbelS_sprite *sprite);
 
