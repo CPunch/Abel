@@ -2,20 +2,28 @@
 #define ABEL_SPRITE_H
 
 #include "abel.h"
+#include "core/mem.h"
 #include "vec2.h"
+
+typedef struct _tAbelS_animationData
+{
+    SDL_Rect clip;
+    uint32_t delay; /* time in ms for current frame */
+} tAbelS_animationData;
 
 typedef struct _tAbelS_sprite
 {
-    SDL_Rect clip;
     tAbel_vec2 pos;
     tAbelL_layer *layer;
-    SPRITE_ID id;
+    AbelM_newVector(tAbelS_animationData, animation);
+    int animationID;
+    bool animationTimer;
 } tAbelS_sprite;
 
-tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, TILE_ID id);
+tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_vec2 pos);
 void AbelS_freeSprite(tAbelS_sprite *sprite);
 
-void AbelS_setSpriteTile(tAbelS_sprite *sprite, TILE_ID id);
+void AbelS_addSprite(tAbelS_sprite *sprite, TILE_ID id, uint32_t delay);
 void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_vec2 pos);
 
 tAbelS_sprite *AbelS_getSprite(SPRITE_ID id);

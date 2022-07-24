@@ -16,7 +16,7 @@ void AbelR_init(void)
 {
     /* pretty sure sdl_img & ttf_img are initalized with this,,, but i think the API is for
         previous versions of SDL so... we'll go ahead and do it anyways */
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
         ABEL_ERROR("Failed to initialize SDL: %s\n", SDL_GetError());
 
     /* IMG_Init() returns the flags set, make sure they match */

@@ -61,8 +61,12 @@ void AbelG_run(void)
     int i, id = 0;
     bool quit = false;
 
-    testSprite = AbelS_newSprite(AbelG_layers[0], id);
-    AbelS_setSpritePos(testSprite, AbelL_gridToPos(AbelV_newVec2(4, 4)));
+    testSprite = AbelS_newSprite(AbelG_layers[0], AbelL_gridToPos(AbelV_newVec2(2, 2)));
+    AbelS_addSprite(testSprite, 16, 1000); /* tile id 16 for 1 second */
+    AbelS_addSprite(testSprite, 17, 100);  /* tile id 17 for .1 seconds */
+    AbelS_addSprite(
+        testSprite, 16,
+        1000); /* tile id 16 again for 2 seconds (since it wraps around to the first frame) */
 
     /* main engine loop */
     while (!quit) {
@@ -77,8 +81,6 @@ void AbelG_run(void)
             }
         }
 
-        AbelS_setSpriteTile(testSprite, id++);
-
         /* clear layers */
         SDL_RenderClear(AbelR_renderer);
 
@@ -89,6 +91,5 @@ void AbelG_run(void)
 
         /* render to window */
         SDL_RenderPresent(AbelR_renderer);
-        SDL_Delay(1000);
     }
 }
