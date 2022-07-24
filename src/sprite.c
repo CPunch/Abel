@@ -40,12 +40,15 @@ void AbelS_freeSprite(tAbelS_sprite *sprite)
 
 void AbelS_addSprite(tAbelS_sprite *sprite, TILE_ID id, uint32_t delay)
 {
+    sprite->animationID = sprite->animation_COUNT;
+
+    /* add animation frame */
     AbelM_growVector(tAbelS_animationData, sprite->animation, 1);
     sprite->animation[sprite->animation_COUNT++] =
         (tAbelS_animationData){.clip = AbelL_getTileClip(sprite->layer, id), .delay = delay};
 
-    /* if the timer is NOT running, start our timer */
-    if (!sprite->animationTimer) {
+    /* if the timer is NOT running, start our timer (if we have more than 1 frame) */
+    if (!sprite->animationTimer && sprite->animation_COUNT > 1) {
         sprite->animationTimer = true;
 
         /* start the timer at the *next* frame */
