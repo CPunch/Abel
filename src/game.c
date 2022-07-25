@@ -58,15 +58,14 @@ void AbelG_run(void)
     SDL_Event evnt;
     TTF_Font *font = AbelA_getFont(debugFontID);
     tAbelS_sprite *testSprite;
-    int i, id = 0;
+    int i, animID;
     bool quit = false;
 
     testSprite = AbelS_newSprite(AbelG_layers[0], AbelL_gridToPos(AbelV_newVec2(2, 2)));
-    AbelS_addSprite(testSprite, 16, 1000); /* tile id 16 for 1 second */
-    AbelS_addSprite(testSprite, 17, 100);  /* tile id 17 for .1 seconds */
-    AbelS_addSprite(
-        testSprite, 16,
-        1000); /* tile id 16 again for 2 seconds (since it wraps around to the first frame) */
+    animID = AbelS_addAnimation(testSprite);
+    AbelS_addFrame(testSprite, animID, 16, 1000); /* tile id 16 for 1 second */
+    AbelS_addFrame(testSprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
+    AbelS_playAnimation(testSprite, animID); /* play animation :D */
 
     /* main engine loop */
     while (!quit) {

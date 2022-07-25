@@ -22,6 +22,7 @@ typedef struct _tAbelR_texture tAbelR_texture;
 typedef struct _tAbelS_sprite tAbelS_sprite;
 
 typedef uint16_t ASSET_ID;
+typedef uint8_t LAYER_ID;
 typedef uint16_t TILE_ID;
 typedef uint32_t SPRITE_ID;
 
