@@ -3,7 +3,7 @@
 
 #include "abel.h"
 #include "core/mem.h"
-#include "vec2.h"
+#include "core/vec2.h"
 
 /* animation frame */
 typedef struct _tAbelS_animationData
@@ -28,19 +28,19 @@ typedef struct _tAbelS_animationStates
 
 typedef struct _tAbelS_sprite
 {
-    tAbel_vec2 pos;
+    tAbel_fVec2 pos;
     tAbelL_layer *layer;
     tAbelS_animationStates animations;
 } tAbelS_sprite;
 
-tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_vec2 pos);
+tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_fVec2 pos);
 void AbelS_freeSprite(tAbelS_sprite *sprite);
 
 void AbelS_addFrame(tAbelS_sprite *sprite, int animationID, TILE_ID id, uint32_t delay);
 int AbelS_addAnimation(tAbelS_sprite *sprite);
 void AbelS_playAnimation(tAbelS_sprite *sprite, int animationID);
 void AbelS_stopAnimation(tAbelS_sprite *sprite);
-void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_vec2 pos);
+void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_fVec2 pos);
 
 void AbelS_drawSprite(tAbelS_sprite *sprite);
 

@@ -139,7 +139,7 @@ void freeAState(tAbelS_animationStates *states)
 
 /* ======================================[[ Sprite API ]]======================================= */
 
-tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_vec2 pos)
+tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_fVec2 pos)
 {
     tAbelS_sprite *sprite = (tAbelS_sprite *)AbelM_malloc(sizeof(tAbelS_sprite));
     sprite->layer = layer;
@@ -179,7 +179,7 @@ void AbelS_stopAnimation(tAbelS_sprite *sprite)
     stopAnimation(&sprite->animations);
 }
 
-void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_vec2 pos)
+void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_fVec2 pos)
 {
     sprite->pos = pos;
 }
@@ -191,5 +191,5 @@ void AbelS_drawSprite(tAbelS_sprite *sprite)
     if (clip.h == 0 || clip.w == 0)
         return;
 
-    AbelL_drawTileClip(sprite->layer, clip, sprite->pos, FRAME_SPRITE);
+    AbelL_drawTileClip(sprite->layer, clip, AbelV_f2iVec(sprite->pos), FRAME_SPRITE);
 }

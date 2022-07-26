@@ -3,9 +3,9 @@
 #include "core/hashmap.h"
 #include "core/mem.h"
 #include "core/serror.h"
+#include "core/vec2.h"
 #include "layer.h"
 #include "render.h"
-#include "vec2.h"
 
 /* ===================================[[ Helper Functions ]]==================================== */
 

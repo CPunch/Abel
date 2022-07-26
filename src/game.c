@@ -19,7 +19,7 @@ void AbelG_init(void)
     tilesetID = AbelA_loadAsset("res/tileset.png", ASSET_TEXTURE);
     debugFontID = AbelA_loadAsset("res/kongtext.ttf", ASSET_FONT);
     for (i = 0; i < (sizeof(AbelG_layers) / sizeof(tAbelL_layer *)); i++) {
-        AbelG_layers[i] = AbelL_newLayer(AbelA_getTexture(tilesetID), AbelV_newVec2(16, 16));
+        AbelG_layers[i] = AbelL_newLayer(AbelA_getTexture(tilesetID), AbelV_newiVec2(16, 16));
     }
 
     /* TEST AAAAAAAAAAAAAAAAA */
@@ -29,13 +29,13 @@ void AbelG_init(void)
         for (y = 0; y < 16; y++) {
             switch (rand() % 6) {
             case 0:
-                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newVec2(x, y)), 0, FRAME_BG);
+                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newiVec2(x, y)), 0, FRAME_BG);
                 break; /* grass */
             case 1:
-                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newVec2(x, y)), 2, FRAME_BG);
+                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newiVec2(x, y)), 2, FRAME_BG);
                 break; /* weed */
             default:
-                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newVec2(x, y)), 1, FRAME_BG);
+                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newiVec2(x, y)), 1, FRAME_BG);
                 break; /* empty grass */
             }
         }
@@ -61,7 +61,8 @@ void AbelG_run(void)
     int i, animID;
     bool quit = false;
 
-    testSprite = AbelS_newSprite(AbelG_layers[0], AbelL_gridToPos(AbelV_newVec2(2, 2)));
+    testSprite =
+        AbelS_newSprite(AbelG_layers[0], AbelV_i2fVec(AbelL_gridToPos(AbelV_newiVec2(2, 2))));
     animID = AbelS_addAnimation(testSprite);
     AbelS_addFrame(testSprite, animID, 16, 1000); /* tile id 16 for 1 second */
     AbelS_addFrame(testSprite, animID, 17, 100);  /* tile id 17 for .1 seconds */

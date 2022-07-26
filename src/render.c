@@ -5,8 +5,8 @@
 
 SDL_Window *AbelR_window = NULL;
 SDL_Renderer *AbelR_renderer = NULL;
-tAbel_vec2 AbelR_windowSize;
-tAbel_vec2 AbelR_camera;
+tAbel_iVec2 AbelR_windowSize;
+tAbel_iVec2 AbelR_camera;
 
 #define SDL_IMG_FLAGS IMG_INIT_PNG
 
@@ -27,7 +27,7 @@ void AbelR_init(void)
         ABEL_ERROR("Failed to initialize: SDL_TTF: %s\n", TTF_GetError());
 
     /* open window */
-    AbelR_windowSize = AbelV_newVec2(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
+    AbelR_windowSize = AbelV_newiVec2(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
     AbelR_window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                     AbelR_windowSize.x, AbelR_windowSize.y, SDL_WINDOW_SHOWN);
     if (AbelR_window == NULL)
@@ -40,7 +40,7 @@ void AbelR_init(void)
         ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
 
     /* init camera */
-    AbelR_camera = AbelV_newVec2(0, 0);
+    AbelR_camera = AbelV_newiVec2(0, 0);
 
     SDL_SetRenderTarget(AbelR_renderer, NULL);
 }
@@ -76,7 +76,7 @@ void AbelR_freeTexture(tAbelR_texture *texture)
     AbelM_free(texture);
 }
 
-tAbelR_texture *AbelR_newBlankTexture(tAbel_vec2 size)
+tAbelR_texture *AbelR_newBlankTexture(tAbel_iVec2 size)
 {
     SDL_Texture *rawTexture;
 

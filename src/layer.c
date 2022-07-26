@@ -2,21 +2,21 @@
 
 #include "core/mem.h"
 #include "core/serror.h"
+#include "core/vec2.h"
 #include "render.h"
 #include "sprite.h"
-#include "vec2.h"
 
-const tAbel_vec2 AbelL_tileSize = AbelV_newVec2(TILESET_SIZE, TILESET_SIZE);
+const tAbel_iVec2 AbelL_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
 
 /* =======================================[[ Layer API ]]======================================= */
 
-tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_vec2 size)
+tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_iVec2 size)
 {
     tAbelL_layer *layer = (tAbelL_layer *)AbelM_malloc(sizeof(tAbelL_layer));
     layer->tileSet = tileSet;
-    layer->bgFrame = AbelR_newBlankTexture(AbelV_mulVec2(size, AbelL_tileSize));
-    layer->spriteFrame = AbelR_newBlankTexture(AbelV_mulVec2(size, AbelL_tileSize));
-    layer->pos = AbelV_newVec2(0, 0);
+    layer->bgFrame = AbelR_newBlankTexture(AbelV_muliVec2(size, AbelL_tileSize));
+    layer->spriteFrame = AbelR_newBlankTexture(AbelV_muliVec2(size, AbelL_tileSize));
+    layer->pos = AbelV_newiVec2(0, 0);
     AbelM_initVector(layer->sprites, 4);
     return layer;
 }
@@ -76,7 +76,7 @@ void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
     SDL_RenderCopy(AbelR_renderer, layer->spriteFrame->texture, &windowRect, NULL);
 }
 
-void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, TILE_ID id, LAYER_FRAME frame)
+void AbelL_drawTile(tAbelL_layer *layer, tAbel_iVec2 pos, TILE_ID id, LAYER_FRAME frame)
 {
     SDL_Rect src;
 
@@ -87,7 +87,7 @@ void AbelL_drawTile(tAbelL_layer *layer, tAbel_vec2 pos, TILE_ID id, LAYER_FRAME
     AbelL_drawTileClip(layer, src, pos, frame);
 }
 
-void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_vec2 pos, LAYER_FRAME frame)
+void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_iVec2 pos, LAYER_FRAME frame)
 {
     SDL_Rect dest;
 
@@ -114,11 +114,11 @@ void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_vec2 pos, 
 
 SDL_Rect AbelL_getTileClip(tAbelL_layer *layer, TILE_ID id)
 {
-    tAbel_vec2 cordSize;
+    tAbel_iVec2 cordSize;
     int x, y;
 
     /* grabs the x/y cords of our tile in our texture */
-    cordSize = AbelV_divVec2(layer->tileSet->size, AbelL_tileSize);
+    cordSize = AbelV_diviVec2(layer->tileSet->size, AbelL_tileSize);
     y = id / cordSize.x;
     x = id % cordSize.x;
 
@@ -132,7 +132,7 @@ SDL_Rect AbelL_getTileClip(tAbelL_layer *layer, TILE_ID id)
                       .h = AbelL_tileSize.y};
 }
 
-tAbel_vec2 AbelL_gridToPos(tAbel_vec2 gridPos)
+tAbel_iVec2 AbelL_gridToPos(tAbel_iVec2 gridPos)
 {
-    return AbelV_mulVec2(gridPos, AbelL_tileSize);
+    return AbelV_muliVec2(gridPos, AbelL_tileSize);
 }
