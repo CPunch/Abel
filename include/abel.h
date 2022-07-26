@@ -20,10 +20,12 @@ typedef struct _tAbelG_game tAbelG_game;
 typedef struct _tAbelL_layer tAbelL_layer;
 typedef struct _tAbelR_texture tAbelR_texture;
 typedef struct _tAbelS_sprite tAbelS_sprite;
+typedef struct _tAbelE_entity tAbelE_entity;
 
 typedef uint16_t ASSET_ID;
 typedef uint8_t LAYER_ID;
 typedef uint16_t TILE_ID;
 typedef uint32_t SPRITE_ID;
+typedef uint32_t ENTITY_ID;
 
 #endif

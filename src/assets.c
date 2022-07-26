@@ -52,7 +52,7 @@ static void *getAssetData(ASSET_ID id)
     return asset->data;
 }
 
-static ASSET_ID getNextID(void)
+static ASSET_ID getNextAssetID(void)
 {
     int id;
 
@@ -66,7 +66,7 @@ static ASSET_ID getNextID(void)
 
 static ASSET_ID AbelA_insertAsset(void *data, const char *path, ASSET_TYPE type)
 {
-    ASSET_ID nextID = getNextID();
+    ASSET_ID nextID = getNextAssetID();
 
     /* check if we need to grow the asset table */
     if (nextID == AbelM_countVector(AbelA_assetTable)) {
