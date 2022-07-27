@@ -8,7 +8,7 @@
     of having a simple scheduler running in the main loop saves us that headache && helps keep
     things simple. */
 
-/* return value is the next delay */
+/* return value is the next delay (if return value is 0, task will not be scheduled) */
 typedef uint32_t (*taskCallback)(uint32_t, void *);
 
 typedef struct _tAbelT_task
@@ -19,6 +19,7 @@ typedef struct _tAbelT_task
     struct _tAbelT_task *next;
 } tAbelT_task;
 
+/* if delay is == 0, task will not be scheduled */
 tAbelT_task *AbelT_newTask(uint32_t delay, taskCallback callback, void *uData);
 void AbelT_freeTask(tAbelT_task *task);
 

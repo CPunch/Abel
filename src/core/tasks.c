@@ -66,8 +66,9 @@ tAbelT_task *AbelT_newTask(uint32_t delay, taskCallback callback, void *uData)
     task->callback = callback;
     task->uData = uData;
 
-    /* insert into linked list */
-    scheduleTask(task, delay, SDL_GetTicks());
+    /* insert into linked list (if delay is non-zero) */
+    if (delay)
+        scheduleTask(task, delay, SDL_GetTicks());
 
     return task;
 }
