@@ -1,8 +1,8 @@
 #include "world.h"
-#include "entity.h"
 
-#include "core/tasks.h"
 #include "core/hashmap.h"
+#include "core/tasks.h"
+#include "entity.h"
 
 static struct hashmap *AbelW_entityMap;
 static ENTITY_ID AbelW_nextEntityID;
@@ -74,7 +74,8 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
 
 void AbelW_init(void)
 {
-    AbelW_entityMap = hashmap_new(sizeof(tAbelW_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
+    AbelW_entityMap =
+        hashmap_new(sizeof(tAbelW_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
     AbelW_stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
 }
 

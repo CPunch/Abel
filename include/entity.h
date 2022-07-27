@@ -2,7 +2,6 @@
 #define ABEL_ENTITY_H
 
 #include "abel.h"
-
 #include "core/vec2.h"
 
 typedef struct _tAbelE_entity

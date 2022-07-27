@@ -1,9 +1,9 @@
 #include "entity.h"
-#include "sprite.h"
-#include "game.h"
 
 #include "core/mem.h"
 #include "core/vec2.h"
+#include "game.h"
+#include "sprite.h"
 #include "world.h"
 
 /* BOILERPLATE !!!! */
@@ -32,7 +32,7 @@ void AbelE_setVelocity(tAbelE_entity *entity, tAbel_fVec2 velo)
 
 void AbelE_stepEntity(tAbelE_entity *entity, uint32_t delta)
 {
-    tAbel_fVec2 deltaTime = AbelV_newfVec2(delta/1000.0, delta/1000.0);
+    tAbel_fVec2 deltaTime = AbelV_newfVec2(delta / 1000.0, delta / 1000.0);
     tAbel_fVec2 deltaPos = AbelV_mulfVec2(entity->velocity, deltaTime);
     tAbel_fVec2 newPos = AbelV_addfVec2(entity->sprite->pos, deltaPos);
 

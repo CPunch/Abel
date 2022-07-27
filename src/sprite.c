@@ -1,8 +1,8 @@
 #include "sprite.h"
 
 #include "core/mem.h"
-#include "core/tasks.h"
 #include "core/serror.h"
+#include "core/tasks.h"
 #include "layer.h"
 
 /* ======================================[[ Animations ]]======================================= */
@@ -51,7 +51,8 @@ static int addAnimation(tAbelS_animationStates *states)
     return animationID;
 }
 
-static void addSpriteFrame(tAbelS_animationStates *states, int animationID, SDL_Rect clip, uint32_t delay)
+static void addSpriteFrame(tAbelS_animationStates *states, int animationID, SDL_Rect clip,
+                           uint32_t delay)
 {
     /* grab current animation */
     tAbelS_animation *animation;
@@ -89,10 +90,11 @@ static void playAnimation(tAbelS_animationStates *states, int animationID)
     states->animationID = animationID;
     animation->animationFrame = 0;
 
-     /* if the timer is NOT running, start our timer (if we have more than 1 frame) */
+    /* if the timer is NOT running, start our timer (if we have more than 1 frame) */
     if (states->animationTask == NULL && AbelM_countVector(animation->frames) > 1) {
         /* start the timer at the *next* frame */
-        states->animationTask = AbelT_newTask(animationTask(0, (void *)states), animationTask, (void *)states);
+        states->animationTask =
+            AbelT_newTask(animationTask(0, (void *)states), animationTask, (void *)states);
     }
 }
 
@@ -107,7 +109,8 @@ static SDL_Rect getCurrentClip(tAbelS_animationStates *states)
     tAbelS_animation *animation;
 
     /* grab current animation */
-    if (states->animationID == -1 || (animation = &states->animations[states->animationID])->animationFrame == -1)
+    if (states->animationID == -1 ||
+        (animation = &states->animations[states->animationID])->animationFrame == -1)
         return (SDL_Rect){0}; /* invalid clip */
 
     /* return current clip */
@@ -116,10 +119,8 @@ static SDL_Rect getCurrentClip(tAbelS_animationStates *states)
 
 static tAbelS_animationStates newAState()
 {
-    tAbelS_animationStates states = (tAbelS_animationStates){
-        .animationID = -1,
-        .animationTask = NULL
-    };
+    tAbelS_animationStates states =
+        (tAbelS_animationStates){.animationID = -1, .animationTask = NULL};
     AbelM_initVector(states.animations, 2);
     return states;
 }

@@ -9,7 +9,7 @@
     things simple. */
 
 /* return value is the next delay */
-typedef uint32_t(*taskCallback)(uint32_t, void *);
+typedef uint32_t (*taskCallback)(uint32_t, void *);
 
 typedef struct _tAbelT_task
 {

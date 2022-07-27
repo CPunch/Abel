@@ -14,8 +14,8 @@
 #    define ENDVLA(var)        ((void)0) /* no op */
 #endif
 
-#define AbelM_malloc(sz) AbelM_realloc(NULL, sz)
-#define AbelM_free(buf)  AbelM_realloc(buf, 0)
+#define AbelM_malloc(sz)        AbelM_realloc(NULL, sz)
+#define AbelM_free(buf)         AbelM_realloc(buf, 0)
 
 /* ========================================[[ Vectors ]]======================================== */
 

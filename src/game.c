@@ -1,10 +1,10 @@
 #include "game.h"
 
-#include "core/tasks.h"
 #include "assets.h"
+#include "core/tasks.h"
+#include "entity.h"
 #include "layer.h"
 #include "render.h"
-#include "entity.h"
 #include "sprite.h"
 
 tAbelL_layer *AbelG_layers[LAYER_MAX];
@@ -75,7 +75,7 @@ void AbelG_run(void)
     animID = AbelS_addAnimation(entity->sprite);
     AbelS_addFrame(entity->sprite, animID, 16, 1000); /* tile id 16 for 1 second */
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
-    AbelS_playAnimation(entity->sprite, animID); /* play animation :D */
+    AbelS_playAnimation(entity->sprite, animID);      /* play animation :D */
 
     AbelE_setVelocity(entity, AbelV_newfVec2(0, 16));
 
