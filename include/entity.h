@@ -16,6 +16,8 @@ typedef struct _tAbelE_entity
 tAbelE_entity *AbelE_newEntity(tAbel_fVec2 pos);
 void AbelE_freeEntity(tAbelE_entity *entity);
 
+void AbelE_setVelocity(tAbelE_entity *entity, tAbel_fVec2 velo);
+
 /* utils */
 void AbelE_stepEntity(tAbelE_entity *entity, uint32_t delta);
 

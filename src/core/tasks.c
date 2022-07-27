@@ -33,6 +33,12 @@ static void unscheduleTask(tAbelT_task *task)
 {
     tAbelT_task *curr = head, *last = NULL;
 
+    if (task == head) {
+        head = task->next;
+        task->next = NULL;
+        return;
+    }
+
     /* find task in task list */
     while (curr && curr != task) {
         last = curr;
@@ -40,8 +46,10 @@ static void unscheduleTask(tAbelT_task *task)
     }
 
     /* task is already unscheduled */
-    if (curr == NULL)
+    if (curr == NULL) {
+        task->next = NULL;
         return;
+    }
 
     /* remove from list */
     if (last)
@@ -60,6 +68,8 @@ tAbelT_task *AbelT_newTask(uint32_t delay, taskCallback callback, void *uData)
 
     /* insert into linked list */
     scheduleTask(task, delay);
+
+    return task;
 }
 
 void AbelT_freeTask(tAbelT_task *task)

@@ -4,6 +4,7 @@
 #include "assets.h"
 #include "layer.h"
 #include "render.h"
+#include "entity.h"
 #include "sprite.h"
 
 tAbelL_layer *AbelG_layers[LAYER_MAX];
@@ -66,16 +67,17 @@ void AbelG_run(void)
 {
     SDL_Event evnt;
     TTF_Font *font = AbelA_getFont(debugFontID);
-    tAbelS_sprite *testSprite;
+    tAbelE_entity *entity;
     int i, animID;
     bool quit = false;
 
-    testSprite =
-        AbelS_newSprite(AbelG_layers[0], AbelV_i2fVec(AbelL_gridToPos(AbelV_newiVec2(2, 2))));
-    animID = AbelS_addAnimation(testSprite);
-    AbelS_addFrame(testSprite, animID, 16, 1000); /* tile id 16 for 1 second */
-    AbelS_addFrame(testSprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
-    AbelS_playAnimation(testSprite, animID); /* play animation :D */
+    entity = AbelE_newEntity(AbelV_i2fVec(AbelL_gridToPos(AbelV_newiVec2(2, 2))));
+    animID = AbelS_addAnimation(entity->sprite);
+    AbelS_addFrame(entity->sprite, animID, 16, 1000); /* tile id 16 for 1 second */
+    AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
+    AbelS_playAnimation(entity->sprite, animID); /* play animation :D */
+
+    AbelE_setVelocity(entity, AbelV_newfVec2(60, 1.5));
 
     /* main engine loop */
     while (!quit) {
@@ -105,5 +107,5 @@ void AbelG_run(void)
         SDL_RenderPresent(AbelR_renderer);
     }
 
-    AbelS_freeSprite(testSprite);
+    AbelE_freeEntity(entity);
 }
