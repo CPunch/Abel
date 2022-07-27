@@ -77,7 +77,7 @@ void AbelG_run(void)
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
     AbelS_playAnimation(entity->sprite, animID); /* play animation :D */
 
-    AbelE_setVelocity(entity, AbelV_newfVec2(60, 1.5));
+    AbelE_setVelocity(entity, AbelV_newfVec2(0, 16));
 
     /* main engine loop */
     while (!quit) {

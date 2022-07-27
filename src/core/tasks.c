@@ -7,10 +7,10 @@ static tAbelT_task *head = NULL;
 
 /* =========================================[[ Tasks ]]========================================= */
 
-static void scheduleTask(tAbelT_task *task, uint32_t delay)
+static void scheduleTask(tAbelT_task *task, uint32_t delay, uint32_t tick)
 {
     tAbelT_task *curr = head, *last;
-    task->scheduledAt = SDL_GetTicks();
+    task->scheduledAt = tick;
     task->schedule = task->scheduledAt + delay;
 
     /* walk list until we find a task scheduled *prior* */
@@ -67,7 +67,7 @@ tAbelT_task *AbelT_newTask(uint32_t delay, taskCallback callback, void *uData)
     task->uData = uData;
 
     /* insert into linked list */
-    scheduleTask(task, delay);
+    scheduleTask(task, delay, SDL_GetTicks());
 
     return task;
 }
@@ -94,14 +94,14 @@ void AbelT_pollTasks()
 
         /* if they returned non-zero */
         if (nextDelay)
-            scheduleTask(task, nextDelay);
+            scheduleTask(task, nextDelay, currTick);
     }
 }
 
 void AbelT_scheduleTask(tAbelT_task *task, uint32_t delay)
 {
     unscheduleTask(task);
-    scheduleTask(task, delay);
+    scheduleTask(task, delay, SDL_GetTicks());
 }
 
 void AbelT_unscheduleTask(tAbelT_task *task)

@@ -56,7 +56,7 @@ static tAbelE_entity *getEntity(ENTITY_ID id)
     return elem ? elem->entity : NULL;
 }
 
-static uint32_t worldStepTimer(uint32_t tick, void *uData)
+static uint32_t worldStepTask(uint32_t delta, void *uData)
 {
     size_t i = 0;
     void *item;
@@ -64,7 +64,7 @@ static uint32_t worldStepTimer(uint32_t tick, void *uData)
 
     while (hashmap_iter(AbelW_entityMap, &i, &item)) {
         elem = (tAbelW_entityElem *)item;
-        AbelE_stepEntity(elem->entity, tick);
+        AbelE_stepEntity(elem->entity, delta);
     }
 
     return WORLD_STEP_INTERVAL;
@@ -75,7 +75,7 @@ static uint32_t worldStepTimer(uint32_t tick, void *uData)
 void AbelW_init(void)
 {
     AbelW_entityMap = hashmap_new(sizeof(tAbelW_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
-    AbelW_stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTimer, NULL);
+    AbelW_stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
 }
 
 void AbelW_quit(void)
