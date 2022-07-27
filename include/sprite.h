@@ -23,7 +23,7 @@ typedef struct _tAbelS_animationStates
 {
     AbelM_newVector(tAbelS_animation, animations);
     int animationID; /* which animation is playing */
-    SDL_TimerID animationTimer;
+    tAbelT_task *animationTask;
 } tAbelS_animationStates;
 
 typedef struct _tAbelS_sprite

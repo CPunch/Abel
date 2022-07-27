@@ -3,11 +3,19 @@
 
 #include "abel.h"
 
-#define ABEL_MAX_LAYERS 4
+typedef enum
+{
+    LAYER_BG,
+    LAYER_ENTITY,
+    LAYER_UI,
+    LAYER_MAX
+} LAYER_TYPE;
 
 /* initializers */
 void AbelG_init(void);
 void AbelG_quit(void);
+
+tAbelL_layer *AbelG_getLayer(LAYER_TYPE layer);
 
 void AbelG_run(void);
 

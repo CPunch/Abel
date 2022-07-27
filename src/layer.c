@@ -25,6 +25,7 @@ void AbelL_freeLayer(tAbelL_layer *layer)
 {
     AbelR_freeTexture(layer->spriteFrame);
     AbelR_freeTexture(layer->bgFrame);
+    AbelM_free(layer->sprites);
     AbelM_free(layer);
 }
 

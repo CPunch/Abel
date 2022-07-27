@@ -3,6 +3,9 @@
 
 #include "abel.h"
 
+/* every 50ms, step all world physic events */
+#define WORLD_STEP_INTERVAL 50
+
 /* initalizers */
 void AbelW_init(void);
 void AbelW_quit(void);

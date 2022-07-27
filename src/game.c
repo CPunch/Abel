@@ -1,11 +1,12 @@
 #include "game.h"
 
+#include "core/tasks.h"
 #include "assets.h"
 #include "layer.h"
 #include "render.h"
 #include "sprite.h"
 
-tAbelL_layer *AbelG_layers[ABEL_MAX_LAYERS];
+tAbelL_layer *AbelG_layers[LAYER_MAX];
 ASSET_ID tilesetID;
 ASSET_ID debugFontID;
 
@@ -53,6 +54,14 @@ void AbelG_quit(void)
     AbelA_freeAsset(debugFontID);
 }
 
+tAbelL_layer *AbelG_getLayer(LAYER_TYPE layer)
+{
+    if (layer >= LAYER_MAX)
+        return NULL;
+
+    return AbelG_layers[layer];
+}
+
 void AbelG_run(void)
 {
     SDL_Event evnt;
@@ -81,6 +90,9 @@ void AbelG_run(void)
             }
         }
 
+        /* run scheduled tasks */
+        AbelT_pollTasks();
+
         /* clear layers */
         SDL_RenderClear(AbelR_renderer);
 
@@ -92,4 +104,6 @@ void AbelG_run(void)
         /* render to window */
         SDL_RenderPresent(AbelR_renderer);
     }
+
+    AbelS_freeSprite(testSprite);
 }

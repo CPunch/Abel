@@ -1,12 +1,13 @@
 #include "sprite.h"
 
 #include "core/mem.h"
+#include "core/tasks.h"
 #include "core/serror.h"
 #include "layer.h"
 
 /* ======================================[[ Animations ]]======================================= */
 
-tAbelS_animation newAnimation()
+static tAbelS_animation newAnimation()
 {
     tAbelS_animation animation = (tAbelS_animation){
         .animationFrame = -1,
@@ -15,12 +16,12 @@ tAbelS_animation newAnimation()
     return animation;
 }
 
-void freeAnimation(tAbelS_animation *animation)
+static void freeAnimation(tAbelS_animation *animation)
 {
     AbelM_free(animation->frames);
 }
 
-uint32_t animationTimer(uint32_t tick, void *uData)
+static uint32_t animationTask(uint32_t tick, void *uData)
 {
     tAbelS_animationStates *states = (tAbelS_animationStates *)uData;
     /* grab current animation */
@@ -34,7 +35,7 @@ uint32_t animationTimer(uint32_t tick, void *uData)
     return animation->frames[animation->animationFrame].delay;
 }
 
-int addAnimation(tAbelS_animationStates *states)
+static int addAnimation(tAbelS_animationStates *states)
 {
     tAbelS_animation animation = newAnimation();
     int animationID = AbelM_countVector(states->animations)++;
@@ -50,7 +51,7 @@ int addAnimation(tAbelS_animationStates *states)
     return animationID;
 }
 
-void addSpriteFrame(tAbelS_animationStates *states, int animationID, SDL_Rect clip, uint32_t delay)
+static void addSpriteFrame(tAbelS_animationStates *states, int animationID, SDL_Rect clip, uint32_t delay)
 {
     /* grab current animation */
     tAbelS_animation *animation;
@@ -70,7 +71,7 @@ void addSpriteFrame(tAbelS_animationStates *states, int animationID, SDL_Rect cl
         animation->animationFrame = 0;
 }
 
-void playAnimation(tAbelS_animationStates *states, int animationID)
+static void playAnimation(tAbelS_animationStates *states, int animationID)
 {
     /* grab current animation */
     tAbelS_animation *animation;
@@ -89,20 +90,19 @@ void playAnimation(tAbelS_animationStates *states, int animationID)
     animation->animationFrame = 0;
 
      /* if the timer is NOT running, start our timer (if we have more than 1 frame) */
-    if (states->animationTimer == 0 && AbelM_countVector(animation->frames) > 1) {
+    if (states->animationTask == NULL && AbelM_countVector(animation->frames) > 1) {
         /* start the timer at the *next* frame */
-        states->animationTimer = SDL_AddTimer(animationTimer(SDL_GetTicks(), (void *)states),
-                                              animationTimer, (void *)states);
+        states->animationTask = AbelT_newTask(animationTask(0, (void *)states), animationTask, (void *)states);
     }
 }
 
-void stopAnimation(tAbelS_animationStates *states)
+static void stopAnimation(tAbelS_animationStates *states)
 {
-    if (states->animationTimer != 0)
-        SDL_RemoveTimer(states->animationTimer);
+    if (states->animationTask != NULL)
+        AbelT_freeTask(states->animationTask);
 }
 
-SDL_Rect getCurrentClip(tAbelS_animationStates *states)
+static SDL_Rect getCurrentClip(tAbelS_animationStates *states)
 {
     tAbelS_animation *animation;
 
@@ -114,18 +114,17 @@ SDL_Rect getCurrentClip(tAbelS_animationStates *states)
     return animation->frames[animation->animationFrame].clip;
 }
 
-tAbelS_animationStates newAState()
+static tAbelS_animationStates newAState()
 {
     tAbelS_animationStates states = (tAbelS_animationStates){
         .animationID = -1,
-        /* 0 is a reserved timerID error result, so it should be safe to use as an invalid ID */
-        .animationTimer = 0
+        .animationTask = NULL
     };
     AbelM_initVector(states.animations, 2);
     return states;
 }
 
-void freeAState(tAbelS_animationStates *states)
+static void freeAState(tAbelS_animationStates *states)
 {
     int i;
     stopAnimation(states);
@@ -148,6 +147,7 @@ tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_fVec2 pos)
     /* setup sprite in layer */
     AbelS_setSpritePos(sprite, pos);
     AbelL_addSprite(layer, sprite);
+    return sprite;
 }
 
 void AbelS_freeSprite(tAbelS_sprite *sprite)
