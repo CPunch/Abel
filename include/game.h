@@ -5,7 +5,7 @@
 
 typedef enum
 {
-    LAYER_BG,
+    LAYER_MAP,
     LAYER_ENTITY,
     LAYER_UI,
     LAYER_MAX

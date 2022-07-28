@@ -1,4 +1,4 @@
-#include "world.h"
+#include "map.h"
 
 #include "core/hashmap.h"
 #include "core/tasks.h"
@@ -72,14 +72,14 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
 
 /* =====================================[[ Initializers ]]====================================== */
 
-void AbelW_init(void)
+void AbelM_init(void)
 {
     AbelW_entityMap =
         hashmap_new(sizeof(tAbelW_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
     AbelW_stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
 }
 
-void AbelW_quit(void)
+void AbelM_quit(void)
 {
     hashmap_free(AbelW_entityMap);
     AbelT_freeTask(AbelW_stepTimer);
@@ -87,17 +87,44 @@ void AbelW_quit(void)
 
 /* =========================================[[ World ]]========================================= */
 
-ENTITY_ID AbelW_addEntity(tAbelE_entity *entity)
+ENTITY_ID AbelM_addEntity(tAbelE_entity *entity)
 {
     return addEntity(entity);
 }
 
-void AbelW_rmvEntity(ENTITY_ID id)
+void AbelM_rmvEntity(ENTITY_ID id)
 {
     return rmvEntity(id);
 }
 
-tAbelE_entity *AbelW_getEntity(ENTITY_ID id)
+tAbelE_entity *AbelM_getEntity(ENTITY_ID id)
 {
     return getEntity(id);
+}
+
+/* check for collision against other entities */
+tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity)
+{
+    size_t i = 0;
+    void *item;
+    tAbelE_entity *other;
+    tAbel_fVec2 pos = AbelE_getPosition(entity), otherPos;
+    tAbel_iVec2 collider = AbelE_getCollider(entity), otherCollider;
+
+    /* walk through each entity, check for collision */
+    while (hashmap_iter(AbelW_entityMap, &i, &item)) {
+        other = ((tAbelW_entityElem *)item)->entity;
+        otherPos = AbelE_getPosition(other);
+        otherCollider = AbelE_getCollider(other);
+
+        /* check collide */
+        if (pos.x < otherPos.x + otherCollider.x &&
+            pos.x + collider.x > otherPos.x &&
+            pos.y < otherPos.y + otherCollider.y &&
+            pos.y + collider.y > otherPos.y)
+            return other;
+    }
+
+    /* no collisions found! */
+    return NULL;
 }
