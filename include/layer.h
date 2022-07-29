@@ -39,5 +39,6 @@ void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_iVec2 pos,
 /* utils */
 SDL_Rect AbelL_getTileClip(tAbelL_layer *layer, TILE_ID id);
 tAbel_iVec2 AbelL_gridToPos(tAbel_iVec2 gridPos);
+tAbel_iVec2 AbelL_posToGrid(tAbel_iVec2 pos);
 
 #endif

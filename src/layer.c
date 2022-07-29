@@ -137,3 +137,8 @@ tAbel_iVec2 AbelL_gridToPos(tAbel_iVec2 gridPos)
 {
     return AbelV_muliVec2(gridPos, AbelL_tileSize);
 }
+
+tAbel_iVec2 AbelL_posToGrid(tAbel_iVec2 pos)
+{
+    return AbelV_diviVec2(pos, AbelL_tileSize);
+}

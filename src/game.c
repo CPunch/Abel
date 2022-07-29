@@ -6,6 +6,7 @@
 #include "layer.h"
 #include "render.h"
 #include "sprite.h"
+#include "map.h"
 
 tAbelL_layer *AbelG_layers[LAYER_MAX];
 ASSET_ID tilesetID;
@@ -31,13 +32,13 @@ void AbelG_init(void)
         for (y = 0; y < 16; y++) {
             switch (rand() % 6) {
             case 0:
-                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newiVec2(x, y)), 0, FRAME_BG);
+                AbelM_setCell(AbelV_newiVec2(x, y), 0, false);
                 break; /* grass */
             case 1:
-                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newiVec2(x, y)), 2, FRAME_BG);
+                AbelM_setCell(AbelV_newiVec2(x, y), 2, false);
                 break; /* weed */
             default:
-                AbelL_drawTile(AbelG_layers[0], AbelL_gridToPos(AbelV_newiVec2(x, y)), 1, FRAME_BG);
+                AbelM_setCell(AbelV_newiVec2(x, y), 1, false);
                 break; /* empty grass */
             }
         }
@@ -77,7 +78,10 @@ void AbelG_run(void)
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
     AbelS_playAnimation(entity->sprite, animID);      /* play animation :D */
 
-    AbelE_setVelocity(entity, AbelV_newfVec2(0, 16));
+    AbelE_setVelocity(entity, AbelV_newfVec2(16, 16));
+
+    AbelM_setCell(AbelV_newiVec2(3, 4), 4, true);
+    AbelM_setCell(AbelV_newiVec2(5, 5), 4, true);
 
     /* main engine loop */
     while (!quit) {

@@ -57,6 +57,41 @@ void AbelE_stepEntity(tAbelE_entity *entity, uint32_t delta)
     tAbel_fVec2 deltaTime = AbelV_newfVec2(delta / 1000.0, delta / 1000.0);
     tAbel_fVec2 deltaPos = AbelV_mulfVec2(entity->velocity, deltaTime);
     tAbel_fVec2 newPos = AbelV_addfVec2(entity->sprite->pos, deltaPos);
-    tAbelE_entity *other;
+    bool collide = false;
 
+    /* colliders */
+    tAbel_iVec2 TLCorner = AbelL_posToGrid(AbelV_f2iVec(newPos));
+    tAbel_iVec2 TRCorner = AbelL_posToGrid(AbelV_newiVec2((int)newPos.x + entity->collider.x, (int)newPos.y));
+    tAbel_iVec2 BLCorner = AbelL_posToGrid(AbelV_newiVec2((int)newPos.x, (int)newPos.y + entity->collider.y));
+    tAbel_iVec2 BRCorner = AbelL_posToGrid(AbelV_newiVec2((int)newPos.x + entity->collider.x, (int)newPos.y + entity->collider.y));
+
+
+    /* check left/right colliders */
+    if (deltaPos.x > 0) {
+        if (AbelM_getCell(TRCorner).isSolid || AbelM_getCell(BRCorner).isSolid) {
+            newPos.x = entity->sprite->pos.x;
+            collide = true;
+        }
+    } else if (deltaPos.x < 0) {
+        if (AbelM_getCell(TLCorner).isSolid || AbelM_getCell(BLCorner).isSolid) {
+            newPos.x = entity->sprite->pos.x;
+            collide = true;
+        }
+    }
+
+    /* check up/down colliders */
+    if (deltaPos.y > 0) {
+        if (AbelM_getCell(BRCorner).isSolid || AbelM_getCell(BLCorner).isSolid) {
+            newPos.y = entity->sprite->pos.y;
+            collide = true;
+        }
+    } else if (deltaPos.y < 0) {
+        if (AbelM_getCell(TLCorner).isSolid || AbelM_getCell(TRCorner).isSolid) {
+            newPos.y = entity->sprite->pos.y;
+            collide = true;
+        }
+    }
+
+    /* update position */
+    AbelE_setPosition(entity, newPos);
 }
