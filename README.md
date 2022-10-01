@@ -1,7 +1,5 @@
 # Abel
 
-Abel is a lightweight game engine.
+An incomplete game engine. Probably won't do anything with this so hf lol
 
-## Building
-
-please read the [BUILDING.md](BUILDING.md) file for information on how to compile.
+![](res/demo.gif)

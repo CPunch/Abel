@@ -67,7 +67,6 @@ tAbelL_layer *AbelG_getLayer(LAYER_TYPE layer)
 void AbelG_run(void)
 {
     SDL_Event evnt;
-    TTF_Font *font = AbelA_getFont(debugFontID);
     tAbelE_entity *entity;
     int i, animID;
     bool quit = false;
