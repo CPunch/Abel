@@ -13,6 +13,12 @@ typedef struct _tAbelR_texture
     tAbel_iVec2 size;
 } tAbelR_texture;
 
+typedef struct _tAbelR_camera
+{
+    tAbel_iVec2 size;
+    tAbel_iVec2 pos;
+} tAbelR_camera;
+
 /* initializers */
 void AbelR_init(void);
 void AbelR_quit(void);
@@ -26,7 +32,7 @@ tAbelR_texture *AbelR_newBlankTexture(tAbel_iVec2 size);
 /* globals */
 extern SDL_Window *AbelR_window;
 extern SDL_Renderer *AbelR_renderer;
-extern tAbel_iVec2 AbelR_windowSize;
-extern tAbel_iVec2 AbelR_camera;
+extern tAbelR_camera AbelR_camera;
+
 
 #endif

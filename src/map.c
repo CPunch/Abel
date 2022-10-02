@@ -141,6 +141,7 @@ tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity)
     tAbel_iVec2 collider = AbelE_getCollider(entity), otherCollider;
 
     /* walk through each entity, check for collision */
+    /* TODO: split entities into 'chunks' */
     while (hashmap_iter(AbelM_entityMap, &i, &item)) {
         other = ((tAbelM_entityElem *)item)->entity;
         otherPos = AbelE_getPosition(other);

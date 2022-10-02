@@ -11,6 +11,7 @@
 tAbelL_layer *AbelG_layers[LAYER_MAX];
 ASSET_ID tilesetID;
 ASSET_ID debugFontID;
+SDL_Rect camera;
 
 /* =====================================[[ Initializers ]]====================================== */
 
@@ -103,8 +104,11 @@ void AbelG_run(void)
 
         /* render layers */
         for (i = 0; i < (sizeof(AbelG_layers) / sizeof(tAbelL_layer *)); i++) {
-            AbelL_renderLayer(AbelG_layers[i], NULL);
+            AbelL_renderLayer(AbelG_layers[i]);
         }
+
+        AbelR_camera.pos.x = entity->sprite->pos.x;
+        AbelR_camera.pos.y = entity->sprite->pos.y;
 
         /* render to window */
         SDL_RenderPresent(AbelR_renderer);

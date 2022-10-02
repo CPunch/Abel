@@ -17,6 +17,8 @@ tAbelL_layer *AbelL_newLayer(tAbelR_texture *tileSet, tAbel_iVec2 size)
     layer->bgFrame = AbelR_newBlankTexture(AbelV_muliVec2(size, AbelL_tileSize));
     layer->spriteFrame = AbelR_newBlankTexture(AbelV_muliVec2(size, AbelL_tileSize));
     layer->pos = AbelV_newiVec2(0, 0);
+    layer->size = AbelV_muliVec2(size, AbelL_tileSize);
+    layer->camera = NULL;
     AbelM_initVector(layer->sprites, 4);
     return layer;
 }
@@ -53,16 +55,29 @@ void AbelL_rmvSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
 
 /* ========================================[[ Drawing ]]======================================== */
 
-void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
+void AbelL_renderLayer(tAbelL_layer *layer)
 {
-    SDL_Rect windowRect = (SDL_Rect){.x = layer->pos.x - AbelR_camera.x,
-                                     .y = layer->pos.y - AbelR_camera.y,
-                                     .w = AbelR_windowSize.x / 4,
-                                     .h = AbelR_windowSize.y / 4};
-    int i;
+
+    SDL_Rect viewPort = (SDL_Rect){.x = layer->pos.x + AbelR_camera.pos.x - (AbelR_camera.size.x / 8),
+                                     .y = layer->pos.y + AbelR_camera.pos.y - (AbelR_camera.size.y / 8),
+                                     .w = AbelR_camera.size.x / 4,
+                                     .h = AbelR_camera.size.y / 4};
+    SDL_Rect dest;
+    int i, tmp;
+
+    dest = (SDL_Rect){.x = 0, .y = 0, .w = AbelR_camera.size.x, .h = AbelR_camera.size.y};
+    if ((tmp = (viewPort.x + viewPort.w) - (layer->size.x + layer->pos.x)) > 0) {
+        dest.w -= tmp;
+        dest.x += tmp;
+    }
+
+    if ((tmp = (viewPort.y + viewPort.y) - (layer->size.y + layer->pos.y)) > 0) {
+        dest.h -= tmp;
+        dest.y += tmp;
+    }
 
     /* render bg frame */
-    SDL_RenderCopy(AbelR_renderer, layer->bgFrame->texture, &windowRect, NULL);
+    SDL_RenderCopy(AbelR_renderer, layer->bgFrame->texture, &viewPort, &dest);
 
     /* clear sprite frame */
     SDL_SetRenderTarget(AbelR_renderer, layer->spriteFrame->texture);
@@ -74,7 +89,7 @@ void AbelL_renderLayer(tAbelL_layer *layer, SDL_Rect *camera)
     }
 
     SDL_SetRenderTarget(AbelR_renderer, NULL);
-    SDL_RenderCopy(AbelR_renderer, layer->spriteFrame->texture, &windowRect, NULL);
+    SDL_RenderCopy(AbelR_renderer, layer->spriteFrame->texture, &viewPort, &dest);
 }
 
 void AbelL_drawTile(tAbelL_layer *layer, tAbel_iVec2 pos, TILE_ID id, LAYER_FRAME frame)
@@ -95,6 +110,20 @@ void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_iVec2 pos,
     /* get clip of render target */
     dest = (SDL_Rect){.x = pos.x, .y = pos.y, .w = AbelL_tileSize.x, .h = AbelL_tileSize.y};
 
+    if (layer->camera) {
+        /* apply camera offset */
+        dest.x -= layer->camera->x;
+        dest.y -= layer->camera->y;
+
+        /* make sure we're within render distance */
+        if (dest.x > layer->camera->w  ||
+            (dest.x + dest.w) < 0      ||
+            dest.y > layer->camera->h  ||
+            (dest.y + dest.h) < 0) {
+            return;
+        }
+    }
+
     /* render to selected frame */
     switch (frame) {
     case FRAME_BG:
@@ -111,6 +140,13 @@ void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_iVec2 pos,
     if (SDL_RenderCopy(AbelR_renderer, layer->tileSet->texture, &tileClip, &dest) != 0)
         ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
     SDL_SetRenderTarget(AbelR_renderer, NULL);
+}
+
+/* =========================================[[ Utils ]]========================================= */
+
+void AbelL_setCamera(tAbelL_layer *layer, SDL_Rect *camera)
+{
+    layer->camera = camera;
 }
 
 SDL_Rect AbelL_getTileClip(tAbelL_layer *layer, TILE_ID id)

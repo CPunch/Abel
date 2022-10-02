@@ -5,8 +5,7 @@
 
 SDL_Window *AbelR_window = NULL;
 SDL_Renderer *AbelR_renderer = NULL;
-tAbel_iVec2 AbelR_windowSize;
-tAbel_iVec2 AbelR_camera;
+tAbelR_camera AbelR_camera;
 
 #define SDL_IMG_FLAGS IMG_INIT_PNG
 
@@ -26,10 +25,13 @@ void AbelR_init(void)
     if (TTF_Init() != 0)
         ABEL_ERROR("Failed to initialize: SDL_TTF: %s\n", TTF_GetError());
 
+    /* init camera */
+    AbelR_camera.pos = AbelV_newiVec2(0, 0);
+    AbelR_camera.size = AbelV_newiVec2(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
+
     /* open window */
-    AbelR_windowSize = AbelV_newiVec2(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
     AbelR_window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                    AbelR_windowSize.x, AbelR_windowSize.y, SDL_WINDOW_SHOWN);
+                                    AbelR_camera.size.x, AbelR_camera.size.y, SDL_WINDOW_SHOWN);
     if (AbelR_window == NULL)
         ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 
@@ -38,9 +40,6 @@ void AbelR_init(void)
         SDL_CreateRenderer(AbelR_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
     if (AbelR_renderer == NULL)
         ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
-
-    /* init camera */
-    AbelR_camera = AbelV_newiVec2(0, 0);
 
     SDL_SetRenderTarget(AbelR_renderer, NULL);
 }
