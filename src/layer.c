@@ -58,23 +58,28 @@ void AbelL_rmvSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
 void AbelL_renderLayer(tAbelL_layer *layer)
 {
 
-    SDL_Rect viewPort = (SDL_Rect){.x = layer->pos.x + AbelR_camera.pos.x - (AbelR_camera.size.x / 8),
-                                     .y = layer->pos.y + AbelR_camera.pos.y - (AbelR_camera.size.y / 8),
-                                     .w = AbelR_camera.size.x / 4,
-                                     .h = AbelR_camera.size.y / 4};
-    SDL_Rect dest;
-    int i, tmp;
+    // SDL_Rect viewPort = (SDL_Rect){.x = layer->pos.x + AbelR_camera.pos.x - (AbelR_camera.size.x / 8),
+    //                                  .y = layer->pos.y + AbelR_camera.pos.y - (AbelR_camera.size.y / 8),
+    //                                  .w = AbelR_camera.size.x / 4,
+    //                                  .h = AbelR_camera.size.y / 4};
+    // SDL_Rect dest;
+    // int i, tmp;
 
-    dest = (SDL_Rect){.x = 0, .y = 0, .w = AbelR_camera.size.x, .h = AbelR_camera.size.y};
-    if ((tmp = (viewPort.x + viewPort.w) - (layer->size.x + layer->pos.x)) > 0) {
-        dest.w -= tmp;
-        dest.x += tmp;
-    }
+    // dest = (SDL_Rect){.x = 0, .y = 0, .w = AbelR_camera.size.x, .h = AbelR_camera.size.y};
+    // if ((tmp = (viewPort.x + viewPort.w) - (layer->size.x + layer->pos.x)) > 0) {
+    //     dest.w -= tmp;
+    //     dest.x += tmp;
+    // }
 
-    if ((tmp = (viewPort.y + viewPort.y) - (layer->size.y + layer->pos.y)) > 0) {
-        dest.h -= tmp;
-        dest.y += tmp;
-    }
+    // if ((tmp = (viewPort.y + viewPort.y) - (layer->size.y + layer->pos.y)) > 0) {
+    //     dest.h -= tmp;
+    //     dest.y += tmp;
+    // }
+    SDL_Rect viewPort = {   .x = 0, .y = 0,
+                            .w = AbelR_camera.size.x / 4,
+                            .h = AbelR_camera.size.y / 4},
+            dest = {.x = -(AbelR_camera.pos.x-(AbelR_camera.size.x/8))*4 - TILESET_SIZE, .y = -(AbelR_camera.pos.y-(AbelR_camera.size.y/8))*4 - TILESET_SIZE, .w = AbelR_camera.size.x, .h = AbelR_camera.size.y};
+    int i;
 
     /* render bg frame */
     SDL_RenderCopy(AbelR_renderer, layer->bgFrame->texture, &viewPort, &dest);
