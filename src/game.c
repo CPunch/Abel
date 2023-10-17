@@ -140,6 +140,9 @@ void AbelG_run(void)
         /* run scheduled tasks */
         AbelT_pollTasks();
 
+        AbelR_camera.pos.x = entity->sprite->pos.x;
+        AbelR_camera.pos.y = entity->sprite->pos.y;
+
         /* clear layers */
         SDL_RenderClear(AbelR_renderer);
 
@@ -147,9 +150,6 @@ void AbelG_run(void)
         for (i = 0; i < (sizeof(AbelG_layers) / sizeof(tAbelL_layer *)); i++) {
             AbelL_renderLayer(AbelG_layers[i]);
         }
-
-        AbelR_camera.pos.x = entity->sprite->pos.x;
-        AbelR_camera.pos.y = entity->sprite->pos.y;
 
         /* render to window */
         SDL_RenderPresent(AbelR_renderer);
