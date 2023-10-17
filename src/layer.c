@@ -58,10 +58,11 @@ void AbelL_rmvSprite(tAbelL_layer *layer, tAbelS_sprite *sprite)
 void AbelL_renderLayer(tAbelL_layer *layer)
 {
 
-    // SDL_Rect viewPort = (SDL_Rect){.x = layer->pos.x + AbelR_camera.pos.x - (AbelR_camera.size.x / 8),
-    //                                  .y = layer->pos.y + AbelR_camera.pos.y - (AbelR_camera.size.y / 8),
-    //                                  .w = AbelR_camera.size.x / 4,
-    //                                  .h = AbelR_camera.size.y / 4};
+    // SDL_Rect viewPort = (SDL_Rect){.x = layer->pos.x + AbelR_camera.pos.x - (AbelR_camera.size.x
+    // / 8),
+    //                                  .y = layer->pos.y + AbelR_camera.pos.y -
+    //                                  (AbelR_camera.size.y / 8), .w = AbelR_camera.size.x / 4, .h
+    //                                  = AbelR_camera.size.y / 4};
     // SDL_Rect dest;
     // int i, tmp;
 
@@ -75,10 +76,11 @@ void AbelL_renderLayer(tAbelL_layer *layer)
     //     dest.h -= tmp;
     //     dest.y += tmp;
     // }
-    SDL_Rect viewPort = {   .x = 0, .y = 0,
-                            .w = AbelR_camera.size.x / 4,
-                            .h = AbelR_camera.size.y / 4},
-            dest = {.x = -(AbelR_camera.pos.x-(AbelR_camera.size.x/8))*4 - TILESET_SIZE, .y = -(AbelR_camera.pos.y-(AbelR_camera.size.y/8))*4 - TILESET_SIZE, .w = AbelR_camera.size.x, .h = AbelR_camera.size.y};
+    SDL_Rect viewPort = {.x = 0, .y = 0, .w = AbelR_camera.size.x / 4, .h = AbelR_camera.size.y / 4},
+             dest = {.x = -(AbelR_camera.pos.x - (AbelR_camera.size.x / 8)) * 4 - TILESET_SIZE,
+                     .y = -(AbelR_camera.pos.y - (AbelR_camera.size.y / 8)) * 4 - TILESET_SIZE,
+                     .w = AbelR_camera.size.x,
+                     .h = AbelR_camera.size.y};
     int i;
 
     /* render bg frame */
@@ -121,10 +123,7 @@ void AbelL_drawTileClip(tAbelL_layer *layer, SDL_Rect tileClip, tAbel_iVec2 pos,
         dest.y -= layer->camera->y;
 
         /* make sure we're within render distance */
-        if (dest.x > layer->camera->w  ||
-            (dest.x + dest.w) < 0      ||
-            dest.y > layer->camera->h  ||
-            (dest.y + dest.h) < 0) {
+        if (dest.x > layer->camera->w || (dest.x + dest.w) < 0 || dest.y > layer->camera->h || (dest.y + dest.h) < 0) {
             return;
         }
     }
@@ -168,10 +167,7 @@ SDL_Rect AbelL_getTileClip(tAbelL_layer *layer, TILE_ID id)
         ABEL_ERROR("Invalid tile id: %d\n", id);
 
     /* return clip of texture */
-    return (SDL_Rect){.x = x * AbelL_tileSize.x,
-                      .y = y * AbelL_tileSize.y,
-                      .w = AbelL_tileSize.x,
-                      .h = AbelL_tileSize.y};
+    return (SDL_Rect){.x = x * AbelL_tileSize.x, .y = y * AbelL_tileSize.y, .w = AbelL_tileSize.x, .h = AbelL_tileSize.y};
 }
 
 tAbel_iVec2 AbelL_gridToPos(tAbel_iVec2 gridPos)

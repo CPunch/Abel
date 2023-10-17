@@ -19,7 +19,7 @@ typedef struct
     tAbelE_entity *entity;
 } tAbelM_entityElem;
 
-typedef struct 
+typedef struct
 {
     tAbel_iVec2 pos;
     tAbelM_cell cell;
@@ -35,7 +35,8 @@ static uint64_t cellHash(const void *item, uint64_t seed0, uint64_t seed1)
     return hash;
 }
 
-static int cellCompare(const void *a, const void *b, void *udata) {
+static int cellCompare(const void *a, const void *b, void *udata)
+{
     tAbelM_cellElem *elem1 = (tAbelM_cellElem *)a;
     tAbelM_cellElem *elem2 = (tAbelM_cellElem *)b;
     return elem1->pos.x != elem2->pos.x || elem1->pos.y != elem2->pos.y;
@@ -100,10 +101,8 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
 
 void AbelM_init(void)
 {
-    AbelM_entityMap =
-        hashmap_new(sizeof(tAbelM_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
-    AbelM_cellMap =
-        hashmap_new(sizeof(tAbelM_cellElem), 8, 0, 0, cellHash, cellCompare, NULL, NULL);
+    AbelM_entityMap = hashmap_new(sizeof(tAbelM_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
+    AbelM_cellMap = hashmap_new(sizeof(tAbelM_cellElem), 8, 0, 0, cellHash, cellCompare, NULL, NULL);
     AbelM_stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
 }
 
@@ -148,10 +147,7 @@ tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity)
         otherCollider = AbelE_getCollider(other);
 
         /* check collide */
-        if (pos.x < otherPos.x + otherCollider.x &&
-            pos.x + collider.x > otherPos.x &&
-            pos.y < otherPos.y + otherCollider.y &&
-            pos.y + collider.y > otherPos.y)
+        if (pos.x < otherPos.x + otherCollider.x && pos.x + collider.x > otherPos.x && pos.y < otherPos.y + otherCollider.y && pos.y + collider.y > otherPos.y)
             return other;
     }
 
@@ -164,11 +160,7 @@ tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity)
 void AbelM_setCell(tAbel_iVec2 pos, TILE_ID id, bool isSolid)
 {
     hashmap_set(AbelM_cellMap, &(tAbelM_cellElem){
-        .pos = pos,
-        .cell = (tAbelM_cell){
-            .id = id,
-            .isSolid = isSolid
-        }
+                                   .pos = pos, .cell = (tAbelM_cell){.id = id, .isSolid = isSolid}
     });
 
     /* update layer */

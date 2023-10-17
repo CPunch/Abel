@@ -4,14 +4,16 @@
 #include "core/tasks.h"
 #include "entity.h"
 #include "layer.h"
+#include "map.h"
 #include "render.h"
 #include "sprite.h"
-#include "map.h"
 
 tAbelL_layer *AbelG_layers[LAYER_MAX];
 ASSET_ID tilesetID;
 ASSET_ID debugFontID;
 SDL_Rect camera;
+
+#define PLAYER_SPEED 32
 
 /* =====================================[[ Initializers ]]====================================== */
 
@@ -78,7 +80,7 @@ void AbelG_run(void)
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
     AbelS_playAnimation(entity->sprite, animID);      /* play animation :D */
 
-    AbelE_setVelocity(entity, AbelV_newfVec2(16, 16));
+    // AbelE_setVelocity(entity, AbelV_newfVec2(16, 16));
 
     AbelM_setCell(AbelV_newiVec2(3, 4), 4, true);
     AbelM_setCell(AbelV_newiVec2(5, 5), 4, true);
@@ -90,6 +92,45 @@ void AbelG_run(void)
             switch (evnt.type) {
             case SDL_QUIT:
                 quit = true;
+                break;
+            case SDL_KEYDOWN:
+                switch (evnt.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    quit = true;
+                    break;
+                case SDLK_w:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(entity->velocity.x, -PLAYER_SPEED));
+                    break;
+                case SDLK_s:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(entity->velocity.x, PLAYER_SPEED));
+                    break;
+                case SDLK_a:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(-PLAYER_SPEED, entity->velocity.y));
+                    break;
+                case SDLK_d:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(PLAYER_SPEED, entity->velocity.y));
+                    break;
+                default:
+                    break;
+                }
+                break;
+            case SDL_KEYUP:
+                switch (evnt.key.keysym.sym) {
+                case SDLK_w:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(entity->velocity.x, 0));
+                    break;
+                case SDLK_s:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(entity->velocity.x, 0));
+                    break;
+                case SDLK_a:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(0, entity->velocity.y));
+                    break;
+                case SDLK_d:
+                    AbelE_setVelocity(entity, AbelV_newfVec2(0, entity->velocity.y));
+                    break;
+                default:
+                    break;
+                }
                 break;
             default:
                 break;

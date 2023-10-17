@@ -11,12 +11,12 @@
 
 /* DO NOT RETURN/GOTO/BREAK or otherwise skip ABEL_TRYEND */
 #define ABEL_TRY       if (setjmp(eAbel_errStack[++eAbel_errIndx]) == 0) {
-#define ABEL_CATCH                                                                                 \
-    }                                                                                              \
-    else                                                                                           \
+#define ABEL_CATCH                                                                                                                                             \
+    }                                                                                                                                                          \
+    else                                                                                                                                                       \
     {
-#define ABEL_TRYEND                                                                                \
-    }                                                                                              \
+#define ABEL_TRYEND                                                                                                                                            \
+    }                                                                                                                                                          \
     --eAbel_errIndx;
 
 /* if eAbel_errIndx is >= 0, we have a safe spot to jump too if an error is thrown */
@@ -28,22 +28,22 @@
     arguments are ignored.
 */
 #ifdef ABEL_QUITE
-#    define ABEL_ERROR(...)                                                                        \
-        do {                                                                                       \
-            if (ABEL_ISPROTECTED)                                                                  \
-                longjmp(eAbel_errStack[eAbel_errIndx], 1);                                         \
-            else                                                                                   \
-                exit(1);                                                                           \
+#    define ABEL_ERROR(...)                                                                                                                                    \
+        do {                                                                                                                                                   \
+            if (ABEL_ISPROTECTED)                                                                                                                              \
+                longjmp(eAbel_errStack[eAbel_errIndx], 1);                                                                                                     \
+            else                                                                                                                                               \
+                exit(1);                                                                                                                                       \
         } while (0);
 #    define ABEL_WARN(...) ((void)0) /* no op */
 #else
-#    define ABEL_ERROR(...)                                                                        \
-        do {                                                                                       \
-            printf("[ERROR] : " __VA_ARGS__);                                                      \
-            if (ABEL_ISPROTECTED)                                                                  \
-                longjmp(eAbel_errStack[eAbel_errIndx], 1);                                         \
-            else                                                                                   \
-                exit(1);                                                                           \
+#    define ABEL_ERROR(...)                                                                                                                                    \
+        do {                                                                                                                                                   \
+            printf("[ERROR] : " __VA_ARGS__);                                                                                                                  \
+            if (ABEL_ISPROTECTED)                                                                                                                              \
+                longjmp(eAbel_errStack[eAbel_errIndx], 1);                                                                                                     \
+            else                                                                                                                                               \
+                exit(1);                                                                                                                                       \
         } while (0);
 
 #    define ABEL_WARN(...) printf("[WARN] : " __VA_ARGS__);

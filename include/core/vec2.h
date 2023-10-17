@@ -17,10 +17,10 @@ typedef struct
 
 /* ======================================[[ Int Vector ]]======================================= */
 
-#define AbelV_newiVec2(_x, _y)                                                                     \
-    (tAbel_iVec2)                                                                                  \
-    {                                                                                              \
-        .x = _x, .y = _y                                                                           \
+#define AbelV_newiVec2(_x, _y)                                                                                                                                 \
+    (tAbel_iVec2)                                                                                                                                              \
+    {                                                                                                                                                          \
+        .x = _x, .y = _y                                                                                                                                       \
     }
 
 #define AbelV_addiVec2(v1, v2) (AbelV_newiVec2(v1.x + v2.x, v1.y + v2.y))
@@ -30,10 +30,10 @@ typedef struct
 
 /* =====================================[[ Float Vector ]]====================================== */
 
-#define AbelV_newfVec2(_x, _y)                                                                     \
-    (tAbel_fVec2)                                                                                  \
-    {                                                                                              \
-        .x = _x, .y = _y                                                                           \
+#define AbelV_newfVec2(_x, _y)                                                                                                                                 \
+    (tAbel_fVec2)                                                                                                                                              \
+    {                                                                                                                                                          \
+        .x = _x, .y = _y                                                                                                                                       \
     }
 
 #define AbelV_addfVec2(v1, v2) (AbelV_newfVec2(v1.x + v2.x, v1.y + v2.y))

@@ -34,5 +34,4 @@ extern SDL_Window *AbelR_window;
 extern SDL_Renderer *AbelR_renderer;
 extern tAbelR_camera AbelR_camera;
 
-
 #endif

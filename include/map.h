@@ -2,7 +2,6 @@
 #define ABEL_MAP_H
 
 #include "abel.h"
-
 #include "core/vec2.h"
 
 /* every 50ms, step all world physic events */
