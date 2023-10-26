@@ -61,7 +61,7 @@ tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture)
     texture->texture = rawTexture;
 
     /* grab texture size */
-    if (SDL_QueryTexture(rawTexture, NULL, NULL, &texture->size.x, &texture->size.y) != 0)
+    if (SDL_QueryTexture(rawTexture, NULL, NULL, (int*)&texture->size.x, (int*)&texture->size.y) != 0)
         ABEL_ERROR("Failed to query texture information: %s\n", SDL_GetError());
 
     /* make sure we can render textures *on top of* others, keep transparency */
