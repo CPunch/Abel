@@ -4,7 +4,6 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
-#include "layer.h"
 #include "render.h"
 
 /* ===================================[[ Helper Functions ]]==================================== */

@@ -1,15 +1,17 @@
 #include "map.h"
 
+#include "core/mem.h"
 #include "core/hashmap.h"
 #include "core/tasks.h"
 #include "entity.h"
 #include "game.h"
-#include "layer.h"
+#include "chunk.h"
 
-static struct hashmap *AbelM_entityMap;
-static struct hashmap *AbelM_cellMap;
+static struct hashmap *AbelM_entityMap = NULL;
+static struct hashmap *AbelM_chunkMap = NULL;
+static tAbelT_task *AbelM_stepTimer = NULL;
 static ENTITY_ID AbelM_nextEntityID = 0;
-static tAbelT_task *AbelM_stepTimer;
+static tAbelR_texture *AbelM_tileSet = NULL;
 
 /* ===================================[[ Helper Functions ]]==================================== */
 
@@ -21,28 +23,12 @@ typedef struct
 
 typedef struct
 {
-    tAbel_iVec2 pos;
-    tAbelM_cell cell;
-} tAbelM_cellElem;
+    tAbelV_iVec2 pos;
+    tAbelC_chunk *chunk;
+} tAbelM_chunkElem;
 
-/* cell */
-static uint64_t cellHash(const void *item, uint64_t seed0, uint64_t seed1)
-{
-    tAbelM_cellElem *elem = (tAbelM_cellElem *)item;
-    int hash = 23;
-    hash = (hash * 37) + elem->pos.x;
-    hash = (hash * 37) + elem->pos.y;
-    return hash;
-}
+/* =========================================[[ Entity ]]======================================== */
 
-static int cellCompare(const void *a, const void *b, void *udata)
-{
-    tAbelM_cellElem *elem1 = (tAbelM_cellElem *)a;
-    tAbelM_cellElem *elem2 = (tAbelM_cellElem *)b;
-    return elem1->pos.x != elem2->pos.x || elem1->pos.y != elem2->pos.y;
-}
-
-/* entity */
 static uint64_t entityHash(const void *item, uint64_t seed0, uint64_t seed1)
 {
     tAbelM_entityElem *elem = (tAbelM_entityElem *)item;
@@ -67,7 +53,6 @@ static ENTITY_ID addEntity(tAbelE_entity *entity)
 
     /* add to entity map */
     hashmap_set(AbelM_entityMap, &(tAbelM_entityElem){.id = nextID, .entity = entity});
-
     return nextID;
 }
 
@@ -79,41 +64,8 @@ static void rmvEntity(ENTITY_ID id)
 static tAbelE_entity *getEntity(ENTITY_ID id)
 {
     tAbelM_entityElem *elem = hashmap_get(AbelM_entityMap, &(tAbelM_entityElem){.id = id});
-
     return elem ? elem->entity : NULL;
 }
-
-static uint32_t worldStepTask(uint32_t delta, void *uData)
-{
-    size_t i = 0;
-    void *item;
-    tAbelM_entityElem *elem;
-
-    while (hashmap_iter(AbelM_entityMap, &i, &item)) {
-        elem = (tAbelM_entityElem *)item;
-        AbelE_stepEntity(elem->entity, delta);
-    }
-
-    return WORLD_STEP_INTERVAL;
-}
-
-/* =====================================[[ Initializers ]]====================================== */
-
-void AbelM_init(void)
-{
-    AbelM_entityMap = hashmap_new(sizeof(tAbelM_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
-    AbelM_cellMap = hashmap_new(sizeof(tAbelM_cellElem), 8, 0, 0, cellHash, cellCompare, NULL, NULL);
-    AbelM_stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
-}
-
-void AbelM_quit(void)
-{
-    hashmap_free(AbelM_entityMap);
-    hashmap_free(AbelM_cellMap);
-    AbelT_freeTask(AbelM_stepTimer);
-}
-
-/* ==========================================[[ Map ]]========================================== */
 
 ENTITY_ID AbelM_addEntity(tAbelE_entity *entity)
 {
@@ -125,19 +77,14 @@ void AbelM_rmvEntity(ENTITY_ID id)
     return rmvEntity(id);
 }
 
-tAbelE_entity *AbelM_getEntity(ENTITY_ID id)
-{
-    return getEntity(id);
-}
-
 /* check for collision against other entities */
 tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity)
 {
     size_t i = 0;
     void *item;
     tAbelE_entity *other;
-    tAbel_fVec2 pos = AbelE_getPosition(entity), otherPos;
-    tAbel_iVec2 collider = AbelE_getCollider(entity), otherCollider;
+    tAbelV_fVec2 pos = AbelE_getPosition(entity), otherPos;
+    tAbelV_iVec2 collider = AbelE_getCollider(entity), otherCollider;
 
     /* walk through each entity, check for collision */
     /* TODO: split entities into 'chunks' */
@@ -155,22 +102,143 @@ tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity)
     return NULL;
 }
 
-/* =========================================[[ Cells ]]========================================= */
-
-void AbelM_setCell(tAbel_iVec2 pos, TILE_ID id, bool isSolid)
+tAbelE_entity *AbelM_getEntity(ENTITY_ID id)
 {
-    hashmap_set(AbelM_cellMap, &(tAbelM_cellElem){
-                                   .pos = pos, .cell = (tAbelM_cell){.id = id, .isSolid = isSolid}
-    });
-
-    /* update layer */
-    AbelL_drawTile(AbelG_getLayer(LAYER_MAP), AbelL_gridToPos(pos), id, FRAME_BG);
+    return getEntity(id);
 }
 
-tAbelM_cell AbelM_getCell(tAbel_iVec2 pos)
+void AbelM_renderEntities(void)
 {
-    tAbelM_cellElem *elem = hashmap_get(AbelM_cellMap, &(tAbelM_cellElem){.pos = pos});
+    size_t i = 0;
+    void *item;
+    tAbelM_entityElem *elem;
 
-    /* if cell doesn't exist, return default cell */
-    return (elem == NULL) ? (tAbelM_cell){.id = 0, .isSolid = true} : elem->cell;
+    /* render each entity */
+    while (hashmap_iter(AbelM_entityMap, &i, &item)) {
+        elem = (tAbelM_entityElem *)item;
+        AbelE_renderEntity(elem->entity);
+    }
+}
+
+/* =========================================[[ Chunk ]]========================================= */
+
+static uint64_t chunkHash(const void *item, uint64_t seed0, uint64_t seed1)
+{
+    tAbelM_chunkElem *elem = (tAbelM_chunkElem *)item;
+    int hash = 23 + (seed0 ^ seed1);
+
+    /* do not question the magic numbers */
+    hash = (hash * 37) + elem->pos.x;
+    hash = (hash * 37) + elem->pos.y;
+    return hash;
+}
+
+static int chunkCompare(const void *a, const void *b, void *udata)
+{
+    tAbelM_chunkElem *elem1 = (tAbelM_chunkElem *)a;
+    tAbelM_chunkElem *elem2 = (tAbelM_chunkElem *)b;
+    return AbelV_compareiVec2(elem1->pos, elem2->pos);
+}
+
+static uint32_t worldStepTask(uint32_t delta, void *uData)
+{
+    size_t i = 0;
+    void *item;
+    tAbelM_entityElem *elem;
+
+    while (hashmap_iter(AbelM_entityMap, &i, &item)) {
+        elem = (tAbelM_entityElem *)item;
+        AbelE_stepEntity(elem->entity, delta);
+    }
+
+    return WORLD_STEP_INTERVAL;
+}
+
+static tAbelC_chunk* addChunk(tAbelV_iVec2 pos)
+{
+    tAbelC_chunk *chunk = AbelC_newChunk(pos);
+
+    /* add to chunk map */
+    hashmap_set(AbelM_chunkMap, &(tAbelM_chunkElem){.pos = pos, .chunk = chunk});
+    return chunk;
+}
+
+static void rmvChunk(tAbelV_iVec2 pos)
+{
+    hashmap_delete(AbelM_chunkMap, &(tAbelM_chunkElem){.pos = pos});
+}
+
+static tAbelC_chunk* getChunk(tAbelV_iVec2 pos)
+{
+    tAbelM_chunkElem *elem = hashmap_get(AbelM_chunkMap, &(tAbelM_chunkElem){.pos = pos});
+    return elem ? elem->chunk : NULL;
+}
+
+tAbelC_chunk* AbelM_getChunk(tAbelV_iVec2 chunkPos)
+{
+    return getChunk(chunkPos);
+}
+
+tAbelV_iVec2 AbelM_getChunkPos(tAbelV_iVec2 cellPos)
+{
+    return AbelV_diviVec2(cellPos, AbelC_chunkSize);
+}
+
+void AbelM_renderChunks(LAYER_ID layer)
+{
+    size_t i = 0;
+    void *item;
+    tAbelM_chunkElem *elem;
+
+    /* render each chunk */
+    while (hashmap_iter(AbelM_chunkMap, &i, &item)) {
+        elem = (tAbelM_chunkElem *)item;
+        AbelC_renderChunk(elem->chunk, layer);
+    }
+}
+
+/* =====================================[[ Initializers ]]====================================== */
+
+void AbelM_init(void)
+{
+    AbelM_entityMap = hashmap_new(sizeof(tAbelM_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
+    AbelM_chunkMap = hashmap_new(sizeof(tAbelM_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
+    AbelM_stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
+}
+
+void AbelM_quit(void)
+{
+    hashmap_free(AbelM_entityMap);
+    hashmap_free(AbelM_chunkMap);
+
+    AbelT_freeTask(AbelM_stepTimer);
+}
+
+/* =========================================[[ Cells ]]========================================= */
+
+void AbelM_setCell(tAbelV_iVec2 pos, tAbelR_texture *tileSet, TILE_ID id, bool isSolid)
+{
+    /* update chunk */
+    tAbelV_iVec2 chunkPos = AbelM_getChunkPos(pos), localPos;
+    tAbelC_chunk *chunk = AbelM_getChunk(chunkPos);
+
+    /* if chunk doesn't exist, create and add it to chunk map */
+    if (chunk == NULL)
+        chunk = addChunk(chunkPos);
+
+    localPos = AbelC_globalPosToLocalPos(chunk, pos);
+    AbelC_drawTile(chunk, tileSet, localPos, id, LAYER_BG);
+    AbelC_setCell(chunk, localPos, id, isSolid);
+}
+
+tAbelM_cell AbelM_getCell(tAbelV_iVec2 pos)
+{
+    tAbelC_chunk *chunk = AbelM_getChunk(AbelM_getChunkPos(pos));
+
+    /* if chunk doesn't exist, return default cell */
+    if (chunk == NULL)
+        return (tAbelM_cell){.id = 0, .isSolid = true};
+
+    tAbelV_iVec2 localPos = AbelC_globalPosToLocalPos(chunk, pos);
+    return AbelC_getCell(chunk, localPos);
 }

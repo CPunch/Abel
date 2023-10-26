@@ -7,22 +7,23 @@
 typedef struct _tAbelE_entity
 {
     tAbelS_sprite *sprite;
-    tAbel_fVec2 velocity;
-    tAbel_iVec2 collider; /* size of collider */
+    tAbelV_fVec2 velocity;
+    tAbelV_iVec2 collider; /* size of collider */
     ENTITY_ID id;
 } tAbelE_entity;
 
-tAbelE_entity *AbelE_newEntity(tAbel_fVec2 pos);
+tAbelE_entity *AbelE_newEntity(tAbelR_texture *tileSet, tAbelV_fVec2 pos);
 void AbelE_freeEntity(tAbelE_entity *entity);
 
-void AbelE_setPosition(tAbelE_entity *entity, tAbel_fVec2 pos);
-void AbelE_setVelocity(tAbelE_entity *entity, tAbel_fVec2 velo);
+void AbelE_setPosition(tAbelE_entity *entity, tAbelV_fVec2 pos);
+void AbelE_setVelocity(tAbelE_entity *entity, tAbelV_fVec2 velo);
 
-tAbel_fVec2 AbelE_getPosition(tAbelE_entity *entity);
-tAbel_fVec2 AbelE_getVelocity(tAbelE_entity *entity);
-tAbel_iVec2 AbelE_getCollider(tAbelE_entity *entity);
+tAbelV_fVec2 AbelE_getPosition(tAbelE_entity *entity);
+tAbelV_fVec2 AbelE_getVelocity(tAbelE_entity *entity);
+tAbelV_iVec2 AbelE_getCollider(tAbelE_entity *entity);
 
 /* utils */
 void AbelE_stepEntity(tAbelE_entity *entity, uint32_t delta);
+void AbelE_renderEntity(tAbelE_entity *entity);
 
 #endif

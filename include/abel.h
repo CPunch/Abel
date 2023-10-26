@@ -18,10 +18,11 @@
 /* broadly used types */
 typedef struct _tAbelT_task tAbelT_task;
 typedef struct _tAbelG_game tAbelG_game;
-typedef struct _tAbelL_layer tAbelL_layer;
+typedef struct _tAbelC_chunk tAbelC_chunk;
 typedef struct _tAbelR_texture tAbelR_texture;
 typedef struct _tAbelS_sprite tAbelS_sprite;
 typedef struct _tAbelE_entity tAbelE_entity;
+typedef struct _tAbelM_cell tAbelM_cell;
 
 typedef uint16_t ASSET_ID;
 typedef uint8_t LAYER_ID;

@@ -6,17 +6,19 @@
 
 #define START_SCREEN_WIDTH  1024
 #define START_SCREEN_HEIGHT 512
+#define TILESET_SIZE 16
+
 
 typedef struct _tAbelR_texture
 {
     SDL_Texture *texture;
-    tAbel_iVec2 size;
+    tAbelV_iVec2 size;
 } tAbelR_texture;
 
 typedef struct _tAbelR_camera
 {
-    tAbel_iVec2 size;
-    tAbel_iVec2 pos;
+    tAbelV_iVec2 size;
+    tAbelV_iVec2 pos;
 } tAbelR_camera;
 
 /* initializers */
@@ -27,11 +29,15 @@ void AbelR_quit(void);
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture);
 void AbelR_freeTexture(tAbelR_texture *texture);
 
-tAbelR_texture *AbelR_newBlankTexture(tAbel_iVec2 size);
+tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size);
+
+SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id);
+void AbelR_drawClip(tAbelR_texture *texture, SDL_Rect clip, tAbelV_iVec2 pos);
 
 /* globals */
 extern SDL_Window *AbelR_window;
 extern SDL_Renderer *AbelR_renderer;
 extern tAbelR_camera AbelR_camera;
+extern tAbelV_iVec2 AbelR_tileSize;
 
 #endif

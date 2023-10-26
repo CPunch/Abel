@@ -2,10 +2,12 @@
 
 #include "core/mem.h"
 #include "core/serror.h"
+#include "chunk.h"
 
 SDL_Window *AbelR_window = NULL;
 SDL_Renderer *AbelR_renderer = NULL;
-tAbelR_camera AbelR_camera;
+tAbelR_camera AbelR_camera = {0};
+tAbelV_iVec2 AbelR_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
 
 #define SDL_IMG_FLAGS IMG_INIT_PNG
 
@@ -73,7 +75,7 @@ void AbelR_freeTexture(tAbelR_texture *texture)
     AbelM_free(texture);
 }
 
-tAbelR_texture *AbelR_newBlankTexture(tAbel_iVec2 size)
+tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size)
 {
     SDL_Texture *rawTexture;
 
@@ -84,4 +86,32 @@ tAbelR_texture *AbelR_newBlankTexture(tAbel_iVec2 size)
 
     /* create Abel texture */
     return AbelR_newTexture(rawTexture);
+}
+
+SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id)
+{
+    tAbelV_iVec2 cordSize;
+    int x, y;
+
+    /* grabs the x/y cords of our tile in our texture */
+    cordSize = AbelV_diviVec2(tileSet->size, AbelR_tileSize);
+    y = id / cordSize.x;
+    x = id % cordSize.x;
+
+    if (y > cordSize.y)
+        ABEL_ERROR("Invalid tile id: %d\n", id);
+
+    /* return clip of texture */
+    return (SDL_Rect){.x = x * AbelR_tileSize.x, .y = y * AbelR_tileSize.y, .w = AbelR_tileSize.x, .h = AbelR_tileSize.y};
+}
+
+void AbelR_drawClip(tAbelR_texture *texture, SDL_Rect clip, tAbelV_iVec2 pos)
+{
+    SDL_Rect dest;
+
+    /* get destination rect */
+    dest = (SDL_Rect){.x = pos.x, .y = pos.y, .w = clip.w, .h = clip.h};
+
+    /* render */
+    SDL_RenderCopy(AbelR_renderer, texture->texture, &clip, &dest);
 }

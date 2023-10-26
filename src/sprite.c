@@ -3,7 +3,7 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/tasks.h"
-#include "layer.h"
+#include "render.h"
 
 /* ======================================[[ Animations ]]======================================= */
 
@@ -134,22 +134,20 @@ static void freeAState(tAbelS_animationStates *states)
 
 /* ======================================[[ Sprite API ]]======================================= */
 
-tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_fVec2 pos)
+tAbelS_sprite *AbelS_newSprite(tAbelR_texture *tileSet, tAbelV_fVec2 pos)
 {
     tAbelS_sprite *sprite = (tAbelS_sprite *)AbelM_malloc(sizeof(tAbelS_sprite));
-    sprite->layer = layer;
     sprite->animations = newAState();
+    sprite->tileSet = tileSet;
 
-    /* setup sprite in layer */
+    /* setup sprite */
     AbelS_setSpritePos(sprite, pos);
-    AbelL_addSprite(layer, sprite);
     return sprite;
 }
 
 void AbelS_freeSprite(tAbelS_sprite *sprite)
 {
     freeAState(&sprite->animations);
-    AbelL_rmvSprite(sprite->layer, sprite);
     AbelM_free(sprite);
 }
 
@@ -157,7 +155,7 @@ void AbelS_freeSprite(tAbelS_sprite *sprite)
 
 void AbelS_addFrame(tAbelS_sprite *sprite, int animationID, TILE_ID id, uint32_t delay)
 {
-    addSpriteFrame(&sprite->animations, animationID, AbelL_getTileClip(sprite->layer, id), delay);
+    addSpriteFrame(&sprite->animations, animationID, AbelR_getTileClip(sprite->tileSet, id), delay);
 }
 
 int AbelS_addAnimation(tAbelS_sprite *sprite)
@@ -175,7 +173,7 @@ void AbelS_stopAnimation(tAbelS_sprite *sprite)
     stopAnimation(&sprite->animations);
 }
 
-void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_fVec2 pos)
+void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbelV_fVec2 pos)
 {
     sprite->pos = pos;
 }
@@ -187,5 +185,5 @@ void AbelS_drawSprite(tAbelS_sprite *sprite)
     if (clip.h == 0 || clip.w == 0)
         return;
 
-    AbelL_drawTileClip(sprite->layer, clip, AbelV_f2iVec(sprite->pos), FRAME_SPRITE);
+    AbelR_drawClip(sprite->tileSet, clip, AbelV_f2iVec(sprite->pos));
 }

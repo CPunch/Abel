@@ -28,19 +28,19 @@ typedef struct _tAbelS_animationStates
 
 typedef struct _tAbelS_sprite
 {
-    tAbel_fVec2 pos;
-    tAbelL_layer *layer;
+    tAbelV_fVec2 pos;
     tAbelS_animationStates animations;
+    tAbelR_texture *tileSet;
 } tAbelS_sprite;
 
-tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_fVec2 pos);
+tAbelS_sprite *AbelS_newSprite(tAbelR_texture *tileSet, tAbelV_fVec2 pos);
 void AbelS_freeSprite(tAbelS_sprite *sprite);
 
 void AbelS_addFrame(tAbelS_sprite *sprite, int animationID, TILE_ID id, uint32_t delay);
 int AbelS_addAnimation(tAbelS_sprite *sprite);
 void AbelS_playAnimation(tAbelS_sprite *sprite, int animationID);
 void AbelS_stopAnimation(tAbelS_sprite *sprite);
-void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_fVec2 pos);
+void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbelV_fVec2 pos);
 
 void AbelS_drawSprite(tAbelS_sprite *sprite);
 

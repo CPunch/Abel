@@ -2,20 +2,14 @@
 #define ABEL_GAME_H
 
 #include "abel.h"
-
-typedef enum
-{
-    LAYER_MAP,
-    LAYER_ENTITY,
-    LAYER_UI,
-    LAYER_MAX
-} LAYER_TYPE;
+#include "core/vec2.h"
 
 /* initializers */
 void AbelG_init(void);
 void AbelG_quit(void);
 
-tAbelL_layer *AbelG_getLayer(LAYER_TYPE layer);
+tAbelV_iVec2 AbelG_getCameraPos(void);
+void AbelG_setCameraPos(tAbelV_iVec2 pos);
 
 void AbelG_run(void);
 
