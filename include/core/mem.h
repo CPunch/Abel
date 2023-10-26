@@ -3,7 +3,7 @@
 
 #include "abel.h"
 
-#define GROW_FACTOR 2
+#define GROW_FACTOR             2
 
 #define AbelM_malloc(sz)        AbelM_realloc(NULL, sz)
 #define AbelM_free(buf)         AbelM_realloc(buf, 0)

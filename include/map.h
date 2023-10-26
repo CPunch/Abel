@@ -27,7 +27,7 @@ tAbelE_entity *AbelM_getEntity(ENTITY_ID id);
 void AbelM_renderEntities(void);
 
 /* chunk */
-tAbelC_chunk* AbelM_getChunk(tAbelV_iVec2 chunkPos);
+tAbelC_chunk *AbelM_getChunk(tAbelV_iVec2 chunkPos);
 tAbelV_iVec2 AbelM_getChunkPos(tAbelV_iVec2 cellPos);
 void AbelM_renderChunks(LAYER_ID layer);
 

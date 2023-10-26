@@ -1,13 +1,14 @@
 #include "map.h"
 
-#include "core/mem.h"
+#include "chunk.h"
 #include "core/hashmap.h"
+#include "core/mem.h"
 #include "core/tasks.h"
 #include "entity.h"
 #include "game.h"
-#include "chunk.h"
 
-typedef struct _tAbelM_state {
+typedef struct _tAbelM_state
+{
     tAbelR_texture *tileSet;
     tAbelT_task *stepTimer;
     struct hashmap *entityMap;
@@ -158,7 +159,7 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
     return WORLD_STEP_INTERVAL;
 }
 
-static tAbelC_chunk* addChunk(tAbelV_iVec2 pos)
+static tAbelC_chunk *addChunk(tAbelV_iVec2 pos)
 {
     tAbelC_chunk *chunk = AbelC_newChunk(pos);
 
@@ -172,13 +173,13 @@ static void rmvChunk(tAbelV_iVec2 pos)
     hashmap_delete(AbelM_state.chunkMap, &(tAbelM_chunkElem){.pos = pos});
 }
 
-static tAbelC_chunk* getChunk(tAbelV_iVec2 pos)
+static tAbelC_chunk *getChunk(tAbelV_iVec2 pos)
 {
     tAbelM_chunkElem *elem = hashmap_get(AbelM_state.chunkMap, &(tAbelM_chunkElem){.pos = pos});
     return elem ? elem->chunk : NULL;
 }
 
-tAbelC_chunk* AbelM_getChunk(tAbelV_iVec2 chunkPos)
+tAbelC_chunk *AbelM_getChunk(tAbelV_iVec2 chunkPos)
 {
     return getChunk(chunkPos);
 }

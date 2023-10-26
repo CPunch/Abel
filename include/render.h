@@ -6,8 +6,7 @@
 
 #define START_SCREEN_WIDTH  1024
 #define START_SCREEN_HEIGHT 512
-#define TILESET_SIZE 16
-
+#define TILESET_SIZE        16
 
 typedef struct _tAbelR_texture
 {
@@ -25,8 +24,8 @@ typedef struct _tAbelR_camera
 void AbelR_init(void);
 void AbelR_quit(void);
 
-SDL_Renderer* AbelR_getRenderer(void);
-tAbelR_camera* AbelR_getCamera(void);
+SDL_Renderer *AbelR_getRenderer(void);
+tAbelR_camera *AbelR_getCamera(void);
 
 /* textures */
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture);

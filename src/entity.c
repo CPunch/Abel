@@ -1,12 +1,12 @@
 #include "entity.h"
 
+#include "chunk.h"
 #include "core/mem.h"
 #include "core/vec2.h"
 #include "game.h"
 #include "map.h"
-#include "sprite.h"
 #include "render.h"
-#include "chunk.h"
+#include "sprite.h"
 
 tAbelE_entity *AbelE_newEntity(tAbelR_texture *tileSet, tAbelV_fVec2 pos)
 {

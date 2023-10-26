@@ -3,9 +3,9 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
+#include "map.h"
 #include "render.h"
 #include "sprite.h"
-#include "map.h"
 
 tAbelV_iVec2 AbelC_chunkSize = AbelV_newiVec2(16, 16);
 
@@ -18,7 +18,7 @@ tAbelC_chunk *AbelC_newChunk(tAbelV_iVec2 position)
 
     chunk->bgFrame = AbelR_newBlankTexture(textureSize);
     chunk->fgFrame = AbelR_newBlankTexture(textureSize);
-    chunk->cellMap = (tAbelM_cell*)AbelM_malloc(sizeof(tAbelM_cell) * AbelC_chunkSize.x * AbelC_chunkSize.y);
+    chunk->cellMap = (tAbelM_cell *)AbelM_malloc(sizeof(tAbelM_cell) * AbelC_chunkSize.x * AbelC_chunkSize.y);
     chunk->pos = position;
     return chunk;
 }
@@ -63,20 +63,13 @@ void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
 {
     SDL_Rect dest, src;
 
-    src = (SDL_Rect){
-        .x = 0,
-        .y = 0,
-        .w = AbelC_chunkSize.x * AbelR_tileSize.x,
-        .h = AbelC_chunkSize.y * AbelR_tileSize.y
-    };
+    src = (SDL_Rect){.x = 0, .y = 0, .w = AbelC_chunkSize.x * AbelR_tileSize.x, .h = AbelC_chunkSize.y * AbelR_tileSize.y};
 
     /* get clip of render target */
-    dest = (SDL_Rect){
-        .x = ((chunk->pos.x * AbelR_tileSize.x) * AbelC_chunkSize.x) - AbelR_getCamera()->pos.x,
-        .y = ((chunk->pos.y * AbelR_tileSize.y) * AbelC_chunkSize.y) - AbelR_getCamera()->pos.y,
-        .w = AbelR_tileSize.x * AbelC_chunkSize.x,
-        .h = AbelR_tileSize.y * AbelC_chunkSize.y
-    };
+    dest = (SDL_Rect){.x = ((chunk->pos.x * AbelR_tileSize.x) * AbelC_chunkSize.x) - AbelR_getCamera()->pos.x,
+                      .y = ((chunk->pos.y * AbelR_tileSize.y) * AbelC_chunkSize.y) - AbelR_getCamera()->pos.y,
+                      .w = AbelR_tileSize.x * AbelC_chunkSize.x,
+                      .h = AbelR_tileSize.y * AbelC_chunkSize.y};
 
     /* render */
     switch (layer) {

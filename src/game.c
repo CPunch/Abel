@@ -1,9 +1,9 @@
 #include "game.h"
 
 #include "assets.h"
+#include "chunk.h"
 #include "core/tasks.h"
 #include "entity.h"
-#include "chunk.h"
 #include "map.h"
 #include "render.h"
 #include "sprite.h"

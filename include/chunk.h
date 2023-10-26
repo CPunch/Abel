@@ -8,7 +8,8 @@
 
 extern tAbelV_iVec2 AbelC_chunkSize;
 
-enum _LAYER_ID {
+enum _LAYER_ID
+{
     LAYER_BG,
     LAYER_FG
 };

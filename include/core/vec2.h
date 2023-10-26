@@ -18,7 +18,7 @@ typedef struct
 /* ======================================[[ Int Vector ]]======================================= */
 
 #define AbelV_newiVec2(_x, _y)                                                                                                                                 \
-    (tAbelV_iVec2)                                                                                                                                              \
+    (tAbelV_iVec2)                                                                                                                                             \
     {                                                                                                                                                          \
         .x = _x, .y = _y                                                                                                                                       \
     }
@@ -64,7 +64,7 @@ static inline bool AbelV_compareiVec2(tAbelV_iVec2 v1, tAbelV_iVec2 v2)
 /* =====================================[[ Float Vector ]]====================================== */
 
 #define AbelV_newfVec2(_x, _y)                                                                                                                                 \
-    (tAbelV_fVec2)                                                                                                                                              \
+    (tAbelV_fVec2)                                                                                                                                             \
     {                                                                                                                                                          \
         .x = _x, .y = _y                                                                                                                                       \
     }
