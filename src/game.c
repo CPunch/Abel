@@ -128,18 +128,18 @@ void AbelG_run(void)
         /* run scheduled tasks */
         AbelT_pollTasks();
 
-        AbelR_camera.pos.x = entity->sprite->pos.x;
-        AbelR_camera.pos.y = entity->sprite->pos.y;
+        AbelR_getCamera()->pos.x = entity->sprite->pos.x;
+        AbelR_getCamera()->pos.y = entity->sprite->pos.y;
 
         /* clear layers */
-        SDL_RenderClear(AbelR_renderer);
+        SDL_RenderClear(AbelR_getRenderer());
 
         /* render chunks */
         AbelM_renderChunks(LAYER_BG);
         AbelM_renderEntities();
 
         /* render to window */
-        SDL_RenderPresent(AbelR_renderer);
+        SDL_RenderPresent(AbelR_getRenderer());
     }
 
     AbelE_freeEntity(entity);

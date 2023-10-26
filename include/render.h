@@ -25,6 +25,9 @@ typedef struct _tAbelR_camera
 void AbelR_init(void);
 void AbelR_quit(void);
 
+SDL_Renderer* AbelR_getRenderer(void);
+tAbelR_camera* AbelR_getCamera(void);
+
 /* textures */
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture);
 void AbelR_freeTexture(tAbelR_texture *texture);
@@ -35,9 +38,6 @@ SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id);
 void AbelR_drawClip(tAbelR_texture *texture, SDL_Rect clip, tAbelV_iVec2 pos);
 
 /* globals */
-extern SDL_Window *AbelR_window;
-extern SDL_Renderer *AbelR_renderer;
-extern tAbelR_camera AbelR_camera;
 extern tAbelV_iVec2 AbelR_tileSize;
 
 #endif
