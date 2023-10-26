@@ -15,7 +15,7 @@ typedef struct _tAbelR_State
     tAbelR_camera camera;
 } tAbelR_state;
 
-static tAbelR_state AbelR_state;
+static tAbelR_state AbelR_state = {0};
 
 static void openWindow(int width, int height)
 {
