@@ -103,6 +103,11 @@ bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size)
            (pos.y + size.y >= AbelR_state.camera.pos.y && pos.y <= AbelR_state.camera.pos.y + AbelR_state.camera.size.y);
 }
 
+void AbelR_zoomCamera(int zoom)
+{
+    AbelR_setScale(AbelV_addiVec2(AbelR_state.scale, AbelV_newiVec2(zoom, zoom)));
+}
+
 /* ======================================[[ Texture API ]]====================================== */
 
 tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture)

@@ -32,6 +32,7 @@ tAbelV_iVec2 AbelR_getScale(void);
 void AbelR_setScale(tAbelV_iVec2 scale);
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size);
+void AbelR_zoomCamera(int zoom);
 
 /* textures */
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture);

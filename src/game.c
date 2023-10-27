@@ -123,6 +123,14 @@ void AbelG_run(void)
                     break;
                 }
                 break;
+            /* handle mouse zoom in/out */
+            case SDL_MOUSEWHEEL:
+                if (evnt.wheel.y > 0) {
+                    AbelR_zoomCamera(1);
+                } else if (evnt.wheel.y < 0) {
+                    AbelR_zoomCamera(-1);
+                }
+                break;
             default:
                 break;
             }
@@ -131,8 +139,8 @@ void AbelG_run(void)
         /* run scheduled tasks */
         AbelT_pollTasks();
 
-        AbelR_getCamera()->pos.x = entity->sprite->pos.x;
-        AbelR_getCamera()->pos.y = entity->sprite->pos.y;
+        AbelR_getCamera()->pos.x = entity->sprite->pos.x + (AbelR_tileSize.x / 2);
+        AbelR_getCamera()->pos.y = entity->sprite->pos.y + (AbelR_tileSize.y / 2);
 
         /* clear layers */
         SDL_RenderClear(AbelR_getRenderer());
