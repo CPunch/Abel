@@ -33,8 +33,8 @@ void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSol
 tAbelM_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos);
 
 /* utils */
-tAbelV_iVec2 AbelC_globalPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 globalPos);
 tAbelV_iVec2 AbelC_gridToPos(tAbelV_iVec2 gridPos);
 tAbelV_iVec2 AbelC_posToGrid(tAbelV_iVec2 pos);
+tAbelV_iVec2 AbelC_globalPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 globalPos);
 
 #endif

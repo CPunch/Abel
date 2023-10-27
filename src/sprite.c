@@ -24,7 +24,6 @@ static void freeAnimation(tAbelS_animation *animation)
 static uint32_t animationTask(uint32_t tick, void *uData)
 {
     tAbelS_animationStates *states = (tAbelS_animationStates *)uData;
-    /* grab current animation */
     tAbelS_animation *animation = &states->animations[states->animationID];
 
     /* wrap around animation */
@@ -180,10 +179,17 @@ void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbelV_fVec2 pos)
 
 void AbelS_drawSprite(tAbelS_sprite *sprite)
 {
+    tAbelV_iVec2 screenPosition = AbelV_addiVec2(AbelV_f2iVec(sprite->pos), AbelR_getCameraPosOffset());
+
+    // TODO: this is buggy? sprites seem to pop in and out
+    // /* if not visible on screen, dont bother actually rendering */
+    // if (!AbelR_isVisible(screenPosition, AbelR_tileSize))
+    //     return;
+
     /* get current clip (and check if invalid) */
     SDL_Rect clip = getCurrentClip(&sprite->animations);
     if (clip.h == 0 || clip.w == 0)
         return;
 
-    AbelR_drawClip(sprite->tileSet, clip, AbelV_f2iVec(sprite->pos));
+    AbelR_drawClip(sprite->tileSet, clip, screenPosition);
 }

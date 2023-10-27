@@ -26,6 +26,8 @@ void AbelR_quit(void);
 
 SDL_Renderer *AbelR_getRenderer(void);
 tAbelR_camera *AbelR_getCamera(void);
+tAbelV_iVec2 AbelR_getCameraPosOffset(void);
+bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size);
 
 /* textures */
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture);

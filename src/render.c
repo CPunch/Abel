@@ -3,6 +3,7 @@
 #include "chunk.h"
 #include "core/mem.h"
 #include "core/serror.h"
+#include "core/vec2.h"
 
 tAbelV_iVec2 AbelR_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
 
@@ -72,6 +73,17 @@ SDL_Renderer *AbelR_getRenderer(void)
 tAbelR_camera *AbelR_getCamera(void)
 {
     return &AbelR_state.camera;
+}
+
+tAbelV_iVec2 AbelR_getCameraPosOffset(void)
+{
+    return AbelV_subiVec2(AbelV_diviVec2(AbelR_state.camera.size, AbelV_newiVec2(2, 2)), AbelR_state.camera.pos);
+}
+
+bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size)
+{
+    return (pos.x + size.x >= AbelR_state.camera.pos.x && pos.x <= AbelR_state.camera.pos.x + AbelR_state.camera.size.x) &&
+           (pos.y + size.y >= AbelR_state.camera.pos.y && pos.y <= AbelR_state.camera.pos.y + AbelR_state.camera.size.y);
 }
 
 /* ======================================[[ Texture API ]]====================================== */
