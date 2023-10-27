@@ -179,7 +179,10 @@ void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbelV_fVec2 pos)
 
 void AbelS_drawSprite(tAbelS_sprite *sprite)
 {
-    tAbelV_iVec2 screenPosition = AbelV_addiVec2(AbelV_f2iVec(sprite->pos), AbelR_getCameraPosOffset());
+    tAbelV_iVec2 pos = AbelV_f2iVec(sprite->pos);
+    tAbelV_iVec2 offset = AbelR_getCameraOffset();
+    tAbelV_iVec2 scale = AbelR_getScale();
+    SDL_Rect clip, dest;
 
     // TODO: this is buggy? sprites seem to pop in and out
     // /* if not visible on screen, dont bother actually rendering */
@@ -187,9 +190,10 @@ void AbelS_drawSprite(tAbelS_sprite *sprite)
     //     return;
 
     /* get current clip (and check if invalid) */
-    SDL_Rect clip = getCurrentClip(&sprite->animations);
+    clip = getCurrentClip(&sprite->animations);
     if (clip.h == 0 || clip.w == 0)
         return;
 
-    AbelR_drawClip(sprite->tileSet, clip, screenPosition);
+    dest = (SDL_Rect){.x = (pos.x * scale.x) + offset.x, .y = (pos.y * scale.y) + offset.y, .w = clip.w * scale.x, .h = clip.h * scale.y};
+    SDL_RenderCopy(AbelR_getRenderer(), sprite->tileSet->texture, &clip, &dest);
 }

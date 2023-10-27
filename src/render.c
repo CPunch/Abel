@@ -14,12 +14,15 @@ typedef struct _tAbelR_State
     SDL_Window *window;
     SDL_Renderer *renderer;
     tAbelR_camera camera;
+    tAbelV_iVec2 scale;
 } tAbelR_state;
 
 static tAbelR_state AbelR_state = {0};
 
 static void openWindow(int width, int height)
 {
+    AbelR_setScale(AbelV_newiVec2(2, 2));
+
     /* init camera */
     AbelR_state.camera.pos = AbelV_newiVec2(0, 0);
     AbelR_state.camera.size = AbelV_newiVec2(width, height);
@@ -75,9 +78,23 @@ tAbelR_camera *AbelR_getCamera(void)
     return &AbelR_state.camera;
 }
 
-tAbelV_iVec2 AbelR_getCameraPosOffset(void)
+tAbelV_iVec2 AbelR_getCameraOffset(void)
 {
-    return AbelV_subiVec2(AbelV_diviVec2(AbelR_state.camera.size, AbelV_newiVec2(2, 2)), AbelR_state.camera.pos);
+    tAbelV_iVec2 size = AbelV_newiVec2((AbelR_state.camera.size.x) / 2, (AbelR_state.camera.size.y) / 2);
+    tAbelV_iVec2 pos = AbelV_newiVec2(AbelR_state.camera.pos.x * AbelR_state.scale.x, AbelR_state.camera.pos.y * AbelR_state.scale.y);
+
+    return AbelV_subiVec2(size, pos);
+}
+
+tAbelV_iVec2 AbelR_getScale(void)
+{
+    return AbelR_state.scale;
+}
+
+void AbelR_setScale(tAbelV_iVec2 scale)
+{
+    AbelR_state.scale = scale;
+    // SDL_RenderSetScale(AbelR_state.renderer, scale.x, scale.y);
 }
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size)
@@ -136,15 +153,4 @@ SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id)
 
     /* return clip of texture */
     return (SDL_Rect){.x = x * AbelR_tileSize.x, .y = y * AbelR_tileSize.y, .w = AbelR_tileSize.x, .h = AbelR_tileSize.y};
-}
-
-void AbelR_drawClip(tAbelR_texture *texture, SDL_Rect clip, tAbelV_iVec2 pos)
-{
-    SDL_Rect dest;
-
-    /* get destination rect */
-    dest = (SDL_Rect){.x = pos.x, .y = pos.y, .w = clip.w, .h = clip.h};
-
-    /* render */
-    SDL_RenderCopy(AbelR_state.renderer, texture->texture, &clip, &dest);
 }

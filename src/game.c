@@ -62,7 +62,7 @@ void AbelG_run(void)
     bool quit = false;
 
     tileset = AbelA_getTexture(tilesetID);
-    entity = AbelE_newEntity(tileset, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(2, 2))));
+    entity = AbelE_newEntity(tileset, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(entity->sprite);
     AbelS_addFrame(entity->sprite, animID, 16, 1000); /* tile id 16 for 1 second */
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
@@ -71,7 +71,10 @@ void AbelG_run(void)
     // AbelE_setVelocity(entity, AbelV_newfVec2(16, 16));
 
     AbelM_setCell(AbelV_newiVec2(3, 4), tileset, 4, true);
-    AbelM_setCell(AbelV_newiVec2(5, 5), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 5), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 6), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(4, 6), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(5, 6), tileset, 4, true);
 
     /* main engine loop */
     while (!quit) {
