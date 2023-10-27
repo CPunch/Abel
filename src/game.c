@@ -1,47 +1,44 @@
 #include "game.h"
 
 #include "assets.h"
+#include "chunk.h"
 #include "core/tasks.h"
 #include "entity.h"
-#include "layer.h"
 #include "map.h"
 #include "render.h"
 #include "sprite.h"
 
-tAbelL_layer *AbelG_layers[LAYER_MAX];
 ASSET_ID tilesetID;
 ASSET_ID debugFontID;
-SDL_Rect camera;
 
 #define PLAYER_SPEED 32
+#define TESTMAP_SIZE 64
 
 /* =====================================[[ Initializers ]]====================================== */
 
 void AbelG_init(void)
 {
     int i, x, y;
+    tAbelR_texture *tileset;
 
     /* TODO: load this data from game file */
     tilesetID = AbelA_loadAsset("res/tileset.png", ASSET_TEXTURE);
     debugFontID = AbelA_loadAsset("res/kongtext.ttf", ASSET_FONT);
-    for (i = 0; i < (sizeof(AbelG_layers) / sizeof(tAbelL_layer *)); i++) {
-        AbelG_layers[i] = AbelL_newLayer(AbelA_getTexture(tilesetID), AbelV_newiVec2(16, 16));
-    }
 
-    /* TEST AAAAAAAAAAAAAAAAA */
+    tileset = AbelA_getTexture(tilesetID);
 
     /* build pretty semi-random grass field */
-    for (x = 0; x < 16; x++) {
-        for (y = 0; y < 16; y++) {
+    for (x = 0; x < TESTMAP_SIZE; x++) {
+        for (y = 0; y < TESTMAP_SIZE; y++) {
             switch (rand() % 6) {
             case 0:
-                AbelM_setCell(AbelV_newiVec2(x, y), 0, false);
+                AbelM_setCell(AbelV_newiVec2(x, y), tileset, 0, false);
                 break; /* grass */
             case 1:
-                AbelM_setCell(AbelV_newiVec2(x, y), 2, false);
+                AbelM_setCell(AbelV_newiVec2(x, y), tileset, 2, false);
                 break; /* weed */
             default:
-                AbelM_setCell(AbelV_newiVec2(x, y), 1, false);
+                AbelM_setCell(AbelV_newiVec2(x, y), tileset, 1, false);
                 break; /* empty grass */
             }
         }
@@ -52,29 +49,20 @@ void AbelG_quit(void)
 {
     int i;
 
-    for (i = 0; i < (sizeof(AbelG_layers) / sizeof(tAbelL_layer *)); i++) {
-        AbelL_freeLayer(AbelG_layers[i]);
-    }
     AbelA_freeAsset(tilesetID);
     AbelA_freeAsset(debugFontID);
-}
-
-tAbelL_layer *AbelG_getLayer(LAYER_TYPE layer)
-{
-    if (layer >= LAYER_MAX)
-        return NULL;
-
-    return AbelG_layers[layer];
 }
 
 void AbelG_run(void)
 {
     SDL_Event evnt;
     tAbelE_entity *entity;
+    tAbelR_texture *tileset;
     int i, animID;
     bool quit = false;
 
-    entity = AbelE_newEntity(AbelV_i2fVec(AbelL_gridToPos(AbelV_newiVec2(2, 2))));
+    tileset = AbelA_getTexture(tilesetID);
+    entity = AbelE_newEntity(tileset, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(entity->sprite);
     AbelS_addFrame(entity->sprite, animID, 16, 1000); /* tile id 16 for 1 second */
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
@@ -82,8 +70,11 @@ void AbelG_run(void)
 
     // AbelE_setVelocity(entity, AbelV_newfVec2(16, 16));
 
-    AbelM_setCell(AbelV_newiVec2(3, 4), 4, true);
-    AbelM_setCell(AbelV_newiVec2(5, 5), 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 4), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 5), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 6), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(4, 6), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(5, 6), tileset, 4, true);
 
     /* main engine loop */
     while (!quit) {
@@ -140,19 +131,18 @@ void AbelG_run(void)
         /* run scheduled tasks */
         AbelT_pollTasks();
 
-        AbelR_camera.pos.x = entity->sprite->pos.x;
-        AbelR_camera.pos.y = entity->sprite->pos.y;
+        AbelR_getCamera()->pos.x = entity->sprite->pos.x;
+        AbelR_getCamera()->pos.y = entity->sprite->pos.y;
 
         /* clear layers */
-        SDL_RenderClear(AbelR_renderer);
+        SDL_RenderClear(AbelR_getRenderer());
 
-        /* render layers */
-        for (i = 0; i < (sizeof(AbelG_layers) / sizeof(tAbelL_layer *)); i++) {
-            AbelL_renderLayer(AbelG_layers[i]);
-        }
+        /* render chunks */
+        AbelM_renderChunks(LAYER_BG);
+        AbelM_renderEntities();
 
         /* render to window */
-        SDL_RenderPresent(AbelR_renderer);
+        SDL_RenderPresent(AbelR_getRenderer());
     }
 
     AbelE_freeEntity(entity);

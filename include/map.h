@@ -17,18 +17,22 @@ typedef struct _tAbelM_cell
 void AbelM_init(void);
 void AbelM_quit(void);
 
-/* setters */
+/* entity */
 ENTITY_ID AbelM_addEntity(tAbelE_entity *entity);
 void AbelM_rmvEntity(ENTITY_ID id);
 
-/* getters */
+tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity);
 tAbelE_entity *AbelM_getEntity(ENTITY_ID id);
 
-/* check for collision against other entities */
-tAbelE_entity *AbelM_checkEntityCollide(tAbelE_entity *entity);
+void AbelM_renderEntities(void);
+
+/* chunk */
+tAbelC_chunk *AbelM_getChunk(tAbelV_iVec2 chunkPos);
+tAbelV_iVec2 AbelM_getChunkPos(tAbelV_iVec2 cellPos);
+void AbelM_renderChunks(LAYER_ID layer);
 
 /* cells */
-void AbelM_setCell(tAbel_iVec2 pos, TILE_ID id, bool isSolid);
-tAbelM_cell AbelM_getCell(tAbel_iVec2 pos);
+void AbelM_setCell(tAbelV_iVec2 pos, tAbelR_texture *tileSet, TILE_ID id, bool isSolid);
+tAbelM_cell AbelM_getCell(tAbelV_iVec2 pos);
 
 #endif

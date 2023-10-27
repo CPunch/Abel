@@ -4,7 +4,6 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
-#include "layer.h"
 #include "render.h"
 
 /* ===================================[[ Helper Functions ]]==================================== */
@@ -119,7 +118,7 @@ ASSET_ID AbelA_loadAsset(const char *path, ASSET_TYPE type)
         SDL_Texture *rawText;
 
         /* load raw texture */
-        rawText = IMG_LoadTexture(AbelR_renderer, path);
+        rawText = IMG_LoadTexture(AbelR_getRenderer(), path);
         if (rawText == NULL)
             ABEL_ERROR("Failed to load texture from '%s': %s\n", path, SDL_GetError());
 

@@ -3,7 +3,7 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/tasks.h"
-#include "layer.h"
+#include "render.h"
 
 /* ======================================[[ Animations ]]======================================= */
 
@@ -24,7 +24,6 @@ static void freeAnimation(tAbelS_animation *animation)
 static uint32_t animationTask(uint32_t tick, void *uData)
 {
     tAbelS_animationStates *states = (tAbelS_animationStates *)uData;
-    /* grab current animation */
     tAbelS_animation *animation = &states->animations[states->animationID];
 
     /* wrap around animation */
@@ -134,22 +133,20 @@ static void freeAState(tAbelS_animationStates *states)
 
 /* ======================================[[ Sprite API ]]======================================= */
 
-tAbelS_sprite *AbelS_newSprite(tAbelL_layer *layer, tAbel_fVec2 pos)
+tAbelS_sprite *AbelS_newSprite(tAbelR_texture *tileSet, tAbelV_fVec2 pos)
 {
     tAbelS_sprite *sprite = (tAbelS_sprite *)AbelM_malloc(sizeof(tAbelS_sprite));
-    sprite->layer = layer;
     sprite->animations = newAState();
+    sprite->tileSet = tileSet;
 
-    /* setup sprite in layer */
+    /* setup sprite */
     AbelS_setSpritePos(sprite, pos);
-    AbelL_addSprite(layer, sprite);
     return sprite;
 }
 
 void AbelS_freeSprite(tAbelS_sprite *sprite)
 {
     freeAState(&sprite->animations);
-    AbelL_rmvSprite(sprite->layer, sprite);
     AbelM_free(sprite);
 }
 
@@ -157,7 +154,7 @@ void AbelS_freeSprite(tAbelS_sprite *sprite)
 
 void AbelS_addFrame(tAbelS_sprite *sprite, int animationID, TILE_ID id, uint32_t delay)
 {
-    addSpriteFrame(&sprite->animations, animationID, AbelL_getTileClip(sprite->layer, id), delay);
+    addSpriteFrame(&sprite->animations, animationID, AbelR_getTileClip(sprite->tileSet, id), delay);
 }
 
 int AbelS_addAnimation(tAbelS_sprite *sprite)
@@ -175,17 +172,28 @@ void AbelS_stopAnimation(tAbelS_sprite *sprite)
     stopAnimation(&sprite->animations);
 }
 
-void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbel_fVec2 pos)
+void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbelV_fVec2 pos)
 {
     sprite->pos = pos;
 }
 
 void AbelS_drawSprite(tAbelS_sprite *sprite)
 {
+    tAbelV_iVec2 pos = AbelV_f2iVec(sprite->pos);
+    tAbelV_iVec2 offset = AbelR_getCameraOffset();
+    tAbelV_iVec2 scale = AbelR_getScale();
+    SDL_Rect clip, dest;
+
+    // TODO: this is buggy? sprites seem to pop in and out
+    // /* if not visible on screen, dont bother actually rendering */
+    // if (!AbelR_isVisible(screenPosition, AbelR_tileSize))
+    //     return;
+
     /* get current clip (and check if invalid) */
-    SDL_Rect clip = getCurrentClip(&sprite->animations);
+    clip = getCurrentClip(&sprite->animations);
     if (clip.h == 0 || clip.w == 0)
         return;
 
-    AbelL_drawTileClip(sprite->layer, clip, AbelV_f2iVec(sprite->pos), FRAME_SPRITE);
+    dest = (SDL_Rect){.x = (pos.x * scale.x) + offset.x, .y = (pos.y * scale.y) + offset.y, .w = clip.w * scale.x, .h = clip.h * scale.y};
+    SDL_RenderCopy(AbelR_getRenderer(), sprite->tileSet->texture, &clip, &dest);
 }

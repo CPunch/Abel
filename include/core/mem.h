@@ -3,16 +3,7 @@
 
 #include "abel.h"
 
-#define GROW_FACTOR 2
-
-/* microsoft strikes again with their lack of support for VLAs */
-#if _MSC_VER
-#    define VLA(type, var, sz) type *var = AbelM_malloc(sizeof(type) * sz);
-#    define ENDVLA(var)        AbelM_free(var);
-#else
-#    define VLA(type, var, sz) type var[sz];
-#    define ENDVLA(var)        ((void)0) /* no op */
-#endif
+#define GROW_FACTOR             2
 
 #define AbelM_malloc(sz)        AbelM_realloc(NULL, sz)
 #define AbelM_free(buf)         AbelM_realloc(buf, 0)
@@ -26,6 +17,7 @@
     type *name;                                                                                                                                                \
     int name##_COUNT;                                                                                                                                          \
     int name##_CAP;
+
 #define AbelM_initVector(name, startCap)                                                                                                                       \
     name = NULL;                                                                                                                                               \
     name##_COUNT = 0;                                                                                                                                          \
