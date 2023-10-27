@@ -1,5 +1,5 @@
-#ifndef ABEL_LAYER_H
-#define ABEL_LAYER_H
+#ifndef ABEL_CHUNK_H
+#define ABEL_CHUNK_H
 
 #include "abel.h"
 #include "core/hashmap.h"
