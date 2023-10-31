@@ -16,7 +16,8 @@ typedef struct
     ASSET_ID id;
 } tAbelA_asset;
 
-typedef struct _tAbelA_state {
+typedef struct _tAbelA_state
+{
     AbelM_newVector(tAbelA_asset, assetTable);
 } tAbelA_state;
 
@@ -128,8 +129,8 @@ static void insertReservedAsset(void *data, const char *path, ASSET_ID id, ASSET
     /* check if we need to grow the asset table */
     int count = AbelM_countVector(AbelA_state.assetTable);
     if (id >= count) {
-        AbelM_growVector(tAbelA_asset, AbelA_state.assetTable, (id-count)+1);
-        AbelM_countVector(AbelA_state.assetTable) += (id-count)+1;
+        AbelM_growVector(tAbelA_asset, AbelA_state.assetTable, (id - count) + 1);
+        AbelM_countVector(AbelA_state.assetTable) += (id - count) + 1;
 
         /* set ASSET_NONE on all new entries */
         for (int i = count; i < AbelM_countVector(AbelA_state.assetTable); i++)

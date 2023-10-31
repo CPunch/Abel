@@ -64,13 +64,9 @@ static void drawTileClip(tAbelC_chunk *chunk, tAbelR_texture *tileSet, int id, t
 void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
 {
     SDL_Rect dest, src;
-    tAbelV_iVec2 offset = AbelR_getCameraOffset(),
-                 scale = AbelR_getScale();
+    tAbelV_iVec2 offset = AbelR_getCameraOffset(), scale = AbelR_getScale();
 
-    src = (SDL_Rect){.x = 0, 
-                     .y = 0,
-                     .w = AbelC_chunkSize.x * AbelR_tileSize.x,
-                     .h = AbelC_chunkSize.y * AbelR_tileSize.y};
+    src = (SDL_Rect){.x = 0, .y = 0, .w = AbelC_chunkSize.x * AbelR_tileSize.x, .h = AbelC_chunkSize.y * AbelR_tileSize.y};
 
     /* get clip of render target */
     dest = (SDL_Rect){.x = (((chunk->pos.x * AbelR_tileSize.x) * AbelC_chunkSize.x) * scale.x) + offset.x,
