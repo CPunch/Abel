@@ -137,14 +137,17 @@ void AbelG_run(void)
         AbelR_getCamera()->pos.x = entity->sprite->pos.x + (AbelR_tileSize.x / 2);
         AbelR_getCamera()->pos.y = entity->sprite->pos.y + (AbelR_tileSize.y / 2);
 
-        if (nk_begin(ctx, "DEBUG", nk_rect(50, 50, 210, 120),
-            NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|
-            NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
+        /* windowless watermark for realtime stats 
+           TODO: add realtime stats lol */
+        nk_style_push_style_item(ctx, &ctx->style.window.fixed_background, nk_style_item_hide());
+        if (nk_begin(ctx, "DEBUG", nk_rect(0, 0, 210, 120),
+            NK_WINDOW_NO_SCROLLBAR))
         {
-            nk_layout_row_static(ctx, 30, 150, 1);
-            nk_labelf(ctx, NK_TEXT_LEFT, "Test");
+            nk_layout_row_static(ctx, 13, 150, 1);
+            nk_labelf(ctx, NK_TEXT_LEFT, "ABEL v0.1");
         }
         nk_end(ctx);
+        nk_style_pop_style_item(ctx);
 
         /* clear layers */
         SDL_RenderClear(AbelR_getRenderer());
