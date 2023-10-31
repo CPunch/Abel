@@ -166,7 +166,6 @@ void AbelA_init(void)
     /* load and insert reserved assets;
        these assets are expected to be populated and *always*
        available to the rest of the codebase */
-    loadReservedAsset(ASSET_ID_FONT, "res/kongtext.ttf", ASSET_FONT);
     loadReservedAsset(ASSET_ID_MAP_TILESET, "res/tileset.png", ASSET_TEXTURE);
     loadReservedAsset(ASSET_ID_SPRITE_TILESET, "res/tileset.png", ASSET_TEXTURE);
 }

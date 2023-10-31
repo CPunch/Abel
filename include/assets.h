@@ -12,7 +12,6 @@ typedef enum
 
 enum
 {
-    ASSET_ID_FONT,
     ASSET_ID_MAP_TILESET,
     ASSET_ID_SPRITE_TILESET,
     _ASSET_ID_DYNAMIC_START,
