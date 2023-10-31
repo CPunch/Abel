@@ -4,6 +4,16 @@
 #include "abel.h"
 #include "core/vec2.h"
 
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#include "nuklear.h"
+#include "demo/sdl_renderer/nuklear_sdl_renderer.h"
+
 #define START_SCREEN_WIDTH  1024
 #define START_SCREEN_HEIGHT 512
 #define TILESET_SIZE        16
@@ -25,6 +35,7 @@ void AbelR_init(void);
 void AbelR_quit(void);
 
 SDL_Renderer *AbelR_getRenderer(void);
+struct nk_context *AbelR_getNuklearCtx(void);
 tAbelR_camera *AbelR_getCamera(void);
 tAbelV_iVec2 AbelR_getCameraOffset(void);
 tAbelV_iVec2 AbelR_getScale(void);

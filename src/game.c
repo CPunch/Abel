@@ -49,6 +49,7 @@ void AbelG_run(void)
     SDL_Event evnt;
     tAbelE_entity *entity;
     tAbelR_texture *tileset;
+    struct nk_context *ctx = AbelR_getNuklearCtx();
     int i, animID;
     bool quit = false;
 
@@ -70,6 +71,7 @@ void AbelG_run(void)
     /* main engine loop */
     while (!quit) {
         /* handle SDL events */
+        nk_input_begin(ctx);
         while (SDL_PollEvent(&evnt) != 0) {
             switch (evnt.type) {
             case SDL_QUIT:
@@ -125,7 +127,9 @@ void AbelG_run(void)
             default:
                 break;
             }
+            nk_sdl_handle_event(&evnt);
         }
+        nk_input_end(ctx);
 
         /* run scheduled tasks */
         AbelT_pollTasks();
@@ -133,12 +137,22 @@ void AbelG_run(void)
         AbelR_getCamera()->pos.x = entity->sprite->pos.x + (AbelR_tileSize.x / 2);
         AbelR_getCamera()->pos.y = entity->sprite->pos.y + (AbelR_tileSize.y / 2);
 
+        if (nk_begin(ctx, "DEBUG", nk_rect(50, 50, 210, 120),
+            NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|
+            NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
+        {
+            nk_layout_row_static(ctx, 30, 150, 1);
+            nk_labelf(ctx, NK_TEXT_LEFT, "Test");
+        }
+        nk_end(ctx);
+
         /* clear layers */
         SDL_RenderClear(AbelR_getRenderer());
 
         /* render chunks */
         AbelM_renderChunks(LAYER_BG);
         AbelM_renderEntities();
+        nk_sdl_render(NK_ANTI_ALIASING_ON);
 
         /* render to window */
         SDL_RenderPresent(AbelR_getRenderer());

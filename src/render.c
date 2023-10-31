@@ -1,3 +1,5 @@
+#define NK_IMPLEMENTATION
+#define NK_SDL_RENDERER_IMPLEMENTATION
 #include "render.h"
 
 #include "chunk.h"
@@ -13,6 +15,7 @@ typedef struct _tAbelR_State
 {
     SDL_Window *window;
     SDL_Renderer *renderer;
+    struct nk_context *nkCtx;
     tAbelR_camera camera;
     tAbelV_iVec2 scale;
 } tAbelR_state;
@@ -57,10 +60,26 @@ void AbelR_init(void)
         ABEL_ERROR("Failed to initialize: SDL_TTF: %s\n", TTF_GetError());
 
     openWindow(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
+
+    /* setup nuklear ui */
+    AbelR_state.nkCtx = nk_sdl_init(AbelR_state.window, AbelR_state.renderer);
+
+    {
+        struct nk_font_atlas *atlas;
+        struct nk_font_config config = nk_font_config(0);
+        struct nk_font *font;
+
+        nk_sdl_font_stash_begin(&atlas);
+        font = nk_font_atlas_add_from_file(atlas, "res/kongtext.ttf", 14, &config);
+        nk_sdl_font_stash_end();
+
+        nk_style_set_font(AbelR_state.nkCtx, &font->handle);
+    }
 }
 
 void AbelR_quit(void)
 {
+    nk_sdl_shutdown();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_DestroyWindow(AbelR_state.window);
     TTF_Quit();
@@ -71,6 +90,11 @@ void AbelR_quit(void)
 SDL_Renderer *AbelR_getRenderer(void)
 {
     return AbelR_state.renderer;
+}
+
+struct nk_context *AbelR_getNuklearCtx(void)
+{
+    return AbelR_state.nkCtx;
 }
 
 tAbelR_camera *AbelR_getCamera(void)
