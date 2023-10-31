@@ -81,7 +81,7 @@ tAbelR_camera *AbelR_getCamera(void)
 tAbelV_iVec2 AbelR_getCameraOffset(void)
 {
     tAbelV_iVec2 size = AbelV_newiVec2((AbelR_state.camera.size.x) / 2, (AbelR_state.camera.size.y) / 2);
-    tAbelV_iVec2 pos = AbelV_newiVec2(AbelR_state.camera.pos.x * AbelR_state.scale.x, AbelR_state.camera.pos.y * AbelR_state.scale.y);
+    tAbelV_iVec2 pos = AbelV_muliVec2(AbelR_state.camera.pos, AbelR_state.scale);
 
     return AbelV_subiVec2(size, pos);
 }
@@ -122,6 +122,24 @@ tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture)
     /* make sure we can render textures *on top of* others, keep transparency */
     SDL_SetTextureBlendMode(rawTexture, SDL_BLENDMODE_BLEND);
     return texture;
+}
+
+tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text)
+{
+    SDL_Surface *surface;
+    SDL_Texture *texture;
+    SDL_Color textColor = {255, 255, 255, 0};
+
+    surface = TTF_RenderText_Solid(font, text, textColor);
+    texture = SDL_CreateTextureFromSurface(AbelR_state.renderer, surface);
+    SDL_FreeSurface(surface);
+    return AbelR_newTexture(texture);
+}
+
+void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest)
+{
+    if (SDL_RenderCopy(AbelR_state.renderer, texture->texture, src, dest))
+        ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
 }
 
 void AbelR_freeTexture(tAbelR_texture *texture)

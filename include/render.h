@@ -36,8 +36,10 @@ void AbelR_zoomCamera(int zoom);
 
 /* textures */
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture);
+tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text);
 void AbelR_freeTexture(tAbelR_texture *texture);
 
+void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest);
 tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size);
 
 SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id);

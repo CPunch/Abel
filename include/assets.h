@@ -10,12 +10,21 @@ typedef enum
     ASSET_FONT,
 } ASSET_TYPE;
 
+enum
+{
+    ASSET_ID_FONT,
+    ASSET_ID_MAP_TILESET,
+    ASSET_ID_SPRITE_TILESET,
+    _ASSET_ID_DYNAMIC_START,
+};
+
 /* initalizers */
 void AbelA_init(void);
 void AbelA_quit(void);
 
 /* assets */
 ASSET_ID AbelA_loadAsset(const char *filePath, ASSET_TYPE type);
+void AbelA_loadReservedAsset(ASSET_ID id, const char *filePath, ASSET_TYPE type);
 void AbelA_freeAsset(ASSET_ID id);
 
 /* getters */

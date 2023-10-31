@@ -48,6 +48,7 @@
     } while (0);
 
 void *AbelM_realloc(void *buf, size_t sz);
+char *AbelM_strdup(const char *str);
 uint32_t AbelM_fastHash(uint8_t *data, size_t sz);
 
 #endif

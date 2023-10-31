@@ -22,6 +22,19 @@ void *AbelM_realloc(void *buf, size_t sz)
     return newBuf;
 }
 
+/* NOTE: str *MUST* be a NULL terminated string */
+char *AbelM_strdup(const char *str)
+{
+    char *newStr;
+    size_t len;
+
+    len = strlen(str) + 1;
+    newStr = (char *)AbelM_malloc(len);
+
+    memcpy(newStr, str, len);
+    return newStr;
+}
+
 /* tiny implementation of the 'SuperFastHash' algorithm */
 uint32_t AbelM_fastHash(uint8_t *data, size_t sz)
 {

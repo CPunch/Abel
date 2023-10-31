@@ -33,9 +33,12 @@ void AbelC_freeChunk(tAbelC_chunk *chunk)
 
 /* ========================================[[ Drawing ]]======================================== */
 
-static void drawTileClip(tAbelC_chunk *chunk, tAbelR_texture *tileSet, SDL_Rect tileClip, tAbelV_iVec2 pos, LAYER_ID layer)
+static void drawTileClip(tAbelC_chunk *chunk, tAbelR_texture *tileSet, int id, tAbelV_iVec2 pos, LAYER_ID layer)
 {
-    SDL_Rect dest;
+    SDL_Rect dest, src;
+
+    /* get tileset clip */
+    src = AbelR_getTileClip(tileSet, id);
 
     /* get clip of render target */
     dest = (SDL_Rect){.x = pos.x * AbelR_tileSize.x, .y = pos.y * AbelR_tileSize.y, .w = AbelR_tileSize.x, .h = AbelR_tileSize.y};
@@ -53,8 +56,7 @@ static void drawTileClip(tAbelC_chunk *chunk, tAbelR_texture *tileSet, SDL_Rect 
     }
 
     /* draw clipped texture */
-    if (SDL_RenderCopy(AbelR_getRenderer(), tileSet->texture, &tileClip, &dest) != 0)
-        ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
+    AbelR_renderTexture(tileSet, &src, &dest);
     SDL_SetRenderTarget(AbelR_getRenderer(), NULL);
 }
 
@@ -62,10 +64,13 @@ static void drawTileClip(tAbelC_chunk *chunk, tAbelR_texture *tileSet, SDL_Rect 
 void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
 {
     SDL_Rect dest, src;
-    tAbelV_iVec2 offset = AbelR_getCameraOffset();
-    tAbelV_iVec2 scale = AbelR_getScale();
+    tAbelV_iVec2 offset = AbelR_getCameraOffset(),
+                 scale = AbelR_getScale();
 
-    src = (SDL_Rect){.x = 0, .y = 0, .w = AbelC_chunkSize.x * AbelR_tileSize.x, .h = AbelC_chunkSize.y * AbelR_tileSize.y};
+    src = (SDL_Rect){.x = 0, 
+                     .y = 0,
+                     .w = AbelC_chunkSize.x * AbelR_tileSize.x,
+                     .h = AbelC_chunkSize.y * AbelR_tileSize.y};
 
     /* get clip of render target */
     dest = (SDL_Rect){.x = (((chunk->pos.x * AbelR_tileSize.x) * AbelC_chunkSize.x) * scale.x) + offset.x,
@@ -76,10 +81,10 @@ void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
     /* render */
     switch (layer) {
     case LAYER_BG:
-        SDL_RenderCopy(AbelR_getRenderer(), chunk->bgFrame->texture, &src, &dest);
+        AbelR_renderTexture(chunk->bgFrame, &src, &dest);
         break;
     case LAYER_FG:
-        SDL_RenderCopy(AbelR_getRenderer(), chunk->fgFrame->texture, &src, &dest);
+        AbelR_renderTexture(chunk->fgFrame, &src, &dest);
         break;
     default:
         ABEL_ERROR("Invalid layer id: %d\n", layer);
@@ -94,13 +99,7 @@ void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
 
 void AbelC_drawTile(tAbelC_chunk *chunk, tAbelR_texture *tileSet, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer)
 {
-    SDL_Rect src;
-
-    /* get tileset clip */
-    src = AbelR_getTileClip(tileSet, id);
-
-    /* draw to frame */
-    drawTileClip(chunk, tileSet, src, pos, layer);
+    drawTileClip(chunk, tileSet, id, pos, layer);
 }
 
 void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSolid)

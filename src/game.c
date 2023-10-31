@@ -8,9 +8,6 @@
 #include "render.h"
 #include "sprite.h"
 
-ASSET_ID tilesetID;
-ASSET_ID debugFontID;
-
 #define PLAYER_SPEED 32
 #define TESTMAP_SIZE 64
 
@@ -21,11 +18,7 @@ void AbelG_init(void)
     int i, x, y;
     tAbelR_texture *tileset;
 
-    /* TODO: load this data from game file */
-    tilesetID = AbelA_loadAsset("res/tileset.png", ASSET_TEXTURE);
-    debugFontID = AbelA_loadAsset("res/kongtext.ttf", ASSET_FONT);
-
-    tileset = AbelA_getTexture(tilesetID);
+    tileset = AbelA_getTexture(ASSET_ID_MAP_TILESET);
 
     /* build pretty semi-random grass field */
     for (x = 0; x < TESTMAP_SIZE; x++) {
@@ -47,11 +40,9 @@ void AbelG_init(void)
 
 void AbelG_quit(void)
 {
-    int i;
-
-    AbelA_freeAsset(tilesetID);
-    AbelA_freeAsset(debugFontID);
 }
+
+/* =====================================[[ Game Loop ]]====================================== */
 
 void AbelG_run(void)
 {
@@ -61,7 +52,7 @@ void AbelG_run(void)
     int i, animID;
     bool quit = false;
 
-    tileset = AbelA_getTexture(tilesetID);
+    tileset = AbelA_getTexture(ASSET_ID_MAP_TILESET);
     entity = AbelE_newEntity(tileset, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(entity->sprite);
     AbelS_addFrame(entity->sprite, animID, 16, 1000); /* tile id 16 for 1 second */
