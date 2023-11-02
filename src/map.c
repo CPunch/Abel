@@ -221,7 +221,7 @@ void AbelM_quit(void)
 
 /* =========================================[[ Cells ]]========================================= */
 
-void AbelM_setCell(tAbelV_iVec2 pos, tAbelR_texture *tileSet, TILE_ID id, bool isSolid)
+void AbelM_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
 {
     /* update chunk */
     tAbelV_iVec2 chunkPos = AbelM_getChunkPos(pos), localPos;
@@ -232,7 +232,7 @@ void AbelM_setCell(tAbelV_iVec2 pos, tAbelR_texture *tileSet, TILE_ID id, bool i
         chunk = addChunk(chunkPos);
 
     localPos = AbelC_globalPosToLocalPos(chunk, pos);
-    AbelC_drawTile(chunk, tileSet, localPos, id, LAYER_BG);
+    AbelC_drawTile(chunk, localPos, id, LAYER_BG);
     AbelC_setCell(chunk, localPos, id, isSolid);
 }
 

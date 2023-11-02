@@ -1,5 +1,6 @@
 #include "chunk.h"
 
+#include "assets.h"
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
@@ -33,9 +34,10 @@ void AbelC_freeChunk(tAbelC_chunk *chunk)
 
 /* ========================================[[ Drawing ]]======================================== */
 
-static void drawTileClip(tAbelC_chunk *chunk, tAbelR_texture *tileSet, int id, tAbelV_iVec2 pos, LAYER_ID layer)
+static void drawTileClip(tAbelC_chunk *chunk, int id, tAbelV_iVec2 pos, LAYER_ID layer)
 {
     SDL_Rect dest, src;
+    tAbelR_texture *tileSet = AbelA_getTexture(ASSET_ID_MAP_TILESET);
 
     /* get tileset clip */
     src = AbelR_getTileClip(tileSet, id);
@@ -93,9 +95,9 @@ void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
     SDL_SetRenderDrawColor(AbelR_getRenderer(), 0, 0, 0, 255);
 }
 
-void AbelC_drawTile(tAbelC_chunk *chunk, tAbelR_texture *tileSet, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer)
+void AbelC_drawTile(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer)
 {
-    drawTileClip(chunk, tileSet, id, pos, layer);
+    drawTileClip(chunk, id, pos, layer);
 }
 
 void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSolid)

@@ -16,22 +16,19 @@
 void AbelG_init(void)
 {
     int i, x, y;
-    tAbelR_texture *tileset;
-
-    tileset = AbelA_getTexture(ASSET_ID_MAP_TILESET);
 
     /* build pretty semi-random grass field */
     for (x = 0; x < TESTMAP_SIZE; x++) {
         for (y = 0; y < TESTMAP_SIZE; y++) {
             switch (rand() % 6) {
             case 0:
-                AbelM_setCell(AbelV_newiVec2(x, y), tileset, 0, false);
+                AbelM_setCell(AbelV_newiVec2(x, y), 0, false);
                 break; /* grass */
             case 1:
-                AbelM_setCell(AbelV_newiVec2(x, y), tileset, 2, false);
+                AbelM_setCell(AbelV_newiVec2(x, y), 2, false);
                 break; /* weed */
             default:
-                AbelM_setCell(AbelV_newiVec2(x, y), tileset, 1, false);
+                AbelM_setCell(AbelV_newiVec2(x, y), 1, false);
                 break; /* empty grass */
             }
         }
@@ -53,20 +50,18 @@ void AbelG_run(void)
     int i, animID;
     bool quit = false;
 
-    tileset = AbelA_getTexture(ASSET_ID_MAP_TILESET);
+    tileset = AbelA_getTexture(ASSET_ID_SPRITE_TILESET);
     entity = AbelE_newEntity(tileset, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(entity->sprite);
     AbelS_addFrame(entity->sprite, animID, 16, 1000); /* tile id 16 for 1 second */
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
     AbelS_playAnimation(entity->sprite, animID);      /* play animation :D */
 
-    // AbelE_setVelocity(entity, AbelV_newfVec2(16, 16));
-
-    AbelM_setCell(AbelV_newiVec2(3, 4), tileset, 4, true);
-    AbelM_setCell(AbelV_newiVec2(3, 5), tileset, 4, true);
-    AbelM_setCell(AbelV_newiVec2(3, 6), tileset, 4, true);
-    AbelM_setCell(AbelV_newiVec2(4, 6), tileset, 4, true);
-    AbelM_setCell(AbelV_newiVec2(5, 6), tileset, 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 4), 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 5), 4, true);
+    AbelM_setCell(AbelV_newiVec2(3, 6), 4, true);
+    AbelM_setCell(AbelV_newiVec2(4, 6), 4, true);
+    AbelM_setCell(AbelV_newiVec2(5, 6), 4, true);
 
     /* main engine loop */
     while (!quit) {
@@ -137,12 +132,10 @@ void AbelG_run(void)
         AbelR_getCamera()->pos.x = entity->sprite->pos.x + (AbelR_tileSize.x / 2);
         AbelR_getCamera()->pos.y = entity->sprite->pos.y + (AbelR_tileSize.y / 2);
 
-        /* windowless watermark for realtime stats 
+        /* windowless watermark for realtime stats
            TODO: add realtime stats lol */
         nk_style_push_style_item(ctx, &ctx->style.window.fixed_background, nk_style_item_hide());
-        if (nk_begin(ctx, "DEBUG", nk_rect(0, 0, 210, 120),
-            NK_WINDOW_NO_SCROLLBAR))
-        {
+        if (nk_begin(ctx, "DEBUG", nk_rect(0, 0, 210, 120), NK_WINDOW_NO_SCROLLBAR)) {
             nk_layout_row_static(ctx, 13, 150, 1);
             nk_labelf(ctx, NK_TEXT_LEFT, "ABEL v0.1");
         }

@@ -28,7 +28,7 @@ void AbelC_freeChunk(tAbelC_chunk *chunk);
 
 /* drawing */
 void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer);
-void AbelC_drawTile(tAbelC_chunk *chunk, tAbelR_texture *tileSet, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer);
+void AbelC_drawTile(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer);
 void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
 tAbelM_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos);
 

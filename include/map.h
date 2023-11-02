@@ -32,7 +32,7 @@ tAbelV_iVec2 AbelM_getChunkPos(tAbelV_iVec2 cellPos);
 void AbelM_renderChunks(LAYER_ID layer);
 
 /* cells */
-void AbelM_setCell(tAbelV_iVec2 pos, tAbelR_texture *tileSet, TILE_ID id, bool isSolid);
+void AbelM_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
 tAbelM_cell AbelM_getCell(tAbelV_iVec2 pos);
 
 #endif
