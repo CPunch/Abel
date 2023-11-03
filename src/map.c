@@ -6,14 +6,19 @@
 #include "core/tasks.h"
 #include "entity.h"
 #include "game.h"
+#include "render.h"
 
 typedef struct _tAbelM_state
 {
     tAbelR_texture *tileSet;
     tAbelT_task *stepTimer;
+    tAbelT_task *resetFPSTask;
     struct hashmap *entityMap;
     struct hashmap *chunkMap;
     ENTITY_ID nextEntityID;
+    uint32_t FPS;
+    uint32_t currFPS;
+    uint32_t lastStepTime;
 } tAbelM_state;
 
 static tAbelM_state AbelM_state = {0};
@@ -156,7 +161,15 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
         AbelE_stepEntity(elem->entity, delta);
     }
 
+    AbelM_state.lastStepTime = SDL_GetTicks();
     return WORLD_STEP_INTERVAL;
+}
+
+static uint32_t resetFPSTask(uint32_t delta, void *uData)
+{
+    AbelM_state.FPS = AbelM_state.currFPS;
+    AbelM_state.currFPS = 0;
+    return 1000;
 }
 
 static tAbelC_chunk *addChunk(tAbelV_iVec2 pos)
@@ -202,6 +215,26 @@ void AbelM_renderChunks(LAYER_ID layer)
     }
 }
 
+void AbelM_render(void)
+{
+    /* clear layers */
+    SDL_RenderClear(AbelR_getRenderer());
+
+    /* render chunks */
+    AbelM_renderChunks(LAYER_BG);
+    AbelM_renderEntities();
+    nk_sdl_render(NK_ANTI_ALIASING_ON);
+
+    /* render to window */
+    SDL_RenderPresent(AbelR_getRenderer());
+    AbelM_state.currFPS++;
+}
+
+uint32_t AbelM_getFPS(void)
+{
+    return AbelM_state.FPS;
+}
+
 /* =====================================[[ Initializers ]]====================================== */
 
 void AbelM_init(void)
@@ -209,6 +242,11 @@ void AbelM_init(void)
     AbelM_state.entityMap = hashmap_new(sizeof(tAbelM_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
     AbelM_state.chunkMap = hashmap_new(sizeof(tAbelM_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
     AbelM_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
+    AbelM_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
+    AbelM_state.lastStepTime = SDL_GetTicks();
+    AbelM_state.FPS = 0;
+    AbelM_state.currFPS = 0;
+    AbelM_state.nextEntityID = 0;
 }
 
 void AbelM_quit(void)
@@ -217,6 +255,7 @@ void AbelM_quit(void)
     hashmap_free(AbelM_state.chunkMap);
 
     AbelT_freeTask(AbelM_state.stepTimer);
+    AbelT_freeTask(AbelM_state.resetFPSTask);
 }
 
 /* =========================================[[ Cells ]]========================================= */

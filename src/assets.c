@@ -167,7 +167,7 @@ void AbelA_init(void)
        these assets are expected to be populated and *always*
        available to the rest of the codebase */
     loadReservedAsset(ASSET_ID_MAP_TILESET, "res/tileset.png", ASSET_TEXTURE);
-    loadReservedAsset(ASSET_ID_SPRITE_TILESET, "res/tileset.png", ASSET_TEXTURE);
+    loadReservedAsset(ASSET_ID_ENTITY_TILESET, "res/tileset.png", ASSET_TEXTURE);
 }
 
 void AbelA_quit(void)

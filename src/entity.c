@@ -7,10 +7,12 @@
 #include "map.h"
 #include "render.h"
 #include "sprite.h"
+#include "assets.h"
 
-tAbelE_entity *AbelE_newEntity(tAbelR_texture *tileSet, tAbelV_fVec2 pos)
+tAbelE_entity *AbelE_newEntity(tAbelV_fVec2 pos)
 {
     tAbelE_entity *entity = (tAbelE_entity *)AbelM_malloc(sizeof(tAbelE_entity));
+    tAbelR_texture *tileSet = AbelA_getTexture(ASSET_ID_ENTITY_TILESET);
 
     entity->velocity = AbelV_newfVec2(0, 0);
     entity->collider = AbelV_newiVec2(TILESET_SIZE - 1, TILESET_SIZE - 1);

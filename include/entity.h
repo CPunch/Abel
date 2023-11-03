@@ -12,7 +12,7 @@ typedef struct _tAbelE_entity
     ENTITY_ID id;
 } tAbelE_entity;
 
-tAbelE_entity *AbelE_newEntity(tAbelR_texture *tileSet, tAbelV_fVec2 pos);
+tAbelE_entity *AbelE_newEntity(tAbelV_fVec2 pos);
 void AbelE_freeEntity(tAbelE_entity *entity);
 
 void AbelE_setPosition(tAbelE_entity *entity, tAbelV_fVec2 pos);

@@ -11,8 +11,9 @@
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_DEFAULT_FONT
-#include "demo/sdl_renderer/nuklear_sdl_renderer.h"
 #include "nuklear.h"
+
+#include "demo/sdl_renderer/nuklear_sdl_renderer.h"
 
 #define START_SCREEN_WIDTH  1024
 #define START_SCREEN_HEIGHT 512

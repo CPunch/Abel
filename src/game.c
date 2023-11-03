@@ -45,13 +45,12 @@ void AbelG_run(void)
 {
     SDL_Event evnt;
     tAbelE_entity *entity;
-    tAbelR_texture *tileset;
     struct nk_context *ctx = AbelR_getNuklearCtx();
     int i, animID;
     bool quit = false;
+    uint32_t lastTick, currTick = SDL_GetTicks();
 
-    tileset = AbelA_getTexture(ASSET_ID_SPRITE_TILESET);
-    entity = AbelE_newEntity(tileset, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
+    entity = AbelE_newEntity(AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(entity->sprite);
     AbelS_addFrame(entity->sprite, animID, 16, 1000); /* tile id 16 for 1 second */
     AbelS_addFrame(entity->sprite, animID, 17, 100);  /* tile id 17 for .1 seconds */
@@ -138,20 +137,16 @@ void AbelG_run(void)
         if (nk_begin(ctx, "DEBUG", nk_rect(0, 0, 210, 120), NK_WINDOW_NO_SCROLLBAR)) {
             nk_layout_row_static(ctx, 13, 150, 1);
             nk_labelf(ctx, NK_TEXT_LEFT, "ABEL v0.1");
+            nk_layout_row_static(ctx, 13, 200, 1);
+            nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %d", AbelM_getFPS());
+            nk_labelf(ctx, NK_TEXT_LEFT, "FT (MS): %d", currTick - lastTick);
         }
         nk_end(ctx);
         nk_style_pop_style_item(ctx);
 
-        /* clear layers */
-        SDL_RenderClear(AbelR_getRenderer());
-
-        /* render chunks */
-        AbelM_renderChunks(LAYER_BG);
-        AbelM_renderEntities();
-        nk_sdl_render(NK_ANTI_ALIASING_ON);
-
-        /* render to window */
-        SDL_RenderPresent(AbelR_getRenderer());
+        AbelM_render();
+        lastTick = currTick;
+        currTick = SDL_GetTicks();
     }
 
     AbelE_freeEntity(entity);

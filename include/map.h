@@ -31,6 +31,9 @@ tAbelC_chunk *AbelM_getChunk(tAbelV_iVec2 chunkPos);
 tAbelV_iVec2 AbelM_getChunkPos(tAbelV_iVec2 cellPos);
 void AbelM_renderChunks(LAYER_ID layer);
 
+void AbelM_render(void);
+uint32_t AbelM_getFPS(void);
+
 /* cells */
 void AbelM_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
 tAbelM_cell AbelM_getCell(tAbelV_iVec2 pos);
