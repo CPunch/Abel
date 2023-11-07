@@ -39,6 +39,10 @@ target_compile_definitions(Abel PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
 # add -lm if unix to link the math lib
 if(UNIX)
   target_link_libraries(Abel PUBLIC m)
+
+  # add address sanitizer if we're compiling as Debug
+  target_compile_options(Abel PUBLIC "$<$<CONFIG:Debug>:-fsanitize=address>")
+  target_link_options(Abel PUBLIC "$<$<CONFIG:Debug>:-fsanitize=address>")
 endif()
 
 # add include directory
