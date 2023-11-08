@@ -132,7 +132,7 @@ tAbelV_iVec2 AbelC_posToGrid(tAbelV_iVec2 pos)
     return AbelV_diviVec2(pos, AbelR_tileSize);
 }
 
-tAbelV_iVec2 AbelC_globalPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 globalPos)
+tAbelV_iVec2 AbelC_worldPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 worldPos)
 {
-    return AbelV_subiVec2(globalPos, AbelV_muliVec2(chunk->pos, AbelC_chunkSize));
+    return AbelV_subiVec2(worldPos, AbelV_muliVec2(chunk->pos, AbelC_chunkSize));
 }
