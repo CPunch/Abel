@@ -22,31 +22,5 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
 add_subdirectory(vendor)
-
-# ======================================= [[ GLOB SOURCE ]] =======================================
-
-set(INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
-file(GLOB_RECURSE SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/**.c)
-file(GLOB_RECURSE HEADERS ${INCLUDEDIR}/**.h)
-
-# ====================================== [[ BUILD TARGET ]] =======================================
-
-add_executable(Abel ${SOURCE} ${HEADERS})
-
-# add the 'DEBUG' preprocessor definition if we're compiling as Debug
-target_compile_definitions(Abel PUBLIC "$<$<CONFIG:Debug>:DEBUG>")
-
-# add -lm if unix to link the math lib
-if(UNIX)
-  target_link_libraries(Abel PUBLIC m)
-
-  # add address sanitizer if we're compiling as Debug
-  target_compile_options(Abel PUBLIC "$<$<CONFIG:Debug>:-fsanitize=address>")
-  target_link_options(Abel PUBLIC "$<$<CONFIG:Debug>:-fsanitize=address>")
-endif()
-
-# add include directory
-target_include_directories(Abel PUBLIC ${INCLUDEDIR} ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
-
-# link libraries
-target_link_libraries(Abel PUBLIC ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} vendorlibs)
+add_subdirectory(libcore)
+add_subdirectory(studio)
