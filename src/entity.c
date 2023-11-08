@@ -1,13 +1,13 @@
 #include "entity.h"
 
+#include "assets.h"
 #include "chunk.h"
 #include "core/mem.h"
 #include "core/vec2.h"
 #include "game.h"
-#include "world.h"
 #include "render.h"
 #include "sprite.h"
-#include "assets.h"
+#include "world.h"
 
 void AbelE_initEntity(tAbelE_entity *entity, tAbelV_fVec2 pos)
 {
@@ -70,8 +70,7 @@ void AbelE_stepEntity(tAbelE_entity *entity, uint32_t delta)
             newPos.x = oldPos.x;
         }
     } else if (deltaPos.x < 0) {
-        if (checkCell(AbelV_newiVec2((int)newPos.x, (int)oldPos.y)) ||
-            checkCell(AbelV_newiVec2((int)newPos.x, (int)oldPos.y + entity->collider.y))) {
+        if (checkCell(AbelV_newiVec2((int)newPos.x, (int)oldPos.y)) || checkCell(AbelV_newiVec2((int)newPos.x, (int)oldPos.y + entity->collider.y))) {
             newPos.x = oldPos.x;
         }
     }
@@ -83,8 +82,7 @@ void AbelE_stepEntity(tAbelE_entity *entity, uint32_t delta)
             newPos.y = oldPos.y;
         }
     } else if (deltaPos.y < 0) {
-        if (checkCell(AbelV_newiVec2((int)oldPos.x, (int)newPos.y)) ||
-            checkCell(AbelV_newiVec2((int)oldPos.x + entity->collider.x, (int)newPos.y))) {
+        if (checkCell(AbelV_newiVec2((int)oldPos.x, (int)newPos.y)) || checkCell(AbelV_newiVec2((int)oldPos.x + entity->collider.x, (int)newPos.y))) {
             newPos.y = oldPos.y;
         }
     }

@@ -4,9 +4,9 @@
 #include "chunk.h"
 #include "core/tasks.h"
 #include "entity.h"
-#include "world.h"
 #include "render.h"
 #include "sprite.h"
+#include "world.h"
 
 #define PLAYER_SPEED 32
 #define TESTMAP_SIZE 64
@@ -52,12 +52,12 @@ void AbelG_run(void)
 
     AbelE_initEntity(&entity, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(&entity.sprite);
-    for (int i = 0; i < 25; i++)
-    {
-        if (i == 15) continue;
+    for (int i = 0; i < 25; i++) {
+        if (i == 15)
+            continue;
         AbelS_addFrame(&entity.sprite, animID, i, 100);
     }
-    AbelS_playAnimation(&entity.sprite, animID);      /* play animation :D */
+    AbelS_playAnimation(&entity.sprite, animID); /* play animation :D */
 
     AbelW_setCell(AbelV_newiVec2(3, 4), 4, true);
     AbelW_setCell(AbelV_newiVec2(3, 5), 4, true);

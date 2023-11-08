@@ -4,9 +4,9 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
-#include "world.h"
 #include "render.h"
 #include "sprite.h"
+#include "world.h"
 
 tAbelV_iVec2 AbelC_chunkSize = AbelV_newiVec2(16, 16);
 
