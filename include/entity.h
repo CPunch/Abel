@@ -3,17 +3,19 @@
 
 #include "abel.h"
 #include "core/vec2.h"
+#include "sprite.h"
 
 typedef struct _tAbelE_entity
 {
-    tAbelS_sprite *sprite;
+    tAbelS_sprite sprite;
     tAbelV_fVec2 velocity;
     tAbelV_iVec2 collider; /* size of collider */
     ENTITY_ID id;
 } tAbelE_entity;
 
-tAbelE_entity *AbelE_newEntity(tAbelV_fVec2 pos);
-void AbelE_freeEntity(tAbelE_entity *entity);
+/* TODO: maybe accept a collider here as well? */
+void AbelE_initEntity(tAbelE_entity *entity, tAbelV_fVec2 pos);
+void AbelE_cleanupEntity(tAbelE_entity *entity);
 
 void AbelE_setPosition(tAbelE_entity *entity, tAbelV_fVec2 pos);
 void AbelE_setVelocity(tAbelE_entity *entity, tAbelV_fVec2 velo);

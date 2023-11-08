@@ -41,9 +41,6 @@ static void openWindow(int width, int height)
         ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
 
     SDL_SetRenderTarget(AbelR_state.renderer, NULL);
-
-    /* set 60 fps cap */
-    
 }
 
 /* =====================================[[ Initializers ]]====================================== */

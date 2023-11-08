@@ -1,2 +1,5 @@
 .vscode
 build
+debug
+res/*.kra
+res/*~

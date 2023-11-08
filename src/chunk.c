@@ -4,7 +4,7 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
-#include "map.h"
+#include "world.h"
 #include "render.h"
 #include "sprite.h"
 
@@ -19,7 +19,7 @@ tAbelC_chunk *AbelC_newChunk(tAbelV_iVec2 position)
 
     chunk->bgFrame = AbelR_newBlankTexture(textureSize);
     chunk->fgFrame = AbelR_newBlankTexture(textureSize);
-    chunk->cellMap = (tAbelM_cell *)AbelM_malloc(sizeof(tAbelM_cell) * AbelC_chunkSize.x * AbelC_chunkSize.y);
+    chunk->cellMap = (tAbelW_cell *)AbelM_malloc(sizeof(tAbelW_cell) * AbelC_chunkSize.x * AbelC_chunkSize.y);
     chunk->pos = position;
     return chunk;
 }
@@ -107,15 +107,15 @@ void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSol
     if (indx >= AbelC_chunkSize.x * AbelC_chunkSize.y)
         return; /* do nothing */
 
-    chunk->cellMap[indx] = (tAbelM_cell){.id = id, .isSolid = isSolid};
+    chunk->cellMap[indx] = (tAbelW_cell){.id = id, .isSolid = isSolid};
 }
 
-tAbelM_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos)
+tAbelW_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos)
 {
     /* validation */
     int indx = (AbelC_chunkSize.x * pos.y) + pos.x;
     if (indx >= AbelC_chunkSize.x * AbelC_chunkSize.y)
-        return (tAbelM_cell){.id = 0, .isSolid = true}; /* if cell doesn't exist, return default cell */
+        return (tAbelW_cell){.id = 0, .isSolid = true}; /* if cell doesn't exist, return default cell */
 
     return chunk->cellMap[indx];
 }

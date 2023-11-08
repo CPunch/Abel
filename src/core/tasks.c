@@ -62,7 +62,6 @@ static void unscheduleTask(tAbelT_task *task)
 tAbelT_task *AbelT_newTask(uint32_t delay, taskCallback callback, void *uData)
 {
     tAbelT_task *task = (tAbelT_task *)AbelM_malloc(sizeof(tAbelT_task));
-
     task->callback = callback;
     task->uData = uData;
 

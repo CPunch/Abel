@@ -133,21 +133,18 @@ static void freeAState(tAbelS_animationStates *states)
 
 /* ======================================[[ Sprite API ]]======================================= */
 
-tAbelS_sprite *AbelS_newSprite(tAbelR_texture *tileSet, tAbelV_fVec2 pos)
+void AbelS_initSprite(tAbelS_sprite *sprite, tAbelR_texture *tileSet, tAbelV_fVec2 pos)
 {
-    tAbelS_sprite *sprite = (tAbelS_sprite *)AbelM_malloc(sizeof(tAbelS_sprite));
     sprite->animations = newAState();
     sprite->tileSet = tileSet;
 
     /* setup sprite */
     AbelS_setSpritePos(sprite, pos);
-    return sprite;
 }
 
-void AbelS_freeSprite(tAbelS_sprite *sprite)
+void AbelS_cleanupSprite(tAbelS_sprite *sprite)
 {
     freeAState(&sprite->animations);
-    AbelM_free(sprite);
 }
 
 /* =======================================[[ Setters ]]========================================= */

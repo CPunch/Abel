@@ -33,8 +33,8 @@ typedef struct _tAbelS_sprite
     tAbelR_texture *tileSet;
 } tAbelS_sprite;
 
-tAbelS_sprite *AbelS_newSprite(tAbelR_texture *tileSet, tAbelV_fVec2 pos);
-void AbelS_freeSprite(tAbelS_sprite *sprite);
+void AbelS_initSprite(tAbelS_sprite *sprite, tAbelR_texture *tileSet, tAbelV_fVec2 pos);
+void AbelS_cleanupSprite(tAbelS_sprite *sprite);
 
 void AbelS_addFrame(tAbelS_sprite *sprite, int animationID, TILE_ID id, uint32_t delay);
 int AbelS_addAnimation(tAbelS_sprite *sprite);
