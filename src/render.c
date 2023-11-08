@@ -85,9 +85,15 @@ void AbelR_quit(void)
     nk_sdl_shutdown();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_DestroyWindow(AbelR_state.window);
+
+    // NOTE: SDL_Quit() calls dlclose(), which can confuse address sanitizer. during asan runs,
+    // make sure to define ABEL_ASAN.
+    // referencing https://old.reddit.com/r/C_Programming/comments/9kkxax/using_addresssanitizer_with_leaking_libraries/
+#ifndef ABEL_ASAN
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
+#endif
 }
 
 SDL_Renderer *AbelR_getRenderer(void)

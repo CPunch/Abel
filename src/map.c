@@ -252,6 +252,16 @@ void AbelM_init(void)
 void AbelM_quit(void)
 {
     hashmap_free(AbelM_state.entityMap);
+
+    /* free chunks */
+    size_t i = 0;
+    void *item;
+    tAbelM_chunkElem *elem;
+    while (hashmap_iter(AbelM_state.chunkMap, &i, &item)) {
+        elem = (tAbelM_chunkElem *)item;
+        AbelC_freeChunk(elem->chunk);
+    }
+
     hashmap_free(AbelM_state.chunkMap);
 
     AbelT_freeTask(AbelM_state.stepTimer);

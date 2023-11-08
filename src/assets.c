@@ -178,6 +178,8 @@ void AbelA_quit(void)
         if (AbelA_state.assetTable[i].type != ASSET_NONE)
             AbelA_freeAsset(i);
     }
+
+    AbelM_free(AbelA_state.assetTable);
 }
 
 /* =======================================[[ Asset API ]]======================================= */
