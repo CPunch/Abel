@@ -85,7 +85,7 @@ void AbelT_pollTasks()
 
     /* run scheduled tasks */
     currTick = SDL_GetTicks();
-    while (curr != NULL && curr->schedule < currTick) {
+    while (curr && curr->schedule < currTick) {
         task = curr;
         curr = curr->next;
 

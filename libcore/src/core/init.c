@@ -2,8 +2,8 @@
 
 #include "assets.h"
 #include "game.h"
-#include "world.h"
 #include "render.h"
+#include "world.h"
 
 /* DO NOT REORGANIZE, in order for what needs to be initialized first */
 Abel_initFunc initializers[] = {AbelR_init, AbelA_init, AbelW_init, AbelG_init};
