@@ -135,7 +135,15 @@ bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size)
 
 void AbelR_zoomCamera(int zoom)
 {
-    AbelR_setScale(AbelV_addiVec2(AbelR_state.scale, AbelV_newiVec2(zoom, zoom)));
+    tAbelV_iVec2 newScale = AbelV_addiVec2(AbelR_state.scale, AbelV_newiVec2(zoom, zoom));
+
+    /* validate new scale */
+    if (newScale.x < 1 || newScale.y < 1)
+        return;
+
+    AbelR_setScale(newScale);
+}
+
 }
 
 /* ======================================[[ Texture API ]]====================================== */
