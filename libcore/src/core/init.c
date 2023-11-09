@@ -4,10 +4,11 @@
 #include "game.h"
 #include "render.h"
 #include "world.h"
+#include "input.h"
 
 /* DO NOT REORGANIZE, in order for what needs to be initialized first */
-Abel_initFunc initializers[] = {AbelR_init, AbelA_init, AbelW_init, AbelG_init};
-Abel_initFunc deinitializers[] = {AbelG_quit, AbelW_quit, AbelA_quit, AbelR_quit};
+Abel_initFunc initializers[] = {AbelR_init, AbelI_init, AbelA_init, AbelW_init, AbelG_init};
+Abel_initFunc deinitializers[] = {AbelG_quit, AbelW_quit, AbelA_quit, AbelI_quit, AbelR_quit};
 
 void Abel_init(void)
 {

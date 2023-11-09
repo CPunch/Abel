@@ -2,7 +2,7 @@
 
 #include "core/mem.h"
 
-tAbelVM_eventConnection *AbelVM_connectEvent(tAbelVM_eventConnection **head, eventCallback callback, const void *uData)
+void AbelVM_connectEvent(tAbelVM_eventConnection **head, tEventCallback callback, const void *uData)
 {
     tAbelVM_eventConnection *conn = (tAbelVM_eventConnection *)AbelM_malloc(sizeof(tAbelVM_eventConnection));
     conn->callback = callback;
@@ -37,6 +37,19 @@ void AbelVM_disconnectEvent(tAbelVM_eventConnection **head, tAbelVM_eventConnect
 
 _freeEvent:
     AbelM_free(event);
+}
+
+void AbelVM_clearEventList(tAbelVM_eventConnection **head)
+{
+    tAbelVM_eventConnection *curr = *head, *next;
+
+    while (curr) {
+        next = curr->next;
+        AbelM_free(curr);
+        curr = next;
+    }
+
+    *head = NULL;
 }
 
 void AbelVM_fireEventList(tAbelVM_eventConnection *event, const void *eventData)

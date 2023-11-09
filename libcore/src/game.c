@@ -7,9 +7,16 @@
 #include "render.h"
 #include "sprite.h"
 #include "world.h"
+#include "input.h"
 
 #define PLAYER_SPEED 32
 #define TESTMAP_SIZE 64
+
+typedef struct _tAbelG_state {
+    bool quit;
+} tAbelG_state;
+
+static tAbelG_state state;
 
 /* =====================================[[ Initializers ]]====================================== */
 
@@ -33,10 +40,17 @@ void AbelG_init(void)
             }
         }
     }
+
+    AbelW_setCell(AbelV_newiVec2(3, 4), 4, true);
+    AbelW_setCell(AbelV_newiVec2(3, 5), 4, true);
+    AbelW_setCell(AbelV_newiVec2(3, 6), 4, true);
+    AbelW_setCell(AbelV_newiVec2(4, 6), 4, true);
+    AbelW_setCell(AbelV_newiVec2(5, 6), 4, true);
 }
 
 void AbelG_quit(void)
 {
+    state.quit = true;
 }
 
 /* =====================================[[ Game Loop ]]====================================== */
@@ -44,11 +58,9 @@ void AbelG_quit(void)
 void AbelG_run(void)
 {
     tAbelE_entity entity;
-    SDL_Event evnt;
     struct nk_context *ctx = AbelR_getNuklearCtx();
     int i, animID;
     uint32_t lastTick, currTick = SDL_GetTicks();
-    bool quit = false;
 
     AbelE_initEntity(&entity, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(&entity.sprite);
@@ -59,76 +71,10 @@ void AbelG_run(void)
     }
     AbelS_playAnimation(&entity.sprite, animID); /* play animation :D */
 
-    AbelW_setCell(AbelV_newiVec2(3, 4), 4, true);
-    AbelW_setCell(AbelV_newiVec2(3, 5), 4, true);
-    AbelW_setCell(AbelV_newiVec2(3, 6), 4, true);
-    AbelW_setCell(AbelV_newiVec2(4, 6), 4, true);
-    AbelW_setCell(AbelV_newiVec2(5, 6), 4, true);
-
     /* main engine loop */
-    while (!quit) {
-        /* handle SDL events */
-        nk_input_begin(ctx);
-        while (SDL_PollEvent(&evnt) != 0) {
-            switch (evnt.type) {
-            case SDL_QUIT:
-                quit = true;
-                break;
-            case SDL_KEYDOWN:
-                switch (evnt.key.keysym.sym) {
-                case SDLK_ESCAPE:
-                    quit = true;
-                    break;
-                case SDLK_w:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(entity.velocity.x, -PLAYER_SPEED));
-                    break;
-                case SDLK_s:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(entity.velocity.x, PLAYER_SPEED));
-                    break;
-                case SDLK_a:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(-PLAYER_SPEED, entity.velocity.y));
-                    break;
-                case SDLK_d:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(PLAYER_SPEED, entity.velocity.y));
-                    break;
-                default:
-                    break;
-                }
-                break;
-            case SDL_KEYUP:
-                switch (evnt.key.keysym.sym) {
-                case SDLK_w:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(entity.velocity.x, 0));
-                    break;
-                case SDLK_s:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(entity.velocity.x, 0));
-                    break;
-                case SDLK_a:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(0, entity.velocity.y));
-                    break;
-                case SDLK_d:
-                    AbelE_setVelocity(&entity, AbelV_newfVec2(0, entity.velocity.y));
-                    break;
-                default:
-                    break;
-                }
-                break;
-            /* handle mouse zoom in/out */
-            case SDL_MOUSEWHEEL:
-                if (evnt.wheel.y > 0) {
-                    AbelR_zoomCamera(1);
-                } else if (evnt.wheel.y < 0) {
-                    AbelR_zoomCamera(-1);
-                }
-                break;
-            default:
-                break;
-            }
-            nk_sdl_handle_event(&evnt);
-        }
-        nk_input_end(ctx);
-
-        /* run scheduled tasks */
+    state.quit = false;
+    while (!state.quit) {
+        AbelI_pollEvents();
         AbelT_pollTasks();
 
         AbelR_getCamera()->pos.x = entity.sprite.pos.x + (AbelR_tileSize.x / 2);
