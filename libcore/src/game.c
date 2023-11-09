@@ -59,8 +59,7 @@ void AbelG_run(void)
 {
     tAbelE_entity entity;
     struct nk_context *ctx = AbelR_getNuklearCtx();
-    int i, animID;
-    uint32_t lastTick, currTick = SDL_GetTicks();
+    int animID;
 
     AbelE_initEntity(&entity, AbelV_i2fVec(AbelC_gridToPos(AbelV_newiVec2(0, 0))));
     animID = AbelS_addAnimation(&entity.sprite);
@@ -71,6 +70,7 @@ void AbelG_run(void)
     }
     AbelS_playAnimation(&entity.sprite, animID); /* play animation :D */
 
+    AbelE_setVelocity(&entity, AbelV_newfVec2(PLAYER_SPEED, PLAYER_SPEED));
     /* main engine loop */
     state.quit = false;
     while (!state.quit) {
@@ -79,22 +79,6 @@ void AbelG_run(void)
 
         AbelR_getCamera()->pos.x = entity.sprite.pos.x + (AbelR_tileSize.x / 2);
         AbelR_getCamera()->pos.y = entity.sprite.pos.y + (AbelR_tileSize.y / 2);
-
-        /* windowless watermark for realtime stats */
-        nk_style_push_style_item(ctx, &ctx->style.window.fixed_background, nk_style_item_hide());
-        if (nk_begin(ctx, "DEBUG", nk_rect(0, 0, 210, 120), NK_WINDOW_NO_SCROLLBAR)) {
-            nk_layout_row_static(ctx, 13, 150, 1);
-            nk_labelf(ctx, NK_TEXT_LEFT, "ABEL v0.1");
-            nk_layout_row_static(ctx, 13, 200, 1);
-            nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %d", AbelW_getFPS());
-            nk_labelf(ctx, NK_TEXT_LEFT, "FT (MS): %d", currTick - lastTick);
-        }
-        nk_end(ctx);
-        nk_style_pop_style_item(ctx);
-
-        AbelW_render();
-        lastTick = currTick;
-        currTick = SDL_GetTicks();
     }
 
     AbelE_cleanupEntity(&entity);

@@ -32,7 +32,6 @@ tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos);
 void AbelW_renderChunks(LAYER_ID layer);
 
 void AbelW_render(void);
-uint32_t AbelW_getFPS(void);
 
 /* cells */
 void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid);

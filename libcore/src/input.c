@@ -1,5 +1,6 @@
 #include "input.h"
 #include "render.h"
+#include "game.h"
 
 typedef struct _tAbelI_state {
     /* passes SDL_Event *evnt as eventData */

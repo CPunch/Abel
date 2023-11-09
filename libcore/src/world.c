@@ -10,14 +10,10 @@
 
 typedef struct _tAbelW_state
 {
-    tAbelR_texture *tileSet;
     tAbelT_task *stepTimer;
-    tAbelT_task *resetFPSTask;
     struct hashmap *entityMap;
     struct hashmap *chunkMap;
     ENTITY_ID nextEntityID;
-    uint32_t FPS;
-    uint32_t currFPS;
     uint32_t lastStepTime;
 } tAbelW_state;
 
@@ -165,13 +161,6 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
     return WORLD_STEP_INTERVAL;
 }
 
-static uint32_t resetFPSTask(uint32_t delta, void *uData)
-{
-    AbelW_state.FPS = AbelW_state.currFPS;
-    AbelW_state.currFPS = 0;
-    return 1000;
-}
-
 static tAbelC_chunk *addChunk(tAbelV_iVec2 pos)
 {
     tAbelC_chunk *chunk = AbelC_newChunk(pos);
@@ -215,26 +204,6 @@ void AbelW_renderChunks(LAYER_ID layer)
     }
 }
 
-void AbelW_render(void)
-{
-    /* clear layers */
-    SDL_RenderClear(AbelR_getRenderer());
-
-    /* render chunks */
-    AbelW_renderChunks(LAYER_BG);
-    AbelW_renderEntities();
-    nk_sdl_render(NK_ANTI_ALIASING_ON);
-
-    /* render to window */
-    SDL_RenderPresent(AbelR_getRenderer());
-    AbelW_state.currFPS++;
-}
-
-uint32_t AbelW_getFPS(void)
-{
-    return AbelW_state.FPS;
-}
-
 /* =====================================[[ Initializers ]]====================================== */
 
 void AbelW_init(void)
@@ -242,11 +211,8 @@ void AbelW_init(void)
     AbelW_state.entityMap = hashmap_new(sizeof(tAbelW_entityElem), 8, 0, 0, entityHash, entityCompare, NULL, NULL);
     AbelW_state.chunkMap = hashmap_new(sizeof(tAbelW_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
     AbelW_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
-    AbelW_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
-    AbelW_state.lastStepTime = SDL_GetTicks();
-    AbelW_state.FPS = 0;
-    AbelW_state.currFPS = 0;
     AbelW_state.nextEntityID = 0;
+    AbelW_state.lastStepTime = SDL_GetTicks();
 }
 
 void AbelW_quit(void)
@@ -265,7 +231,6 @@ void AbelW_quit(void)
     hashmap_free(AbelW_state.chunkMap);
 
     AbelT_freeTask(AbelW_state.stepTimer);
-    AbelT_freeTask(AbelW_state.resetFPSTask);
 }
 
 /* =========================================[[ Cells ]]========================================= */

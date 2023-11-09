@@ -3,9 +3,11 @@
 #include "render.h"
 
 #include "chunk.h"
+#include "world.h"
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
+#include "core/tasks.h"
 
 tAbelV_iVec2 AbelR_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
 
@@ -13,11 +15,15 @@ tAbelV_iVec2 AbelR_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
 
 typedef struct _tAbelR_State
 {
+    tAbelR_camera camera;
+    tAbelV_iVec2 scale;
     SDL_Window *window;
     SDL_Renderer *renderer;
     struct nk_context *nkCtx;
-    tAbelR_camera camera;
-    tAbelV_iVec2 scale;
+    tAbelT_task *resetFPSTask;
+    tAbelT_task *renderTask;
+    uint32_t FPS;
+    uint32_t currFPS;
 } tAbelR_state;
 
 static tAbelR_state AbelR_state = {0};
@@ -41,6 +47,47 @@ static void openWindow(int width, int height)
         ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
 
     SDL_SetRenderTarget(AbelR_state.renderer, NULL);
+}
+
+static void drawRealtimeStats(void)
+{
+    struct nk_context *ctx = AbelR_getNuklearCtx();
+
+    /* windowless watermark for realtime stats */
+    nk_style_push_style_item(ctx, &ctx->style.window.fixed_background, nk_style_item_hide());
+    if (nk_begin(ctx, "DEBUG", nk_rect(0, 0, 210, 120), NK_WINDOW_NO_SCROLLBAR)) {
+        nk_layout_row_static(ctx, 13, 150, 1);
+        nk_labelf(ctx, NK_TEXT_LEFT, "ABEL v0.1");
+        nk_layout_row_static(ctx, 13, 200, 1);
+        nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %d", AbelR_getFPS());
+    }
+    nk_end(ctx);
+    nk_style_pop_style_item(ctx);
+}
+
+static uint32_t resetFPSTask(uint32_t delta, void *uData)
+{
+    AbelR_state.FPS = AbelR_state.currFPS;
+    AbelR_state.currFPS = 0;
+    return 1000;
+}
+
+static uint32_t renderTask(uint32_t delta, void *uData)
+{
+    drawRealtimeStats();
+
+    /* clear layers */
+    SDL_RenderClear(AbelR_state.renderer);
+
+    /* render chunks */
+    AbelW_renderChunks(LAYER_BG);
+    AbelW_renderEntities();
+    nk_sdl_render(NK_ANTI_ALIASING_ON);
+
+    /* render to window */
+    SDL_RenderPresent(AbelR_state.renderer);
+    AbelR_state.currFPS++;
+    return RENDER_INTERVAL;
 }
 
 /* =====================================[[ Initializers ]]====================================== */
@@ -75,10 +122,16 @@ void AbelR_init(void)
 
         nk_style_set_font(AbelR_state.nkCtx, &font->handle);
     }
+
+    AbelR_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
+    AbelR_state.renderTask = AbelT_newTask(RENDER_INTERVAL, renderTask, NULL);
 }
 
 void AbelR_quit(void)
 {
+    AbelT_freeTask(AbelR_state.resetFPSTask);
+    AbelT_freeTask(AbelR_state.renderTask);
+
     nk_sdl_shutdown();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_DestroyWindow(AbelR_state.window);
@@ -121,10 +174,14 @@ tAbelV_iVec2 AbelR_getScale(void)
     return AbelR_state.scale;
 }
 
+uint32_t AbelR_getFPS(void)
+{
+    return AbelR_state.FPS;
+}
+
 void AbelR_setScale(tAbelV_iVec2 scale)
 {
     AbelR_state.scale = scale;
-    // SDL_RenderSetScale(AbelR_state.renderer, scale.x, scale.y);
 }
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size)
@@ -142,8 +199,6 @@ void AbelR_zoomCamera(int zoom)
         return;
 
     AbelR_setScale(newScale);
-}
-
 }
 
 /* ======================================[[ Texture API ]]====================================== */
