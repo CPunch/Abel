@@ -47,6 +47,33 @@
         name##_COUNT += numElem;                                                                                                                               \
     } while (0);
 
+/* =======================================[[ RefCount ]]======================================== */
+
+/* these are expected to be the *first* member of a reference counted struct */
+typedef struct _tAbelM_RefCount
+{
+    void (*free)(struct _tAbelM_RefCount *ptr);
+    int refCount;
+} tAbelM_RefCount;
+
+inline void AbelM_initRef(tAbelM_RefCount *ref, void (*free)(tAbelM_RefCount *ptr))
+{
+    ref->refCount = 1;
+    ref->free = free;
+}
+
+inline void AbelM_retainRef(tAbelM_RefCount *ref)
+{
+    ref->refCount++;
+}
+
+inline void AbelM_releaseRef(tAbelM_RefCount *ref)
+{
+    ref->refCount--;
+    if (ref->refCount == 0)
+        ref->free(ref);
+}
+
 void *AbelM_realloc(void *buf, size_t sz);
 char *AbelM_strdup(const char *str);
 uint32_t AbelM_fastHash(uint8_t *data, size_t sz);
