@@ -9,32 +9,60 @@
 #include "sprite.h"
 #include "world.h"
 
-void AbelE_initEntity(tAbelE_entity *entity, tAbelV_fVec2 pos)
+void AbelE_initEntity(tAbelE_entity *entity, tAbelV_fVec2 pos, void (*free)(tAbelM_RefCount *ptr))
 {
     tAbelR_texture *tileSet = AbelA_getTexture(ASSET_ID_ENTITY_TILESET);
 
     entity->velocity = AbelV_newfVec2(0, 0);
     entity->collider = AbelV_newiVec2(TILESET_SIZE - 1, TILESET_SIZE - 1);
-    entity->id = AbelW_addEntity(entity);
+    entity->currentChunk = NULL;
+    entity->renderNext = NULL;
 
     AbelS_initSprite(&entity->sprite, tileSet, pos);
+    AbelM_initRef(&entity->refCount, free);
 }
 
 void AbelE_cleanupEntity(tAbelE_entity *entity)
 {
-    AbelW_rmvEntity(entity->id);
     AbelS_cleanupSprite(&entity->sprite);
 }
+
+/* ========================================[[ Setters ]]======================================== */
 
 void AbelE_setPosition(tAbelE_entity *entity, tAbelV_fVec2 pos)
 {
     AbelS_setSpritePos(&entity->sprite, pos);
+
+    if (entity->currentChunk != NULL) {
+        tAbelV_iVec2 gridPos = AbelC_posToGrid(AbelV_f2iVec(pos));
+        tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
+        tAbelC_chunk *chunk = AbelW_getChunk(chunkPos);
+    }
 }
 
 void AbelE_setVelocity(tAbelE_entity *entity, tAbelV_fVec2 velo)
 {
     entity->velocity = velo;
 }
+
+void AbelE_setCollider(tAbelE_entity *entity, tAbelV_iVec2 collider)
+{
+    entity->collider = collider;
+}
+
+void AbelE_setChunk(tAbelE_entity *entity, tAbelC_chunk *chunk)
+{
+    if (chunk != entity->currentChunk) {
+        AbelC_rmvEntity(entity->currentChunk, entity);
+
+        if (chunk != NULL)
+            AbelC_addEntity(chunk, entity);
+    }
+
+    entity->currentChunk = chunk;
+}
+
+/* ========================================[[ Getters ]]======================================== */
 
 tAbelV_fVec2 AbelE_getPosition(tAbelE_entity *entity)
 {
@@ -49,6 +77,11 @@ tAbelV_fVec2 AbelE_getVelocity(tAbelE_entity *entity)
 tAbelV_iVec2 AbelE_getCollider(tAbelE_entity *entity)
 {
     return entity->collider;
+}
+
+tAbelC_chunk *AbelE_getChunk(tAbelE_entity *entity)
+{
+    return entity->currentChunk;
 }
 
 static bool checkCell(tAbelV_iVec2 worldPos)

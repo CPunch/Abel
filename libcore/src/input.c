@@ -1,8 +1,10 @@
 #include "input.h"
-#include "render.h"
-#include "game.h"
 
-typedef struct _tAbelI_state {
+#include "game.h"
+#include "render.h"
+
+typedef struct _tAbelI_state
+{
     /* passes SDL_Event *evnt as eventData */
     tAbelVM_eventConnection *onKeyDown;
     tAbelVM_eventConnection *onKeyUp;

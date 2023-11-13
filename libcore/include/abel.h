@@ -27,7 +27,5 @@ typedef struct _tAbelW_cell tAbelW_cell;
 typedef uint16_t ASSET_ID;
 typedef uint8_t LAYER_ID;
 typedef uint16_t TILE_ID;
-typedef uint32_t SPRITE_ID;
-typedef uint32_t ENTITY_ID;
 
 #endif

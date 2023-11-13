@@ -4,11 +4,22 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
+#include "entity.h"
 #include "render.h"
 #include "sprite.h"
 #include "world.h"
 
 tAbelV_iVec2 AbelC_chunkSize = AbelV_newiVec2(16, 16);
+
+static int findEmptyEntityIndex(tAbelC_chunk *chunk)
+{
+    for (int i = 0; i < AbelM_countVector(chunk->entities); i++) {
+        if (chunk->entities[i] == NULL)
+            return i;
+    }
+
+    return -1;
+}
 
 /* =======================================[[ Chunk API ]]======================================= */
 
@@ -21,14 +32,24 @@ tAbelC_chunk *AbelC_newChunk(tAbelV_iVec2 position)
     chunk->fgFrame = AbelR_newBlankTexture(textureSize);
     chunk->cellMap = (tAbelW_cell *)AbelM_malloc(sizeof(tAbelW_cell) * AbelC_chunkSize.x * AbelC_chunkSize.y);
     chunk->pos = position;
+
+    AbelM_initVector(chunk->entities, 4);
     return chunk;
 }
 
 void AbelC_freeChunk(tAbelC_chunk *chunk)
 {
+    tAbelE_entity *entity;
+    for (int i = 0; i < AbelM_countVector(chunk->entities); i++) {
+        if (entity = chunk->entities[i]) {
+            AbelM_releaseRef(&entity->refCount);
+        }
+    }
+
     AbelR_freeTexture(chunk->bgFrame);
     AbelR_freeTexture(chunk->fgFrame);
     AbelM_free(chunk->cellMap);
+    AbelM_free(chunk->entities);
     AbelM_free(chunk);
 }
 
@@ -100,6 +121,8 @@ void AbelC_drawTile(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID 
     drawTileClip(chunk, id, pos, layer);
 }
 
+/* =========================================[[ Cells ]]========================================= */
+
 void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
 {
     /* validation */
@@ -118,6 +141,48 @@ tAbelW_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos)
         return (tAbelW_cell){.id = 0, .isSolid = true}; /* if cell doesn't exist, return default cell */
 
     return chunk->cellMap[indx];
+}
+
+void AbelC_addEntity(tAbelC_chunk *chunk, tAbelE_entity *entity)
+{
+    int indx = findEmptyEntityIndex(chunk);
+    if (indx == -1) {
+        AbelM_growVector(tAbelE_entity *, chunk->entities, 1);
+        chunk->entities[AbelM_countVector(chunk->entities)++] = entity;
+    } else {
+        chunk->entities[indx] = entity;
+    }
+
+    AbelM_retainRef(&entity->refCount);
+}
+
+void AbelC_rmvEntity(tAbelC_chunk *chunk, tAbelE_entity *entity)
+{
+    for (int i = 0; i < AbelM_countVector(chunk->entities); i++) {
+        if (chunk->entities[i] == entity) {
+            chunk->entities[i] = NULL;
+            AbelM_releaseRef(&entity->refCount);
+            return;
+        }
+    }
+}
+
+void AbelC_stepEntities(tAbelC_chunk *chunk, uint32_t delta)
+{
+    tAbelE_entity *entity;
+    for (int i = 0; i < AbelM_countVector(chunk->entities); i++) {
+        if (entity = chunk->entities[i]) {
+            AbelE_stepEntity(entity, delta);
+        }
+    }
+}
+
+/* note: returned pointer is only valid until entities are modified.
+    make sure to check the returned array for NULL ptrs! */
+tAbelE_entity **AbelC_getEntities(tAbelC_chunk *chunk, size_t *size)
+{
+    *size = AbelM_countVector(chunk->entities);
+    return chunk->entities;
 }
 
 /* =========================================[[ Utils ]]========================================= */

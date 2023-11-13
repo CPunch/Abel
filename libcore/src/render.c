@@ -3,11 +3,11 @@
 #include "render.h"
 
 #include "chunk.h"
-#include "world.h"
 #include "core/mem.h"
 #include "core/serror.h"
-#include "core/vec2.h"
 #include "core/tasks.h"
+#include "core/vec2.h"
+#include "world.h"
 
 tAbelV_iVec2 AbelR_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
 
@@ -81,7 +81,6 @@ static uint32_t renderTask(uint32_t delta, void *uData)
 
     /* render chunks */
     AbelW_renderChunks(LAYER_BG);
-    AbelW_renderEntities();
     nk_sdl_render(NK_ANTI_ALIASING_ON);
 
     /* render to window */

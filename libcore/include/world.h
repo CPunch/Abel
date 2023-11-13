@@ -17,24 +17,17 @@ typedef struct _tAbelW_cell
 void AbelW_init(void);
 void AbelW_quit(void);
 
-/* entity */
-ENTITY_ID AbelW_addEntity(tAbelE_entity *entity);
-void AbelW_rmvEntity(ENTITY_ID id);
-
-tAbelE_entity *AbelW_checkEntityCollide(tAbelE_entity *entity);
-tAbelE_entity *AbelW_getEntity(ENTITY_ID id);
-
-void AbelW_renderEntities(void);
-
 /* chunk */
 tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos);
 tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos);
-void AbelW_renderChunks(LAYER_ID layer);
-
-void AbelW_render(void);
+void AbelW_renderChunks();
 
 /* cells */
 void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
 tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos);
+
+/* entities */
+void AbelW_addEntity(tAbelE_entity *entity);
+void AbelW_rmvEntity(tAbelE_entity *entity);
 
 #endif

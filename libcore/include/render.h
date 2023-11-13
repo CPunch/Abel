@@ -20,7 +20,7 @@
 #define START_SCREEN_HEIGHT 512
 #define TILESET_SIZE        16
 #define TARGET_FPS          60
-#define RENDER_INTERVAL     1000/TARGET_FPS
+#define RENDER_INTERVAL     1000 / TARGET_FPS
 
 typedef struct _tAbelR_texture
 {
@@ -46,7 +46,6 @@ tAbelV_iVec2 AbelR_getScale(void);
 uint32_t AbelR_getFPS(void);
 
 void AbelR_setScale(tAbelV_iVec2 scale);
-
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size);
 void AbelR_zoomCamera(int zoom);

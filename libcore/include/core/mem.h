@@ -3,20 +3,21 @@
 
 #include "abel.h"
 
-#define GROW_FACTOR             2
+#define GROW_FACTOR               2
 
-#define AbelM_malloc(sz)        AbelM_realloc(NULL, sz)
-#define AbelM_free(buf)         AbelM_realloc(buf, 0)
+#define AbelM_malloc(sz)          AbelM_realloc(NULL, sz)
+#define AbelM_calloc(type, count) (type *)AbelM_realloc(NULL, sizeof(type))
+#define AbelM_free(buf)           AbelM_realloc(buf, 0)
 
 /* ========================================[[ Vectors ]]======================================== */
 
-#define AbelM_countVector(name) name##_COUNT
-#define AbelM_capVector(name)   name##_CAP
+#define AbelM_countVector(name)   name##_COUNT
+#define AbelM_capVector(name)     name##_CAP
 
 #define AbelM_newVector(type, name)                                                                                                                            \
     type *name;                                                                                                                                                \
-    int name##_COUNT;                                                                                                                                          \
-    int name##_CAP;
+    size_t name##_COUNT;                                                                                                                                       \
+    size_t name##_CAP;
 
 #define AbelM_initVector(name, startCap)                                                                                                                       \
     name = NULL;                                                                                                                                               \
@@ -56,21 +57,20 @@ typedef struct _tAbelM_RefCount
     int refCount;
 } tAbelM_RefCount;
 
-inline void AbelM_initRef(tAbelM_RefCount *ref, void (*free)(tAbelM_RefCount *ptr))
+static inline void AbelM_initRef(tAbelM_RefCount *ref, void (*free)(tAbelM_RefCount *ptr))
 {
     ref->refCount = 1;
     ref->free = free;
 }
 
-inline void AbelM_retainRef(tAbelM_RefCount *ref)
+static inline void AbelM_retainRef(tAbelM_RefCount *ref)
 {
     ref->refCount++;
 }
 
-inline void AbelM_releaseRef(tAbelM_RefCount *ref)
+static inline void AbelM_releaseRef(tAbelM_RefCount *ref)
 {
-    ref->refCount--;
-    if (ref->refCount == 0)
+    if (--ref->refCount == 0)
         ref->free(ref);
 }
 
