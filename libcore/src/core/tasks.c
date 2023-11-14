@@ -78,7 +78,8 @@ void AbelT_freeTask(tAbelT_task *task)
     AbelM_free(task);
 }
 
-void AbelT_pollTasks()
+/* returns the delay until a task is scheduled */
+uint32_t AbelT_pollTasks(void)
 {
     tAbelT_task *curr = head, *task;
     uint32_t currTick, nextDelay;
@@ -96,6 +97,8 @@ void AbelT_pollTasks()
         if (nextDelay)
             scheduleTask(task, nextDelay, currTick);
     }
+
+    return curr ? curr->schedule - currTick : MAX_POLLRATE;
 }
 
 void AbelT_scheduleTask(tAbelT_task *task, uint32_t delay)

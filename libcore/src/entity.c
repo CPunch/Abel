@@ -56,7 +56,7 @@ void AbelE_setCollider(tAbelE_entity *entity, tAbelV_iVec2 collider)
 void AbelE_setChunk(tAbelE_entity *entity, tAbelC_chunk *chunk)
 {
     /* if the entity is already in the chunk, do nothing */
-    if (chunk == entity->currentChunk) 
+    if (chunk == entity->currentChunk)
         return;
 
     if (entity->currentChunk != NULL)

@@ -73,11 +73,11 @@ void AbelG_run(void)
 
     // AbelE_setVelocity(&entity, AbelV_newfVec2(PLAYER_SPEED, PLAYER_SPEED));
     /* main engine loop */
-    AbelR_setCameraPos(AbelV_newiVec2(32*12, 32*12));
+    AbelR_setCameraPos(AbelV_newiVec2(32 * 12, 32 * 12));
     state.quit = false;
     while (!state.quit) {
         AbelI_pollEvents();
-        AbelT_pollTasks();
+        SDL_Delay(AbelT_pollTasks());
 
         // AbelR_getCamera()->pos.x = entity.sprite.pos.x + (AbelR_tileSize.x / 2);
         // AbelR_getCamera()->pos.y = entity.sprite.pos.y + (AbelR_tileSize.y / 2);

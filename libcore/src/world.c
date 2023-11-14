@@ -40,7 +40,7 @@ typedef struct _tAbelW_state
     tAbelT_task *stepTimer;
     struct hashmap *chunkMap;
     tAbelE_entity *renderHead; /* sorted linked list of entities to render in order */
-    tAbelC_chunk *activeHead; /* linked list of currently visible chunks */
+    tAbelC_chunk *activeHead;  /* linked list of currently visible chunks */
     uint32_t lastStepTime;
     int activeDist;
 } tAbelW_state;
@@ -177,7 +177,7 @@ static void recomputeActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
     clearActiveChunks();
     for (int x = -activeDist; x <= activeDist; x++) {
         for (int y = -activeDist; y <= activeDist; y++) {
-            if (chunk = getChunk(AbelV_newiVec2(newChunkPos.x+x, newChunkPos.y+y)))
+            if (chunk = getChunk(AbelV_newiVec2(newChunkPos.x + x, newChunkPos.y + y)))
                 insertActiveChunk(chunk);
         }
     }
@@ -189,12 +189,11 @@ static void recomputeActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
 
 static void checkChunkUpdate(tAbelV_iVec2 chunkPos)
 {
-    // printf("comparing (%d, %d) render dist [%d] against (%d, %d)\n", AbelW_state.activeChunkPos.x, AbelW_state.activeChunkPos.y, AbelW_state.activeDist, chunkPos.x, chunkPos.y);
+    // printf("comparing (%d, %d) render dist [%d] against (%d, %d)\n", AbelW_state.activeChunkPos.x, AbelW_state.activeChunkPos.y, AbelW_state.activeDist,
+    // chunkPos.x, chunkPos.y);
     /* if chunkPos is within our visible range, we'll need to update things */
-    if (AbelW_state.activeChunkPos.x - AbelW_state.activeDist <= chunkPos.x &&
-        AbelW_state.activeChunkPos.x + AbelW_state.activeDist >= chunkPos.x &&
-        AbelW_state.activeChunkPos.y - AbelW_state.activeDist <= chunkPos.y &&
-        AbelW_state.activeChunkPos.y + AbelW_state.activeDist >= chunkPos.y) {
+    if (AbelW_state.activeChunkPos.x - AbelW_state.activeDist <= chunkPos.x && AbelW_state.activeChunkPos.x + AbelW_state.activeDist >= chunkPos.x &&
+        AbelW_state.activeChunkPos.y - AbelW_state.activeDist <= chunkPos.y && AbelW_state.activeChunkPos.y + AbelW_state.activeDist >= chunkPos.y) {
         recomputeActiveChunks(AbelW_state.activeChunkPos, AbelW_state.activeDist);
     }
 }

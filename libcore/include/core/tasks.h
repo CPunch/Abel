@@ -11,6 +11,8 @@
 /* return value is the next delay (if return value is 0, task will not be scheduled) */
 typedef uint32_t (*taskCallback)(uint32_t, void *);
 
+#define MAX_POLLRATE 50
+
 typedef struct _tAbelT_task
 {
     uint32_t schedule, scheduledAt;
@@ -24,7 +26,7 @@ tAbelT_task *AbelT_newTask(uint32_t delay, taskCallback callback, void *uData);
 void AbelT_freeTask(tAbelT_task *task);
 
 /* utils */
-void AbelT_pollTasks(void);
+uint32_t AbelT_pollTasks(void);
 void AbelT_scheduleTask(tAbelT_task *task, uint32_t delay);
 void AbelT_unscheduleTask(tAbelT_task *task);
 
