@@ -87,11 +87,7 @@ static uint32_t renderTask(uint32_t delta, void *uData)
     SDL_RenderPresent(AbelR_state.renderer);
     AbelR_state.currFPS++;
 
-    /* ask our scheduler to pwetty please schedule the task just a little bit
-      earlier based on an estimate of the time it *actually* took to be rendered;
-      so instead of sitting at 59 fps; we'll jump between 60 & 62 ish just a
-      little over our target */
-    return RENDER_INTERVAL - (delta - RENDER_INTERVAL);
+    return RENDER_INTERVAL;
 }
 
 /* =====================================[[ Initializers ]]====================================== */
