@@ -80,10 +80,10 @@ static uint32_t renderTask(uint32_t delta, void *uData)
     SDL_RenderClear(AbelR_state.renderer);
 
     /* render chunks */
-    AbelW_renderChunks(LAYER_BG);
+    AbelW_render();
     nk_sdl_render(NK_ANTI_ALIASING_ON);
 
-    /* render to window */
+    /* present to window */
     SDL_RenderPresent(AbelR_state.renderer);
     AbelR_state.currFPS++;
     return RENDER_INTERVAL;
@@ -155,9 +155,9 @@ struct nk_context *AbelR_getNuklearCtx(void)
     return AbelR_state.nkCtx;
 }
 
-tAbelR_camera *AbelR_getCamera(void)
+tAbelV_iVec2 AbelR_getCameraPos(void)
 {
-    return &AbelR_state.camera;
+    return AbelR_state.camera.pos;
 }
 
 tAbelV_iVec2 AbelR_getCameraOffset(void)
@@ -181,6 +181,16 @@ uint32_t AbelR_getFPS(void)
 void AbelR_setScale(tAbelV_iVec2 scale)
 {
     AbelR_state.scale = scale;
+}
+
+void AbelR_setCameraPos(tAbelV_iVec2 pos)
+{
+    tAbelV_iVec2 gridPos = AbelC_posToGrid(pos);
+    tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
+
+    AbelW_updateActiveChunks(chunkPos, 1);
+
+    AbelR_state.camera.pos = pos;
 }
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size)

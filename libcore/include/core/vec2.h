@@ -5,8 +5,8 @@
 
 typedef struct
 {
-    uint32_t x;
-    uint32_t y;
+    int x;
+    int y;
 } tAbelV_iVec2;
 
 typedef struct

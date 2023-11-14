@@ -32,12 +32,17 @@ static int chunkCompare(const void *a, const void *b, void *udata)
     return AbelV_compareiVec2(elem1->pos, elem2->pos);
 }
 
+static tAbelC_chunk *getChunk(tAbelV_iVec2 pos);
+
 typedef struct _tAbelW_state
 {
+    tAbelV_iVec2 lastActiveChunkPos;
     tAbelT_task *stepTimer;
     struct hashmap *chunkMap;
-    tAbelE_entity *renderHead;
+    tAbelE_entity *renderHead; /* sorted linked list of entities to render in order */
+    tAbelC_chunk *activeHead; /* linked list of currently visible chunks */
     uint32_t lastStepTime;
+    int lastActiveDist;
 } tAbelW_state;
 
 static tAbelW_state AbelW_state = {0};
@@ -65,6 +70,8 @@ void AbelW_init(void)
     AbelW_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
     AbelW_state.lastStepTime = SDL_GetTicks();
     AbelW_state.renderHead = NULL;
+    AbelW_state.activeHead = NULL;
+    AbelW_state.lastActiveDist = 1;
 }
 
 void AbelW_quit(void)
@@ -85,68 +92,110 @@ void AbelW_quit(void)
 
 /* ===================================[[ Helper Functions ]]==================================== */
 
-/* TODO: move away from using the hashmap. we should compute visible chunks beforehand
- and store them in a list. this way we can iterate through the list and render each chunk */
+static void insertRenderOrder(tAbelE_entity *entity)
+{
+    tAbelE_entity *curr = AbelW_state.renderHead, *last = NULL;
 
-#define forEachChunk(chunkIdentifier, ...)                                                                                                                     \
-    {                                                                                                                                                          \
-        size_t i = 0;                                                                                                                                          \
-        void *item;                                                                                                                                            \
-        tAbelW_chunkElem *elem;                                                                                                                                \
-        tAbelC_chunk *chunkIdentifier;                                                                                                                         \
-                                                                                                                                                               \
-        while (hashmap_iter(AbelW_state.chunkMap, &i, &item)) {                                                                                                \
-            chunkIdentifier = ((tAbelW_chunkElem *)item)->chunk;                                                                                               \
-            __VA_ARGS__                                                                                                                                        \
-        }                                                                                                                                                      \
+    /* search linked list for insert location */
+    while (curr && curr->sprite.pos.y < entity->sprite.pos.y) {
+        last = curr;
+        curr = curr->nextRender;
     }
 
-#define forEachEntity(entityIdentifier, ...)                                                                                                                   \
-    {                                                                                                                                                          \
-        forEachChunk(chunk, {                                                                                                                                  \
-            size_t sz;                                                                                                                                         \
-            tAbelE_entity **entities = AbelC_getEntities(chunk, &sz);                                                                                          \
-            tAbelE_entity *entityIdentifier;                                                                                                                   \
-                                                                                                                                                               \
-            for (int i = 0; i < sz; i++) {                                                                                                                     \
-                if (entities[i] == NULL)                                                                                                                       \
-                    continue;                                                                                                                                  \
-                entityIdentifier = entities[i];                                                                                                                \
-                __VA_ARGS__                                                                                                                                    \
-            }                                                                                                                                                  \
-        })                                                                                                                                                     \
+    /* insert entity */
+    if (curr == AbelW_state.renderHead) {
+        entity->nextRender = AbelW_state.renderHead;
+        AbelW_state.renderHead = entity;
+    } else {
+        entity->nextRender = curr;
+        last->nextRender = entity;
     }
+}
 
 static void clearRenderOrder()
 {
-    forEachEntity(entity, { entity->renderNext = NULL; });
-
     AbelW_state.renderHead = NULL;
 }
 
 /* sort every entity from every chunk */
-static void recomputeRenderOrder()
+static void recomputeEntityRenderOrder()
 {
+    size_t chunkSz;
+    tAbelE_entity **entities;
+    tAbelE_entity *entity;
+
     clearRenderOrder();
+    for (tAbelC_chunk *curr = AbelW_state.activeHead; curr; curr = curr->nextActive) {
+        entities = AbelC_getEntities(curr, &chunkSz);
+        for (int i = 0; i < chunkSz; i++) {
+            entity = entities[i];
+            if (entity == NULL)
+                continue;
 
-    forEachEntity(entity, {
-        tAbelE_entity *curr = AbelW_state.renderHead, *last = NULL;
-
-        /* search linked list for insert location */
-        while (curr && curr->sprite.pos.y < entity->sprite.pos.y) {
-            last = curr;
-            curr = curr->renderNext;
+            insertRenderOrder(entity);
         }
+    }
+}
 
-        /* insert entity */
-        if (curr == AbelW_state.renderHead) {
-            entity->renderNext = AbelW_state.renderHead;
-            AbelW_state.renderHead = entity;
-        } else {
-            entity->renderNext = curr;
-            last->renderNext = entity;
+static void insertActiveChunk(tAbelC_chunk *chunk)
+{
+    chunk->nextActive = AbelW_state.activeHead;
+    AbelW_state.activeHead = chunk;
+}
+
+static void removeActiveChunk(tAbelC_chunk *chunk)
+{
+    tAbelC_chunk *curr = AbelW_state.activeHead, *last = NULL;
+
+    /* look for visible chunk */
+    while (curr && curr != chunk) {
+        last = curr;
+        curr = curr->nextActive;
+    }
+
+    /* chunk is already removed */
+    if (curr == NULL) {
+        chunk->nextActive = NULL;
+        return;
+    }
+
+    /* remove from list */
+    if (last)
+        last->nextActive = chunk->nextActive;
+    chunk->nextActive = NULL;
+}
+
+static void clearActiveChunks()
+{
+    AbelW_state.activeHead = NULL;
+}
+
+static void recomputeActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
+{
+    tAbelC_chunk *chunk;
+
+    clearActiveChunks();
+    for (int x = -activeDist; x <= activeDist; x++) {
+        for (int y = -activeDist; y <= activeDist; y++) {
+            if (chunk = getChunk(AbelV_newiVec2(newChunkPos.x+x, newChunkPos.y+y)))
+                insertActiveChunk(chunk);
         }
-    });
+    }
+
+    recomputeEntityRenderOrder();
+    AbelW_state.lastActiveChunkPos = newChunkPos;
+}
+
+static void checkChunkUpdate(tAbelV_iVec2 chunkPos)
+{
+    // printf("comparing (%d, %d) render dist [%d] against (%d, %d)\n", AbelW_state.lastActiveChunkPos.x, AbelW_state.lastActiveChunkPos.y, AbelW_state.lastActiveDist, chunkPos.x, chunkPos.y);
+    /* if chunkPos is within our visible range, we'll need to update things */
+    if (AbelW_state.lastActiveChunkPos.x - AbelW_state.lastActiveDist <= chunkPos.x &&
+        AbelW_state.lastActiveChunkPos.x + AbelW_state.lastActiveDist >= chunkPos.x &&
+        AbelW_state.lastActiveChunkPos.y - AbelW_state.lastActiveDist <= chunkPos.y &&
+        AbelW_state.lastActiveChunkPos.y + AbelW_state.lastActiveDist >= chunkPos.y) {
+        recomputeActiveChunks(AbelW_state.lastActiveChunkPos, AbelW_state.lastActiveDist);
+    }
 }
 
 /* =========================================[[ Chunk ]]========================================= */
@@ -157,49 +206,22 @@ static tAbelC_chunk *addChunk(tAbelV_iVec2 pos)
 
     /* add to chunk map */
     hashmap_set(AbelW_state.chunkMap, &(tAbelW_chunkElem){.pos = pos, .chunk = chunk});
+
+    checkChunkUpdate(pos);
     return chunk;
 }
 
 static void rmvChunk(tAbelV_iVec2 pos)
 {
     hashmap_delete(AbelW_state.chunkMap, &(tAbelW_chunkElem){.pos = pos});
+
+    checkChunkUpdate(pos);
 }
 
 static tAbelC_chunk *getChunk(tAbelV_iVec2 pos)
 {
     tAbelW_chunkElem *elem = hashmap_get(AbelW_state.chunkMap, &(tAbelW_chunkElem){.pos = pos});
     return elem ? elem->chunk : NULL;
-}
-
-tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos)
-{
-    return getChunk(chunkPos);
-}
-
-tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos)
-{
-    return AbelV_diviVec2(cellPos, AbelC_chunkSize);
-}
-
-void AbelW_renderChunks()
-{
-    size_t i = 0, sz;
-    void *item;
-    tAbelC_chunk *chunk;
-
-    /* render each chunk */
-    while (hashmap_iter(AbelW_state.chunkMap, &i, &item)) {
-        tAbelE_entity **entities;
-        tAbelE_entity *entity;
-
-        chunk = ((tAbelW_chunkElem *)item)->chunk;
-        entities = AbelC_getEntities(chunk, &sz);
-
-        /* render BG, each entity & FG */
-        AbelC_renderChunk(chunk, LAYER_BG);
-        // TODO: render entities
-        AbelC_renderChunk(chunk, LAYER_FG);
-    }
 }
 
 static tAbelC_chunk *grabChunk(tAbelV_iVec2 chunkPos)
@@ -211,6 +233,41 @@ static tAbelC_chunk *grabChunk(tAbelV_iVec2 chunkPos)
         chunk = addChunk(chunkPos);
 
     return chunk;
+}
+
+tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos)
+{
+    return grabChunk(chunkPos);
+}
+
+tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos)
+{
+    return AbelV_diviVec2(cellPos, AbelC_chunkSize);
+}
+
+void AbelW_updateActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
+{
+    /* if our last update was the same, no need to update everything */
+    if (!AbelV_compareiVec2(newChunkPos, AbelW_state.lastActiveChunkPos) && AbelW_state.lastActiveDist == activeDist)
+        return;
+
+    recomputeActiveChunks(newChunkPos, activeDist);
+    AbelW_state.lastActiveDist = activeDist;
+}
+
+void AbelW_render()
+{
+    for (tAbelC_chunk *curr = AbelW_state.activeHead; curr; curr = curr->nextActive) {
+        AbelC_renderChunk(curr, LAYER_BG);
+    }
+
+    for (tAbelE_entity *curr = AbelW_state.renderHead; curr; curr = curr->nextRender) {
+        AbelE_renderEntity(curr);
+    }
+
+    for (tAbelC_chunk *curr = AbelW_state.activeHead; curr; curr = curr->nextActive) {
+        AbelC_renderChunk(curr, LAYER_FG);
+    }
 }
 
 /* =========================================[[ Cells ]]========================================= */
@@ -247,12 +304,14 @@ void AbelW_addEntity(tAbelE_entity *entity)
     tAbelC_chunk *chunk = grabChunk(chunkPos);
 
     AbelE_setChunk(entity, chunk);
+    checkChunkUpdate(chunkPos);
 }
 
 void AbelW_rmvEntity(tAbelE_entity *entity)
 {
-    AbelE_setChunk(entity, NULL);
-}
+    tAbelV_iVec2 gridPos = AbelC_posToGrid(AbelV_f2iVec(entity->sprite.pos));
+    tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
 
-#undef forEachEntity
-#undef forEachChunk
+    AbelE_setChunk(entity, NULL);
+    checkChunkUpdate(chunkPos);
+}

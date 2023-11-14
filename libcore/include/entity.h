@@ -13,7 +13,7 @@ typedef struct _tAbelE_entity
     tAbelV_fVec2 velocity;
     tAbelV_iVec2 collider; /* size of collider */
     tAbelC_chunk *currentChunk;
-    struct _tAbelE_entity *renderNext; /* used to compute render order */
+    struct _tAbelE_entity *nextRender; /* used to compute render order */
 } tAbelE_entity;
 
 /* TODO: maybe accept a collider here as well? */

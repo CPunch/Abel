@@ -16,7 +16,7 @@ void AbelE_initEntity(tAbelE_entity *entity, tAbelV_fVec2 pos, void (*free)(tAbe
     entity->velocity = AbelV_newfVec2(0, 0);
     entity->collider = AbelV_newiVec2(TILESET_SIZE - 1, TILESET_SIZE - 1);
     entity->currentChunk = NULL;
-    entity->renderNext = NULL;
+    entity->nextRender = NULL;
 
     AbelS_initSprite(&entity->sprite, tileSet, pos);
     AbelM_initRef(&entity->refCount, free);
@@ -33,10 +33,13 @@ void AbelE_setPosition(tAbelE_entity *entity, tAbelV_fVec2 pos)
 {
     AbelS_setSpritePos(&entity->sprite, pos);
 
+    /* if we've been added to the world, make sure to update our current chunk */
     if (entity->currentChunk != NULL) {
         tAbelV_iVec2 gridPos = AbelC_posToGrid(AbelV_f2iVec(pos));
         tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
         tAbelC_chunk *chunk = AbelW_getChunk(chunkPos);
+
+        AbelE_setChunk(entity, chunk);
     }
 }
 
@@ -52,12 +55,15 @@ void AbelE_setCollider(tAbelE_entity *entity, tAbelV_iVec2 collider)
 
 void AbelE_setChunk(tAbelE_entity *entity, tAbelC_chunk *chunk)
 {
-    if (chunk != entity->currentChunk) {
+    /* if the entity is already in the chunk, do nothing */
+    if (chunk == entity->currentChunk) 
+        return;
+
+    if (entity->currentChunk != NULL)
         AbelC_rmvEntity(entity->currentChunk, entity);
 
-        if (chunk != NULL)
-            AbelC_addEntity(chunk, entity);
-    }
+    if (chunk != NULL)
+        AbelC_addEntity(chunk, entity);
 
     entity->currentChunk = chunk;
 }

@@ -21,7 +21,10 @@ typedef struct _tAbelC_chunk
     tAbelW_cell *cellMap;
     AbelM_newVector(tAbelE_entity *, entities);
     tAbelV_iVec2 pos;
+    struct _tAbelC_chunk *nextActive;
 } tAbelC_chunk;
+
+#define CHUNK_VIEW_DIST 2
 
 /* chunks */
 tAbelC_chunk *AbelC_newChunk(tAbelV_iVec2 position);

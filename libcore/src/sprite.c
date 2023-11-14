@@ -181,11 +181,6 @@ void AbelS_drawSprite(tAbelS_sprite *sprite)
     tAbelV_iVec2 scale = AbelR_getScale();
     SDL_Rect clip, dest;
 
-    // TODO: this is buggy? sprites seem to pop in and out
-    // /* if not visible on screen, dont bother actually rendering */
-    // if (!AbelR_isVisible(screenPosition, AbelR_tileSize))
-    //     return;
-
     /* get current clip (and check if invalid) */
     clip = getCurrentClip(&sprite->animations);
     if (clip.h == 0 || clip.w == 0)

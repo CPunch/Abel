@@ -199,5 +199,6 @@ tAbelV_iVec2 AbelC_posToGrid(tAbelV_iVec2 pos)
 
 tAbelV_iVec2 AbelC_worldPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 worldPos)
 {
-    return AbelV_subiVec2(worldPos, AbelV_muliVec2(chunk->pos, AbelC_chunkSize));
+    tAbelV_iVec2 chunkWorldPos = AbelV_muliVec2(chunk->pos, AbelC_chunkSize);
+    return AbelV_subiVec2(worldPos, chunkWorldPos);
 }

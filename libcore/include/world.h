@@ -20,7 +20,8 @@ void AbelW_quit(void);
 /* chunk */
 tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos);
 tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos);
-void AbelW_renderChunks();
+void AbelW_updateActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist);
+void AbelW_render(void);
 
 /* cells */
 void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
@@ -29,5 +30,6 @@ tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos);
 /* entities */
 void AbelW_addEntity(tAbelE_entity *entity);
 void AbelW_rmvEntity(tAbelE_entity *entity);
+void AbelW_updateEntityList(void);
 
 #endif
