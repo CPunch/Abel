@@ -86,7 +86,7 @@ static uint32_t renderTask(uint32_t delta, void *uData)
     /* present to window */
     SDL_RenderPresent(AbelR_state.renderer);
     AbelR_state.currFPS++;
-    return RENDER_INTERVAL;
+    return RENDER_INTERVAL - (delta - RENDER_INTERVAL);
 }
 
 /* =====================================[[ Initializers ]]====================================== */
@@ -188,8 +188,7 @@ void AbelR_setCameraPos(tAbelV_iVec2 pos)
     tAbelV_iVec2 gridPos = AbelC_posToGrid(pos);
     tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
 
-    AbelW_updateActiveChunks(chunkPos, 1);
-
+    AbelW_updateActiveChunkPos(chunkPos);
     AbelR_state.camera.pos = pos;
 }
 

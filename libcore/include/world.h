@@ -20,7 +20,8 @@ void AbelW_quit(void);
 /* chunk */
 tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos);
 tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos);
-void AbelW_updateActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist);
+void AbelW_updateActiveChunkPos(tAbelV_iVec2 newChunkPos);
+void AbelW_updateActiveDistance(int distance);
 void AbelW_render(void);
 
 /* cells */

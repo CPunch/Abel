@@ -36,13 +36,13 @@ static tAbelC_chunk *getChunk(tAbelV_iVec2 pos);
 
 typedef struct _tAbelW_state
 {
-    tAbelV_iVec2 lastActiveChunkPos;
+    tAbelV_iVec2 activeChunkPos;
     tAbelT_task *stepTimer;
     struct hashmap *chunkMap;
     tAbelE_entity *renderHead; /* sorted linked list of entities to render in order */
     tAbelC_chunk *activeHead; /* linked list of currently visible chunks */
     uint32_t lastStepTime;
-    int lastActiveDist;
+    int activeDist;
 } tAbelW_state;
 
 static tAbelW_state AbelW_state = {0};
@@ -61,7 +61,7 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
     }
 
     AbelW_state.lastStepTime = SDL_GetTicks();
-    return WORLD_STEP_INTERVAL;
+    return WORLD_STEP_INTERVAL - (delta - WORLD_STEP_INTERVAL);
 }
 
 void AbelW_init(void)
@@ -71,7 +71,7 @@ void AbelW_init(void)
     AbelW_state.lastStepTime = SDL_GetTicks();
     AbelW_state.renderHead = NULL;
     AbelW_state.activeHead = NULL;
-    AbelW_state.lastActiveDist = 1;
+    AbelW_state.activeDist = 1;
 }
 
 void AbelW_quit(void)
@@ -183,18 +183,19 @@ static void recomputeActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
     }
 
     recomputeEntityRenderOrder();
-    AbelW_state.lastActiveChunkPos = newChunkPos;
+    AbelW_state.activeChunkPos = newChunkPos;
+    AbelW_state.activeDist = activeDist;
 }
 
 static void checkChunkUpdate(tAbelV_iVec2 chunkPos)
 {
-    // printf("comparing (%d, %d) render dist [%d] against (%d, %d)\n", AbelW_state.lastActiveChunkPos.x, AbelW_state.lastActiveChunkPos.y, AbelW_state.lastActiveDist, chunkPos.x, chunkPos.y);
+    // printf("comparing (%d, %d) render dist [%d] against (%d, %d)\n", AbelW_state.activeChunkPos.x, AbelW_state.activeChunkPos.y, AbelW_state.activeDist, chunkPos.x, chunkPos.y);
     /* if chunkPos is within our visible range, we'll need to update things */
-    if (AbelW_state.lastActiveChunkPos.x - AbelW_state.lastActiveDist <= chunkPos.x &&
-        AbelW_state.lastActiveChunkPos.x + AbelW_state.lastActiveDist >= chunkPos.x &&
-        AbelW_state.lastActiveChunkPos.y - AbelW_state.lastActiveDist <= chunkPos.y &&
-        AbelW_state.lastActiveChunkPos.y + AbelW_state.lastActiveDist >= chunkPos.y) {
-        recomputeActiveChunks(AbelW_state.lastActiveChunkPos, AbelW_state.lastActiveDist);
+    if (AbelW_state.activeChunkPos.x - AbelW_state.activeDist <= chunkPos.x &&
+        AbelW_state.activeChunkPos.x + AbelW_state.activeDist >= chunkPos.x &&
+        AbelW_state.activeChunkPos.y - AbelW_state.activeDist <= chunkPos.y &&
+        AbelW_state.activeChunkPos.y + AbelW_state.activeDist >= chunkPos.y) {
+        recomputeActiveChunks(AbelW_state.activeChunkPos, AbelW_state.activeDist);
     }
 }
 
@@ -245,14 +246,22 @@ tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos)
     return AbelV_diviVec2(cellPos, AbelC_chunkSize);
 }
 
-void AbelW_updateActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
+void AbelW_updateActiveChunkPos(tAbelV_iVec2 newChunkPos)
 {
     /* if our last update was the same, no need to update everything */
-    if (!AbelV_compareiVec2(newChunkPos, AbelW_state.lastActiveChunkPos) && AbelW_state.lastActiveDist == activeDist)
+    if (!AbelV_compareiVec2(newChunkPos, AbelW_state.activeChunkPos))
         return;
 
-    recomputeActiveChunks(newChunkPos, activeDist);
-    AbelW_state.lastActiveDist = activeDist;
+    recomputeActiveChunks(newChunkPos, AbelW_state.activeDist);
+}
+
+void AbelW_updateActiveDistance(int distance)
+{
+    /* if our last update was the same, no need to update everything */
+    if (AbelW_state.activeDist == distance)
+        return;
+
+    recomputeActiveChunks(AbelW_state.activeChunkPos, distance);
 }
 
 void AbelW_render()
