@@ -40,12 +40,14 @@ void AbelR_quit(void);
 
 SDL_Renderer *AbelR_getRenderer(void);
 struct nk_context *AbelR_getNuklearCtx(void);
+tAbelV_iVec2 AbelR_getCameraSize(void);
 tAbelV_iVec2 AbelR_getCameraPos(void);
 tAbelV_iVec2 AbelR_getCameraOffset(void);
 tAbelV_iVec2 AbelR_getScale(void);
 uint32_t AbelR_getFPS(void);
 
 void AbelR_setScale(tAbelV_iVec2 scale);
+void AbelR_setCameraSize(tAbelV_iVec2 size);
 void AbelR_setCameraPos(tAbelV_iVec2 pos);
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size);

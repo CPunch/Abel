@@ -37,7 +37,7 @@ static void openWindow(int width, int height)
     AbelR_state.camera.size = AbelV_newiVec2(width, height);
 
     /* open window */
-    AbelR_state.window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    AbelR_state.window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (AbelR_state.window == NULL)
         ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 
@@ -161,6 +161,11 @@ tAbelV_iVec2 AbelR_getCameraPos(void)
     return AbelR_state.camera.pos;
 }
 
+tAbelV_iVec2 AbelR_getCameraSize(void)
+{
+    return AbelR_state.camera.size;
+}
+
 tAbelV_iVec2 AbelR_getCameraOffset(void)
 {
     tAbelV_iVec2 size = AbelV_newiVec2((AbelR_state.camera.size.x) / 2, (AbelR_state.camera.size.y) / 2);
@@ -182,6 +187,11 @@ uint32_t AbelR_getFPS(void)
 void AbelR_setScale(tAbelV_iVec2 scale)
 {
     AbelR_state.scale = scale;
+}
+
+void AbelR_setCameraSize(tAbelV_iVec2 size)
+{
+    AbelR_state.camera.size = size;
 }
 
 void AbelR_setCameraPos(tAbelV_iVec2 pos)

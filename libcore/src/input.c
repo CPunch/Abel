@@ -46,6 +46,16 @@ void AbelI_pollEvents(void)
         case SDL_QUIT:
             AbelG_quit();
             break;
+        case SDL_WINDOWEVENT:
+            switch (evnt.window.event) {
+            case SDL_WINDOWEVENT_RESIZED: {
+                int width = evnt.window.data1;
+                int height = evnt.window.data2;
+                AbelR_setCameraSize(AbelV_newiVec2(width, height));
+                break;
+            }
+            }
+            break;
         case SDL_KEYDOWN:
             AbelVM_fireEventList(state.onKeyDown, &evnt);
             break;
