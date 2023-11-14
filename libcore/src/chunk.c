@@ -197,8 +197,10 @@ tAbelV_iVec2 AbelC_posToGrid(tAbelV_iVec2 pos)
     return AbelV_diviVec2(pos, AbelR_tileSize);
 }
 
-tAbelV_iVec2 AbelC_worldPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 worldPos)
+tAbelV_iVec2 AbelC_gridPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 gridPos)
 {
-    tAbelV_iVec2 chunkWorldPos = AbelV_muliVec2(chunk->pos, AbelC_chunkSize);
-    return AbelV_subiVec2(worldPos, chunkWorldPos);
+    tAbelV_iVec2 chunkGridPos = AbelV_muliVec2(chunk->pos, AbelC_chunkSize);
+    ABEL_ASSERT(gridPos.x > 0 && gridPos.y > 0);
+
+    return AbelV_subiVec2(gridPos, chunkGridPos);
 }

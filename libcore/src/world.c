@@ -242,6 +242,7 @@ tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos)
 
 tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos)
 {
+
     return AbelV_diviVec2(cellPos, AbelC_chunkSize);
 }
 
@@ -286,7 +287,7 @@ void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
     tAbelV_iVec2 chunkPos = AbelW_getChunkPos(pos), localPos;
     tAbelC_chunk *chunk = grabChunk(chunkPos);
 
-    localPos = AbelC_worldPosToLocalPos(chunk, pos);
+    localPos = AbelC_gridPosToLocalPos(chunk, pos);
     AbelC_drawTile(chunk, localPos, id, LAYER_BG);
     AbelC_setCell(chunk, localPos, id, isSolid);
 }
@@ -299,7 +300,7 @@ tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos)
     if (chunk == NULL)
         return (tAbelW_cell){.id = 0, .isSolid = true};
 
-    tAbelV_iVec2 localPos = AbelC_worldPosToLocalPos(chunk, pos);
+    tAbelV_iVec2 localPos = AbelC_gridPosToLocalPos(chunk, pos);
     return AbelC_getCell(chunk, localPos);
 }
 

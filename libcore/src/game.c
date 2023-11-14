@@ -42,7 +42,7 @@ void AbelG_init(void)
         }
     }
 
-    AbelW_setCell(AbelV_newiVec2(3, 4), 4, true);
+    AbelW_setCell(AbelV_newiVec2(-3, 4), 4, true);
     AbelW_setCell(AbelV_newiVec2(3, 5), 4, true);
     AbelW_setCell(AbelV_newiVec2(3, 6), 4, true);
     AbelW_setCell(AbelV_newiVec2(4, 6), 4, true);

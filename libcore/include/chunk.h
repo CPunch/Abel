@@ -50,6 +50,6 @@ tAbelE_entity **AbelC_getEntities(tAbelC_chunk *chunk, size_t *size);
 /* utils */
 tAbelV_iVec2 AbelC_gridToPos(tAbelV_iVec2 gridPos);
 tAbelV_iVec2 AbelC_posToGrid(tAbelV_iVec2 pos);
-tAbelV_iVec2 AbelC_worldPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 worldPos);
+tAbelV_iVec2 AbelC_gridPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 gridPos);
 
 #endif
