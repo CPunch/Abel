@@ -7,6 +7,7 @@
 #include "core/serror.h"
 #include "core/tasks.h"
 #include "core/vec2.h"
+#include "entity.h"
 #include "world.h"
 
 tAbelV_iVec2 AbelR_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
@@ -22,6 +23,7 @@ typedef struct _tAbelR_State
     struct nk_context *nkCtx;
     tAbelT_task *resetFPSTask;
     tAbelT_task *renderTask;
+    tAbelE_entity *follow;
     uint32_t FPS;
     uint32_t currFPS;
 } tAbelR_state;
@@ -76,6 +78,10 @@ static uint32_t renderTask(uint32_t delta, void *uData)
 {
     drawRealtimeStats();
 
+    if (AbelR_state.follow) {
+        AbelR_setCameraPos(AbelV_addiVec2(AbelV_f2iVec(AbelR_state.follow->sprite.pos), AbelV_newiVec2(8, 8)));
+    }
+
     /* clear layers */
     SDL_RenderClear(AbelR_state.renderer);
 
@@ -125,6 +131,7 @@ void AbelR_init(void)
 
     AbelR_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
     AbelR_state.renderTask = AbelT_newTask(RENDER_INTERVAL, renderTask, NULL);
+    AbelR_state.follow = NULL;
 }
 
 void AbelR_quit(void)
@@ -174,6 +181,11 @@ tAbelV_iVec2 AbelR_getCameraOffset(void)
     return AbelV_subiVec2(size, pos);
 }
 
+tAbelE_entity *AbelR_getFollow(void)
+{
+    return AbelR_state.follow;
+}
+
 tAbelV_iVec2 AbelR_getScale(void)
 {
     return AbelR_state.scale;
@@ -201,6 +213,17 @@ void AbelR_setCameraPos(tAbelV_iVec2 pos)
 
     AbelW_updateActiveChunkPos(chunkPos);
     AbelR_state.camera.pos = pos;
+}
+
+void AbelR_setFollow(tAbelE_entity *entity)
+{
+    if (AbelR_state.follow)
+        AbelM_releaseRef(&AbelR_state.follow->refCount);
+
+    if (entity)
+        AbelM_retainRef(&entity->refCount);
+
+    AbelR_state.follow = entity;
 }
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size)

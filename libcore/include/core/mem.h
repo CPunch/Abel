@@ -70,8 +70,9 @@ static inline void AbelM_retainRef(tAbelM_RefCount *ref)
 
 static inline void AbelM_releaseRef(tAbelM_RefCount *ref)
 {
-    if (--ref->refCount == 0)
+    if (--ref->refCount == 0) {
         ref->free(ref);
+    }
 }
 
 void *AbelM_realloc(void *buf, size_t sz);

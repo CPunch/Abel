@@ -190,7 +190,7 @@ static void recomputeActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
     clearActiveChunks();
     for (int x = -activeDist; x <= activeDist; x++) {
         for (int y = -activeDist; y <= activeDist; y++) {
-            if (chunk = getChunk(AbelV_newiVec2(newChunkPos.x + x, newChunkPos.y + y))) {
+            if ((chunk = getChunk(AbelV_newiVec2(newChunkPos.x + x, newChunkPos.y + y)))) {
                 insertActiveChunk(chunk);
             }
         }
@@ -256,7 +256,12 @@ tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos)
 
 tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos)
 {
-    return AbelV_diviVec2(cellPos, AbelC_chunkSize);
+    tAbelV_iVec2 chunkPos = AbelV_diviVec2(cellPos, AbelC_chunkSize);
+    if (cellPos.x < 0)
+        chunkPos.x--;
+    if (cellPos.y < 0)
+        chunkPos.y--;
+    return chunkPos;
 }
 
 void AbelW_updateActiveChunkPos(tAbelV_iVec2 newChunkPos)
@@ -307,7 +312,7 @@ void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
 
 tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos)
 {
-    tAbelC_chunk *chunk = AbelW_getChunk(AbelW_getChunkPos(pos));
+    tAbelC_chunk *chunk = getChunk(AbelW_getChunkPos(pos));
 
     /* if chunk doesn't exist, return default cell */
     if (chunk == NULL)

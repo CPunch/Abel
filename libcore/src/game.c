@@ -62,15 +62,17 @@ void AbelG_run(void)
     struct nk_context *ctx = AbelR_getNuklearCtx();
     tAbelP_player *plr = AbelP_newPlayer(AbelV_newfVec2(32 * 12, 32 * 12));
 
-    /* main engine loop */
     AbelW_updateActiveDistance(1);
     AbelW_addEntity(&plr->entity);
+    AbelR_setFollow(&plr->entity);
+
+    /* main engine loop */
     state.quit = false;
     while (!state.quit) {
         AbelI_pollEvents();
-        AbelR_setCameraPos(AbelV_addiVec2(AbelV_f2iVec(plr->entity.sprite.pos), AbelV_newiVec2(8, 8)));
         SDL_Delay(AbelT_pollTasks());
     }
 
+    AbelR_setFollow(NULL);
     AbelP_releasePlayer(plr);
 }

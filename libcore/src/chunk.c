@@ -41,7 +41,7 @@ void AbelC_freeChunk(tAbelC_chunk *chunk)
 {
     tAbelE_entity *entity;
     for (int i = 0; i < AbelM_countVector(chunk->entities); i++) {
-        if (entity = chunk->entities[i]) {
+        if ((entity = chunk->entities[i])) {
             AbelM_releaseRef(&entity->refCount);
         }
     }
@@ -171,7 +171,7 @@ void AbelC_stepEntities(tAbelC_chunk *chunk, uint32_t delta)
 {
     tAbelE_entity *entity;
     for (int i = 0; i < AbelM_countVector(chunk->entities); i++) {
-        if (entity = chunk->entities[i]) {
+        if ((entity = chunk->entities[i])) {
             AbelE_stepEntity(entity, delta);
         }
     }
@@ -194,13 +194,20 @@ tAbelV_iVec2 AbelC_gridToPos(tAbelV_iVec2 gridPos)
 
 tAbelV_iVec2 AbelC_posToGrid(tAbelV_iVec2 pos)
 {
-    return AbelV_diviVec2(pos, AbelR_tileSize);
+    tAbelV_iVec2 grid = AbelV_diviVec2(pos, AbelR_tileSize);
+
+    if (pos.x < 0)
+        grid.x--;
+    if (pos.y < 0)
+        grid.y--;
+
+    return grid;
 }
 
 tAbelV_iVec2 AbelC_gridPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 gridPos)
 {
     tAbelV_iVec2 chunkGridPos = AbelV_muliVec2(chunk->pos, AbelC_chunkSize);
-    // ABEL_ASSERT(gridPos.x >= 0 && gridPos.y >= 0);
+    ABEL_ASSERT(gridPos.x >= 0 && gridPos.y >= 0);
 
     return AbelV_subiVec2(gridPos, chunkGridPos);
 }
