@@ -18,6 +18,7 @@
 
 /* broadly used types */
 typedef struct _tAbelT_task tAbelT_task;
+typedef struct _tAbelVM_eventConnection tAbelVM_eventConnection;
 typedef struct _tAbelG_game tAbelG_game;
 typedef struct _tAbelC_chunk tAbelC_chunk;
 typedef struct _tAbelR_texture tAbelR_texture;

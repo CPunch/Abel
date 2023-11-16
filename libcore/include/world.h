@@ -2,6 +2,7 @@
 #define ABEL_WORLD_H
 
 #include "abel.h"
+#include "core/event.h"
 #include "core/vec2.h"
 
 /* every 50ms, step all world physic events */
@@ -16,6 +17,8 @@ typedef struct _tAbelW_cell
 /* initalizers */
 void AbelW_init(void);
 void AbelW_quit(void);
+tAbelVM_eventConnection *AbelW_onStepConnect(tEventCallback callback, const void *uData);
+void AbelW_onStepDisconnect(tAbelVM_eventConnection *event);
 
 /* chunk */
 tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos);

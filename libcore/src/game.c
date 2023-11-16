@@ -5,6 +5,7 @@
 #include "core/tasks.h"
 #include "entity.h"
 #include "input.h"
+#include "player.h"
 #include "render.h"
 #include "sprite.h"
 #include "world.h"
@@ -59,13 +60,17 @@ void AbelG_quit(void)
 void AbelG_run(void)
 {
     struct nk_context *ctx = AbelR_getNuklearCtx();
+    tAbelP_player *plr = AbelP_newPlayer(AbelV_newfVec2(32 * 12, 32 * 12));
 
     /* main engine loop */
-    AbelR_setCameraPos(AbelV_newiVec2(32 * 12, 32 * 12));
     AbelW_updateActiveDistance(1);
+    AbelW_addEntity(&plr->entity);
     state.quit = false;
     while (!state.quit) {
         AbelI_pollEvents();
+        AbelR_setCameraPos(AbelV_addiVec2(AbelV_f2iVec(plr->entity.sprite.pos), AbelV_newiVec2(8, 8)));
         SDL_Delay(AbelT_pollTasks());
     }
+
+    AbelP_releasePlayer(plr);
 }

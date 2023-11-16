@@ -10,7 +10,7 @@ typedef struct _tAbelVM_eventConnection
     struct _tAbelVM_eventConnection *next;
 } tAbelVM_eventConnection;
 
-void AbelVM_connectEvent(tAbelVM_eventConnection **head, tEventCallback callback, const void *uData);
+tAbelVM_eventConnection *AbelVM_connectEvent(tAbelVM_eventConnection **head, tEventCallback callback, const void *uData);
 void AbelVM_disconnectEvent(tAbelVM_eventConnection **head, tAbelVM_eventConnection *event);
 
 void AbelVM_clearEventList(tAbelVM_eventConnection **head);

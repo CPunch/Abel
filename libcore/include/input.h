@@ -7,8 +7,10 @@
 void AbelI_init(void);
 void AbelI_quit(void);
 
-void AbelI_onKeyDownConnect(tEventCallback callback, const void *uData);
-void AbelI_onKeyUpConnect(tEventCallback callback, const void *uData);
+tAbelVM_eventConnection *AbelI_onKeyDownConnect(tEventCallback callback, const void *uData);
+void AbelI_onKeyDownDisconnect(tAbelVM_eventConnection *event);
+tAbelVM_eventConnection *AbelI_onKeyUpConnect(tEventCallback callback, const void *uData);
+void AbelI_onKeyUpDisconnect(tAbelVM_eventConnection *event);
 
 void AbelI_pollEvents(void);
 

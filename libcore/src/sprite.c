@@ -74,6 +74,9 @@ static void playAnimation(tAbelS_animationStates *states, int animationID)
     /* grab current animation */
     tAbelS_animation *animation;
 
+    if (animationID == states->animationID)
+        return; /* already playing animation */
+
     if (animationID >= AbelM_countVector(states->animations) || animationID < 0)
         ABEL_ERROR("Invalid animation ID: %d\n", animationID);
 

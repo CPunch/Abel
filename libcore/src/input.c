@@ -24,14 +24,24 @@ void AbelI_quit(void)
     AbelVM_clearEventList(&state.onKeyUp);
 }
 
-void AbelI_onKeyDownConnect(tEventCallback callback, const void *uData)
+tAbelVM_eventConnection *AbelI_onKeyDownConnect(tEventCallback callback, const void *uData)
 {
-    AbelVM_connectEvent(&state.onKeyDown, callback, uData);
+    return AbelVM_connectEvent(&state.onKeyDown, callback, uData);
 }
 
-void AbelI_onKeyUpConnect(tEventCallback callback, const void *uData)
+void AbelI_onKeyDownDisconnect(tAbelVM_eventConnection *event)
 {
-    AbelVM_connectEvent(&state.onKeyUp, callback, uData);
+    AbelVM_disconnectEvent(&state.onKeyDown, event);
+}
+
+tAbelVM_eventConnection *AbelI_onKeyUpConnect(tEventCallback callback, const void *uData)
+{
+    return AbelVM_connectEvent(&state.onKeyUp, callback, uData);
+}
+
+void AbelI_onKeyUpDisconnect(tAbelVM_eventConnection *event)
+{
+    AbelVM_disconnectEvent(&state.onKeyUp, event);
 }
 
 void AbelI_pollEvents(void)

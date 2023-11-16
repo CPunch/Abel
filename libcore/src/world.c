@@ -1,6 +1,7 @@
 #include "world.h"
 
 #include "chunk.h"
+#include "core/event.h"
 #include "core/hashmap.h"
 #include "core/mem.h"
 #include "core/tasks.h"
@@ -36,13 +37,14 @@ static tAbelC_chunk *getChunk(tAbelV_iVec2 pos);
 
 typedef struct _tAbelW_state
 {
-    tAbelV_iVec2 activeChunkPos;
     tAbelT_task *stepTimer;
+    tAbelVM_eventConnection *onStep;
     struct hashmap *chunkMap;
     tAbelE_entity *renderHead; /* sorted linked list of entities to render in order */
     tAbelC_chunk *activeHead;  /* linked list of currently visible chunks */
-    uint32_t lastStepTime;
+    tAbelV_iVec2 activeChunkPos;
     int activeDist;
+    uint32_t lastStepTime;
 } tAbelW_state;
 
 static tAbelW_state AbelW_state = {0};
@@ -51,13 +53,11 @@ static tAbelW_state AbelW_state = {0};
 
 static uint32_t worldStepTask(uint32_t delta, void *uData)
 {
-    size_t i = 0;
-    void *item;
-    tAbelW_chunkElem *elem;
+    AbelVM_fireEventList(AbelW_state.onStep, NULL);
 
-    while (hashmap_iter(AbelW_state.chunkMap, &i, &item)) {
-        elem = (tAbelW_chunkElem *)item;
-        AbelC_stepEntities(elem->chunk, delta);
+    /* step all active chunks */
+    for (tAbelC_chunk *curr = AbelW_state.activeHead; curr; curr = curr->nextActive) {
+        AbelC_stepEntities(curr, delta);
     }
 
     AbelW_state.lastStepTime = SDL_GetTicks();
@@ -66,12 +66,14 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
 
 void AbelW_init(void)
 {
-    AbelW_state.chunkMap = hashmap_new(sizeof(tAbelW_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
     AbelW_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
-    AbelW_state.lastStepTime = SDL_GetTicks();
+    AbelW_state.onStep = NULL;
+    AbelW_state.chunkMap = hashmap_new(sizeof(tAbelW_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
     AbelW_state.renderHead = NULL;
     AbelW_state.activeHead = NULL;
+    AbelW_state.activeChunkPos = AbelV_newiVec2(0, 0);
     AbelW_state.activeDist = 1;
+    AbelW_state.lastStepTime = SDL_GetTicks();
 }
 
 void AbelW_quit(void)
@@ -87,7 +89,18 @@ void AbelW_quit(void)
     }
 
     hashmap_free(AbelW_state.chunkMap);
+    AbelVM_clearEventList(&AbelW_state.onStep);
     AbelT_freeTask(AbelW_state.stepTimer);
+}
+
+tAbelVM_eventConnection *AbelW_onStepConnect(tEventCallback callback, const void *uData)
+{
+    return AbelVM_connectEvent(&AbelW_state.onStep, callback, uData);
+}
+
+void AbelW_onStepDisconnect(tAbelVM_eventConnection *event)
+{
+    AbelVM_disconnectEvent(&AbelW_state.onStep, event);
 }
 
 /* ===================================[[ Helper Functions ]]==================================== */
@@ -177,8 +190,9 @@ static void recomputeActiveChunks(tAbelV_iVec2 newChunkPos, int activeDist)
     clearActiveChunks();
     for (int x = -activeDist; x <= activeDist; x++) {
         for (int y = -activeDist; y <= activeDist; y++) {
-            if (chunk = getChunk(AbelV_newiVec2(newChunkPos.x + x, newChunkPos.y + y)))
+            if (chunk = getChunk(AbelV_newiVec2(newChunkPos.x + x, newChunkPos.y + y))) {
                 insertActiveChunk(chunk);
+            }
         }
     }
 
@@ -242,7 +256,6 @@ tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos)
 
 tAbelV_iVec2 AbelW_getChunkPos(tAbelV_iVec2 cellPos)
 {
-
     return AbelV_diviVec2(cellPos, AbelC_chunkSize);
 }
 
