@@ -9,12 +9,10 @@
 #include "sprite.h"
 #include "world.h"
 
-void AbelE_initEntity(tAbelE_entity *entity, tAbelV_fVec2 pos, void (*free)(tAbelM_RefCount *ptr))
+void AbelE_initEntity(tAbelE_entity *entity, tAbelR_texture *tileSet, tAbelV_fVec2 pos, void (*free)(tAbelM_refCount *ptr))
 {
-    tAbelR_texture *tileSet = AbelA_getTexture(ASSET_ID_ENTITY_TILESET);
-
     entity->velocity = AbelV_newfVec2(0, 0);
-    entity->collider = AbelV_newiVec2(TILESET_SIZE - 1, TILESET_SIZE - 1);
+    entity->collider = AbelV_newiVec2(tileSet->tileSize.x - 1, tileSet->tileSize.y - 1);
     entity->currentChunk = NULL;
     entity->nextRender = NULL;
 
@@ -35,7 +33,7 @@ void AbelE_setPosition(tAbelE_entity *entity, tAbelV_fVec2 pos)
 
     /* if we've been added to the world, make sure to update our current chunk */
     if (entity->currentChunk != NULL) {
-        tAbelV_iVec2 gridPos = AbelC_posToGrid(AbelV_f2iVec(pos));
+        tAbelV_iVec2 gridPos = AbelW_posToGrid(AbelV_f2iVec(pos));
         tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
         tAbelC_chunk *chunk = AbelW_getChunk(chunkPos);
 
@@ -92,7 +90,7 @@ tAbelC_chunk *AbelE_getChunk(tAbelE_entity *entity)
 
 static bool checkCell(tAbelV_iVec2 worldPos)
 {
-    return AbelW_getCell(AbelC_posToGrid(worldPos)).isSolid;
+    return AbelW_getCell(AbelW_posToGrid(worldPos)).isSolid;
 }
 
 void AbelE_stepEntity(tAbelE_entity *entity, uint32_t delta)

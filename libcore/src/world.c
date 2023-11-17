@@ -37,6 +37,7 @@ static tAbelC_chunk *getChunk(tAbelV_iVec2 pos);
 
 typedef struct _tAbelW_state
 {
+    tAbelR_texture *tileSet; /* default world tileset to set chunks too */
     tAbelT_task *stepTimer;
     tAbelVM_eventConnection *onStep;
     struct hashmap *chunkMap;
@@ -66,6 +67,7 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
 
 void AbelW_init(void)
 {
+    AbelW_state.tileSet = NULL;
     AbelW_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
     AbelW_state.onStep = NULL;
     AbelW_state.chunkMap = hashmap_new(sizeof(tAbelW_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
@@ -216,7 +218,8 @@ static void checkChunkUpdate(tAbelV_iVec2 chunkPos)
 
 static tAbelC_chunk *addChunk(tAbelV_iVec2 pos)
 {
-    tAbelC_chunk *chunk = AbelC_newChunk(pos);
+    ABEL_ASSERT(AbelW_state.tileSet);
+    tAbelC_chunk *chunk = AbelC_newChunk(AbelW_state.tileSet, pos);
 
     /* add to chunk map */
     hashmap_set(AbelW_state.chunkMap, &(tAbelW_chunkElem){.pos = pos, .chunk = chunk});
@@ -297,7 +300,31 @@ void AbelW_render()
     }
 }
 
+tAbelV_iVec2 AbelW_gridToPos(tAbelV_iVec2 gridPos)
+{
+    ABEL_ASSERT(AbelW_state.tileSet);
+    return AbelV_muliVec2(gridPos, AbelW_state.tileSet->tileSize);
+}
+
+tAbelV_iVec2 AbelW_posToGrid(tAbelV_iVec2 pos)
+{
+    ABEL_ASSERT(AbelW_state.tileSet);
+    tAbelV_iVec2 grid = AbelV_diviVec2(pos, AbelW_state.tileSet->tileSize);
+
+    if (pos.x < 0)
+        grid.x--;
+    if (pos.y < 0)
+        grid.y--;
+
+    return grid;
+}
+
 /* =========================================[[ Cells ]]========================================= */
+
+void AbelW_setTileSet(tAbelR_texture *tileSet)
+{
+    AbelW_state.tileSet = tileSet;
+}
 
 void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
 {
@@ -308,6 +335,12 @@ void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
     localPos = AbelC_gridPosToLocalPos(chunk, pos);
     AbelC_drawTile(chunk, localPos, id, LAYER_BG);
     AbelC_setCell(chunk, localPos, id, isSolid);
+}
+
+tAbelR_texture *AbelW_getTileSet(void)
+{
+    ABEL_ASSERT(AbelW_state.tileSet);
+    return AbelW_state.tileSet;
 }
 
 tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos)
@@ -326,7 +359,7 @@ tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos)
 
 void AbelW_addEntity(tAbelE_entity *entity)
 {
-    tAbelV_iVec2 gridPos = AbelC_posToGrid(AbelV_f2iVec(entity->sprite.pos));
+    tAbelV_iVec2 gridPos = AbelW_posToGrid(AbelV_f2iVec(entity->sprite.pos));
     tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
     tAbelC_chunk *chunk = grabChunk(chunkPos);
 
@@ -336,7 +369,7 @@ void AbelW_addEntity(tAbelE_entity *entity)
 
 void AbelW_rmvEntity(tAbelE_entity *entity)
 {
-    tAbelV_iVec2 gridPos = AbelC_posToGrid(AbelV_f2iVec(entity->sprite.pos));
+    tAbelV_iVec2 gridPos = AbelW_posToGrid(AbelV_f2iVec(entity->sprite.pos));
     tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
 
     AbelE_setChunk(entity, NULL);

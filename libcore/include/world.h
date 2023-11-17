@@ -27,8 +27,13 @@ void AbelW_updateActiveChunkPos(tAbelV_iVec2 newChunkPos);
 void AbelW_updateActiveDistance(int distance);
 void AbelW_render(void);
 
+tAbelV_iVec2 AbelW_gridToPos(tAbelV_iVec2 gridPos);
+tAbelV_iVec2 AbelW_posToGrid(tAbelV_iVec2 pos);
+
 /* cells */
+void AbelW_setTileSet(tAbelR_texture *tileSet);
 void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
+tAbelR_texture *AbelW_getTileSet(void);
 tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos);
 
 /* entities */

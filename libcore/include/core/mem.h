@@ -51,24 +51,24 @@
 /* =======================================[[ RefCount ]]======================================== */
 
 /* these are expected to be the *first* member of a reference counted struct */
-typedef struct _tAbelM_RefCount
+typedef struct _tAbelM_refCount
 {
-    void (*free)(struct _tAbelM_RefCount *ptr);
+    void (*free)(struct _tAbelM_refCount *ptr);
     int refCount;
-} tAbelM_RefCount;
+} tAbelM_refCount;
 
-static inline void AbelM_initRef(tAbelM_RefCount *ref, void (*free)(tAbelM_RefCount *ptr))
+static inline void AbelM_initRef(tAbelM_refCount *ref, void (*free)(tAbelM_refCount *ptr))
 {
     ref->refCount = 1;
     ref->free = free;
 }
 
-static inline void AbelM_retainRef(tAbelM_RefCount *ref)
+static inline void AbelM_retainRef(tAbelM_refCount *ref)
 {
     ref->refCount++;
 }
 
-static inline void AbelM_releaseRef(tAbelM_RefCount *ref)
+static inline void AbelM_releaseRef(tAbelM_refCount *ref)
 {
     if (--ref->refCount == 0) {
         ref->free(ref);

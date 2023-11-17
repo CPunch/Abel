@@ -1,10 +1,11 @@
 #include "player.h"
 
+#include "assets.h"
 #include "core/mem.h"
 #include "input.h"
 #include "world.h"
 
-static void freePlayer(tAbelM_RefCount *ptr)
+static void freePlayer(tAbelM_refCount *ptr)
 {
     tAbelP_player *player = (tAbelP_player *)ptr;
 
@@ -114,11 +115,12 @@ static int setupAnimation(tAbelP_player *plr, int startTileID)
 
 tAbelP_player *AbelP_newPlayer(tAbelV_fVec2 pos)
 {
+    tAbelR_texture *tileSet = AbelA_getTexture("res/entityset.png", AbelV_newiVec2(16, 16));
     tAbelP_player *player = (tAbelP_player *)AbelM_malloc(sizeof(tAbelP_player));
     player->onKeyDown = AbelI_onKeyDownConnect(onKeyDown, player);
     player->onKeyUp = AbelI_onKeyUpConnect(onKeyUp, player);
     player->onStep = AbelW_onStepConnect(onStep, player);
-    AbelE_initEntity(&player->entity, pos, freePlayer);
+    AbelE_initEntity(&player->entity, tileSet, pos, freePlayer);
 
     /* animations */
     player->downAnim = setupAnimation(player, 0);

@@ -25,6 +25,9 @@ static tAbelG_state state;
 void AbelG_init(void)
 {
     int i, x, y;
+    tAbelR_texture *tileSet = AbelA_getTexture("res/tileset.png", AbelV_newiVec2(16, 16));
+
+    AbelW_setTileSet(tileSet);
 
     /* build pretty semi-random grass field */
     for (x = 0; x < TESTMAP_SIZE; x++) {

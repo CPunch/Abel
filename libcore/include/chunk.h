@@ -19,6 +19,7 @@ typedef struct _tAbelC_chunk
     tAbelR_texture *bgFrame;
     tAbelR_texture *fgFrame;
     tAbelW_cell *cellMap;
+    tAbelR_texture *tileSet;
     AbelM_newVector(tAbelE_entity *, entities);
     tAbelV_iVec2 pos;
     struct _tAbelC_chunk *nextActive;
@@ -27,7 +28,7 @@ typedef struct _tAbelC_chunk
 #define CHUNK_VIEW_DIST 2
 
 /* chunks */
-tAbelC_chunk *AbelC_newChunk(tAbelV_iVec2 position);
+tAbelC_chunk *AbelC_newChunk(tAbelR_texture *tileSet, tAbelV_iVec2 position);
 void AbelC_freeChunk(tAbelC_chunk *chunk);
 
 /* drawing */
@@ -48,8 +49,6 @@ void AbelC_stepEntities(tAbelC_chunk *chunk, uint32_t delta);
 tAbelE_entity **AbelC_getEntities(tAbelC_chunk *chunk, size_t *size);
 
 /* utils */
-tAbelV_iVec2 AbelC_gridToPos(tAbelV_iVec2 gridPos);
-tAbelV_iVec2 AbelC_posToGrid(tAbelV_iVec2 pos);
 tAbelV_iVec2 AbelC_gridPosToLocalPos(tAbelC_chunk *chunk, tAbelV_iVec2 gridPos);
 
 #endif

@@ -10,8 +10,6 @@
 #include "entity.h"
 #include "world.h"
 
-tAbelV_iVec2 AbelR_tileSize = AbelV_newiVec2(TILESET_SIZE, TILESET_SIZE);
-
 #define SDL_IMG_FLAGS IMG_INIT_PNG
 
 typedef struct _tAbelR_State
@@ -208,7 +206,7 @@ void AbelR_setCameraSize(tAbelV_iVec2 size)
 
 void AbelR_setCameraPos(tAbelV_iVec2 pos)
 {
-    tAbelV_iVec2 gridPos = AbelC_posToGrid(pos);
+    tAbelV_iVec2 gridPos = AbelW_posToGrid(pos);
     tAbelV_iVec2 chunkPos = AbelW_getChunkPos(gridPos);
 
     AbelW_updateActiveChunkPos(chunkPos);
@@ -245,7 +243,7 @@ void AbelR_zoomCamera(int zoom)
 
 /* ======================================[[ Texture API ]]====================================== */
 
-tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture)
+tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture, tAbelV_iVec2 tileSize)
 {
     tAbelR_texture *texture = (tAbelR_texture *)AbelM_malloc(sizeof(tAbelR_texture));
     texture->texture = rawTexture;
@@ -253,6 +251,12 @@ tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture)
     /* grab texture size */
     if (SDL_QueryTexture(rawTexture, NULL, NULL, (int *)&texture->size.x, (int *)&texture->size.y) != 0)
         ABEL_ERROR("Failed to query texture information: %s\n", SDL_GetError());
+
+    /* set tilset size */
+    if (tileSize.x == 0 && tileSize.y == 0) {
+        tileSize = texture->size;
+    }
+    texture->tileSize = tileSize;
 
     /* make sure we can render textures *on top of* others, keep transparency */
     SDL_SetTextureBlendMode(rawTexture, SDL_BLENDMODE_BLEND);
@@ -268,7 +272,7 @@ tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text)
     surface = TTF_RenderText_Solid(font, text, textColor);
     texture = SDL_CreateTextureFromSurface(AbelR_state.renderer, surface);
     SDL_FreeSurface(surface);
-    return AbelR_newTexture(texture);
+    return AbelR_newTexture(texture, AbelV_newiVec2(0, 0));
 }
 
 void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest)
@@ -283,7 +287,7 @@ void AbelR_freeTexture(tAbelR_texture *texture)
     AbelM_free(texture);
 }
 
-tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size)
+tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size, tAbelV_iVec2 tileSize)
 {
     SDL_Texture *rawTexture;
 
@@ -293,7 +297,7 @@ tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size)
         ABEL_ERROR("Failed to make blank texture: %s\n", SDL_GetError());
 
     /* create Abel texture */
-    return AbelR_newTexture(rawTexture);
+    return AbelR_newTexture(rawTexture, tileSize);
 }
 
 SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id)
@@ -302,7 +306,7 @@ SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id)
     int x, y;
 
     /* grabs the x/y cords of our tile in our texture */
-    cordSize = AbelV_diviVec2(tileSet->size, AbelR_tileSize);
+    cordSize = AbelV_diviVec2(tileSet->size, tileSet->tileSize);
     y = id / cordSize.x;
     x = id % cordSize.x;
 
@@ -310,5 +314,5 @@ SDL_Rect AbelR_getTileClip(tAbelR_texture *tileSet, TILE_ID id)
         ABEL_ERROR("Invalid tile id: %d\n", id);
 
     /* return clip of texture */
-    return (SDL_Rect){.x = x * AbelR_tileSize.x, .y = y * AbelR_tileSize.y, .w = AbelR_tileSize.x, .h = AbelR_tileSize.y};
+    return (SDL_Rect){.x = x * tileSet->tileSize.x, .y = y * tileSet->tileSize.y, .w = tileSet->tileSize.x, .h = tileSet->tileSize.y};
 }
