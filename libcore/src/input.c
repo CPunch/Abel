@@ -12,16 +12,25 @@ typedef struct _tAbelI_state
 
 static tAbelI_state state = {0};
 
-void AbelI_init(void)
+static void reset()
 {
     state.onKeyDown = NULL;
     state.onKeyUp = NULL;
+}
+
+void AbelI_init(void)
+{
+    reset();
 }
 
 void AbelI_quit(void)
 {
     AbelVM_clearEventList(&state.onKeyDown);
     AbelVM_clearEventList(&state.onKeyUp);
+
+    /* asan won't actually mark any globally stored pointers as
+     memory leaks */
+    reset();
 }
 
 tAbelVM_eventConnection *AbelI_onKeyDownConnect(tEventCallback callback, const void *uData)

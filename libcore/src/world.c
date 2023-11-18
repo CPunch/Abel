@@ -65,17 +65,24 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
     return WORLD_STEP_INTERVAL - (delta - WORLD_STEP_INTERVAL);
 }
 
-void AbelW_init(void)
+static void reset()
 {
     AbelW_state.tileSet = NULL;
-    AbelW_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
+    AbelW_state.stepTimer = NULL;
     AbelW_state.onStep = NULL;
-    AbelW_state.chunkMap = hashmap_new(sizeof(tAbelW_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
+    AbelW_state.chunkMap = NULL;
     AbelW_state.renderHead = NULL;
     AbelW_state.activeHead = NULL;
     AbelW_state.activeChunkPos = AbelV_newiVec2(0, 0);
     AbelW_state.activeDist = 1;
     AbelW_state.lastStepTime = SDL_GetTicks();
+}
+
+void AbelW_init(void)
+{
+    reset();
+    AbelW_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);
+    AbelW_state.chunkMap = hashmap_new(sizeof(tAbelW_chunkElem), 4, 0, 0, chunkHash, chunkCompare, NULL, NULL);
 }
 
 void AbelW_quit(void)
@@ -93,6 +100,13 @@ void AbelW_quit(void)
     hashmap_free(AbelW_state.chunkMap);
     AbelVM_clearEventList(&AbelW_state.onStep);
     AbelT_freeTask(AbelW_state.stepTimer);
+
+    if (AbelW_state.tileSet)
+        AbelR_releaseTexture(AbelW_state.tileSet);
+
+    /* asan won't actually mark any globally stored pointers as
+     memory leaks */
+    reset();
 }
 
 tAbelVM_eventConnection *AbelW_onStepConnect(tEventCallback callback, const void *uData)
@@ -323,6 +337,12 @@ tAbelV_iVec2 AbelW_posToGrid(tAbelV_iVec2 pos)
 
 void AbelW_setTileSet(tAbelR_texture *tileSet)
 {
+    if (AbelW_state.tileSet)
+        AbelR_releaseTexture(AbelW_state.tileSet);
+
+    if (tileSet)
+        AbelR_retainTexture(tileSet);
+
     AbelW_state.tileSet = tileSet;
 }
 

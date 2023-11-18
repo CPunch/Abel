@@ -2,6 +2,7 @@
 #define ABEL_RENDER_H
 
 #include "abel.h"
+#include "core/mem.h"
 #include "core/vec2.h"
 
 #define NK_INCLUDE_FIXED_TYPES
@@ -24,6 +25,7 @@
 
 typedef struct _tAbelR_texture
 {
+    tAbelM_refCount refCount;
     SDL_Texture *texture;
     tAbelV_iVec2 size;
     tAbelV_iVec2 tileSize;
@@ -58,8 +60,9 @@ void AbelR_zoomCamera(int zoom);
 
 /* textures */
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture, tAbelV_iVec2 tileSize);
+void AbelR_releaseTexture(tAbelR_texture *texture);
+void AbelR_retainTexture(tAbelR_texture *texture);
 tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text);
-void AbelR_freeTexture(tAbelR_texture *texture);
 
 void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest);
 tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size, tAbelV_iVec2 tileSize);

@@ -26,8 +26,8 @@ void AbelG_init(void)
 {
     int i, x, y;
     tAbelR_texture *tileSet = AbelA_getTexture("res/tileset.png", AbelV_newiVec2(16, 16));
-
     AbelW_setTileSet(tileSet);
+    AbelR_releaseTexture(tileSet);
 
     /* build pretty semi-random grass field */
     for (x = 0; x < TESTMAP_SIZE; x++) {
@@ -63,7 +63,7 @@ void AbelG_quit(void)
 void AbelG_run(void)
 {
     struct nk_context *ctx = AbelR_getNuklearCtx();
-    tAbelP_player *plr = AbelP_newPlayer(AbelV_newfVec2(32 * 12, 32 * 12));
+    tAbelP_player *plr = AbelP_newPlayer(AbelV_newfVec2(32 * 6, 32 * 6));
 
     AbelW_updateActiveDistance(1);
     AbelW_addEntity(&plr->entity);

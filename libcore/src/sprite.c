@@ -143,11 +143,13 @@ void AbelS_initSprite(tAbelS_sprite *sprite, tAbelR_texture *tileSet, tAbelV_fVe
 
     /* setup sprite */
     AbelS_setSpritePos(sprite, pos);
+    AbelR_retainTexture(tileSet);
 }
 
 void AbelS_cleanupSprite(tAbelS_sprite *sprite)
 {
     freeAState(&sprite->animations);
+    AbelR_releaseTexture(sprite->tileSet);
 }
 
 /* =======================================[[ Setters ]]========================================= */

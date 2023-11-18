@@ -3,6 +3,7 @@
 #include "assets.h"
 #include "core/mem.h"
 #include "input.h"
+#include "render.h"
 #include "world.h"
 
 static void freePlayer(tAbelM_refCount *ptr)
@@ -121,6 +122,7 @@ tAbelP_player *AbelP_newPlayer(tAbelV_fVec2 pos)
     player->onKeyUp = AbelI_onKeyUpConnect(onKeyUp, player);
     player->onStep = AbelW_onStepConnect(onStep, player);
     AbelE_initEntity(&player->entity, tileSet, pos, freePlayer);
+    AbelR_releaseTexture(tileSet);
 
     /* animations */
     player->downAnim = setupAnimation(player, 0);

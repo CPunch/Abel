@@ -11,6 +11,7 @@
 #include "world.h"
 
 #define SDL_IMG_FLAGS IMG_INIT_PNG
+// #define ABEL_ASAN
 
 typedef struct _tAbelR_State
 {
@@ -96,8 +97,20 @@ static uint32_t renderTask(uint32_t delta, void *uData)
 
 /* =====================================[[ Initializers ]]====================================== */
 
+static void reset()
+{
+    AbelR_state.window = NULL;
+    AbelR_state.renderer = NULL;
+    AbelR_state.nkCtx = NULL;
+    AbelR_state.resetFPSTask = NULL;
+    AbelR_state.renderTask = NULL;
+    AbelR_state.follow = NULL;
+}
+
 void AbelR_init(void)
 {
+    reset();
+
     /* pretty sure sdl_img & ttf_img are initalized with this,,, but i think the API is for
         previous versions of SDL so... we'll go ahead and do it anyways */
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
@@ -129,7 +142,6 @@ void AbelR_init(void)
 
     AbelR_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
     AbelR_state.renderTask = AbelT_newTask(RENDER_INTERVAL, renderTask, NULL);
-    AbelR_state.follow = NULL;
 }
 
 void AbelR_quit(void)
@@ -140,6 +152,13 @@ void AbelR_quit(void)
     nk_sdl_shutdown();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_DestroyWindow(AbelR_state.window);
+
+    if (AbelR_state.follow)
+        AbelM_releaseRef(&AbelR_state.follow->refCount);
+
+    /* asan won't actually mark any globally stored pointers as
+     memory leaks */
+    reset();
 
     // NOTE: SDL_Quit() calls dlclose(), which can confuse address sanitizer. during asan runs,
     // make sure to define ABEL_ASAN.
@@ -243,6 +262,13 @@ void AbelR_zoomCamera(int zoom)
 
 /* ======================================[[ Texture API ]]====================================== */
 
+static void freeTexture(tAbelM_refCount *ref)
+{
+    tAbelR_texture *texture = (tAbelR_texture *)ref;
+    SDL_DestroyTexture(texture->texture);
+    AbelM_free(texture);
+}
+
 tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture, tAbelV_iVec2 tileSize)
 {
     tAbelR_texture *texture = (tAbelR_texture *)AbelM_malloc(sizeof(tAbelR_texture));
@@ -260,7 +286,18 @@ tAbelR_texture *AbelR_newTexture(SDL_Texture *rawTexture, tAbelV_iVec2 tileSize)
 
     /* make sure we can render textures *on top of* others, keep transparency */
     SDL_SetTextureBlendMode(rawTexture, SDL_BLENDMODE_BLEND);
+    AbelM_initRef(&texture->refCount, freeTexture);
     return texture;
+}
+
+void AbelR_releaseTexture(tAbelR_texture *texture)
+{
+    AbelM_releaseRef(&texture->refCount);
+}
+
+void AbelR_retainTexture(tAbelR_texture *texture)
+{
+    AbelM_retainRef(&texture->refCount);
 }
 
 tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text)
@@ -279,12 +316,6 @@ void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest)
 {
     if (SDL_RenderCopy(AbelR_state.renderer, texture->texture, src, dest))
         ABEL_ERROR("Failed to render tile to target: %s\n", SDL_GetError());
-}
-
-void AbelR_freeTexture(tAbelR_texture *texture)
-{
-    SDL_DestroyTexture(texture->texture);
-    AbelM_free(texture);
 }
 
 tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size, tAbelV_iVec2 tileSize)

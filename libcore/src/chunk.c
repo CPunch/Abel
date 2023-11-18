@@ -35,6 +35,7 @@ tAbelC_chunk *AbelC_newChunk(tAbelR_texture *tileSet, tAbelV_iVec2 position)
     chunk->pos = position;
 
     AbelM_initVector(chunk->entities, 4);
+    AbelR_retainTexture(chunk->tileSet);
     return chunk;
 }
 
@@ -47,8 +48,9 @@ void AbelC_freeChunk(tAbelC_chunk *chunk)
         }
     }
 
-    AbelR_freeTexture(chunk->bgFrame);
-    AbelR_freeTexture(chunk->fgFrame);
+    AbelR_releaseTexture(chunk->bgFrame);
+    AbelR_releaseTexture(chunk->fgFrame);
+    AbelR_releaseTexture(chunk->tileSet);
     AbelM_free(chunk->cellMap);
     AbelM_free(chunk->entities);
     AbelM_free(chunk);
