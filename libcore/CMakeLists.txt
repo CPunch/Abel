@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(libcore)
 
+include(CTest)
+
 # ======================================= [[ GLOB SOURCE ]] =======================================
 
 set(INCLUDEDIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -28,3 +30,6 @@ target_include_directories(libcore PUBLIC ${INCLUDEDIR} ${SDL2_INCLUDE_DIRS} ${S
 
 # link libraries
 target_link_libraries(libcore PUBLIC ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} vendorlibs)
+
+add_subdirectory(test)
+add_test(NAME libcore COMMAND "$<TARGET_FILE:libcoretest>")

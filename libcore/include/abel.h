@@ -31,5 +31,10 @@ typedef uint8_t LAYER_ID;
 typedef uint16_t TILE_ID;
 
 #define ABEL_ASSERT(expr) assert(expr)
+#define ABEL_TEST(message, expr)                                                                                                                               \
+    do {                                                                                                                                                       \
+        if (!(expr))                                                                                                                                           \
+            ABEL_ERROR("Test failed: %s\n", message);                                                                                                          \
+    } while (0);
 
 #endif
