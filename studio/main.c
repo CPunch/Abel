@@ -1,6 +1,6 @@
-#include "abel.h"
-#include "core/init.h"
-#include "game.h"
+#include <abel.h>
+#include <core/init.h>
+#include <game.h>
 
 int main()
 {

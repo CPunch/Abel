@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(studio)
+project(studio LANGUAGES C)
 
 add_executable(studio main.c)
 
