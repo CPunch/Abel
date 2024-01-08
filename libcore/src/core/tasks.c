@@ -90,8 +90,8 @@ uint32_t AbelT_pollTasks(void)
         task = curr;
         curr = curr->next;
 
-        nextDelay = task->callback(currTick - task->scheduledAt, task->uData);
         unscheduleTask(task);
+        nextDelay = task->callback(currTick - task->scheduledAt, task->uData);
 
         /* if they returned non-zero */
         if (nextDelay)
