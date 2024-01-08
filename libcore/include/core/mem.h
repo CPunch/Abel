@@ -48,6 +48,13 @@
         name##_COUNT += numElem;                                                                                                                               \
     } while (0);
 
+/* pushes val onto the end of the vector */
+#define AbelM_pushVector(type, name, val)                                                                                                                      \
+    do {                                                                                                                                                       \
+        AbelM_growVector(type, name, 1);                                                                                                                       \
+        name[name##_COUNT++] = val;                                                                                                                            \
+    } while (0);
+
 /* =======================================[[ RefCount ]]======================================== */
 
 /* these are expected to be the *first* member of a reference counted struct */
