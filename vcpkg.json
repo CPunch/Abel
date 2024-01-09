@@ -1,0 +1,18 @@
+{
+    "name": "abel",
+    "version": "0.0.1",
+    "dependencies": [
+        {
+            "name": "sdl2",
+            "platform": "windows & x64"
+        },
+        {
+            "name": "sdl2-image",
+            "platform": "windows & x64"
+        },
+        {
+            "name": "sdl2-ttf",
+            "platform": "windows & x64"
+        }
+    ]
+}

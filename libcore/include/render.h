@@ -14,7 +14,7 @@
 #define NK_INCLUDE_DEFAULT_FONT
 /* clang-format off */
 #include "nuklear.h"
-#include "demo/sdl_renderer/nuklear_sdl_renderer.h"
+#include "nuklear_sdl_renderer.h"
 /* clang-format on */
 
 #define START_SCREEN_WIDTH  1024

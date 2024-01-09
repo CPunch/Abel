@@ -9,7 +9,7 @@
 #include "sprite.h"
 #include "world.h"
 
-tAbelV_iVec2 AbelC_chunkSize = AbelV_newiVec2(16, 16);
+tAbelV_iVec2 AbelC_chunkSize = {16, 16};
 
 static int findEmptyEntityIndex(tAbelC_chunk *chunk)
 {

@@ -17,12 +17,12 @@
 #define AbelM_newVector(type, name)                                                                                                                            \
     type *name;                                                                                                                                                \
     size_t name##_COUNT;                                                                                                                                       \
-    size_t name##_CAP;
+    size_t name##_CAP
 
 #define AbelM_initVector(name, startCap)                                                                                                                       \
     name = NULL;                                                                                                                                               \
     name##_COUNT = 0;                                                                                                                                          \
-    name##_CAP = startCap;
+    name##_CAP = startCap
 
 #define AbelM_growVector(type, name, needed)                                                                                                                   \
     if (name##_COUNT + needed >= name##_CAP || name == NULL) {                                                                                                 \
