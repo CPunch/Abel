@@ -32,7 +32,7 @@ static int runThread(tAbelVM_thread *thread, int args)
         }
 
         /* thread is suspended, schedule it */
-        uint32_t delay = lua_tointeger(L, -1);
+        uint32_t delay = luaL_checkinteger(L, -1);
         lua_pop(L, 1);
         return delay;
     default:
