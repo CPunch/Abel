@@ -25,6 +25,11 @@ if(UNIX)
   target_link_options(libcore PUBLIC "$<$<CONFIG:Debug>:-fsanitize=address>")
 endif()
 
+# add ABEL_ASAN define if USE_ASAN is set
+if(USE_ASAN)
+  target_compile_definitions(libcore PUBLIC ABEL_ASAN)
+endif()
+
 # add include directory
 target_include_directories(libcore PUBLIC ${INCLUDEDIR} ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
 
