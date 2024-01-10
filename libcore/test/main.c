@@ -2,6 +2,8 @@
 #include "core/mem.h"
 #include "core/serror.h"
 #include "core/vec2.h"
+#include "script.h"
+#include "types/vec2.h"
 
 static void testVec2(void)
 {
@@ -16,7 +18,30 @@ static void testVec2(void)
     ABEL_TEST("AbelV_addiVec2 failed", temp.x == 4 && temp.y == 6);
 
     temp = AbelV_subiVec2(v1, v2);
-    ABEL_TEST("AbelV_subiVec2 failed", temp.x != -2 && temp.y == -2);
+    ABEL_TEST("AbelV_subiVec2 failed", temp.x == -2 && temp.y == -2);
+}
+
+static void testLuaVec2(void)
+{
+    AbelL_init();
+
+    int nresults;
+    tAbelVM_thread *thread = AbelL_runScript("local vec = Vec2.New(1, 2)\n"
+                                             "local vec2 = Vec2.New(3, 4)\n"
+                                             "local vec3 = vec:Add(vec2)\n"
+                                             // "print(\"result: \" .. tostring(vec3))\n"
+                                             "return vec3\n",
+                                             &nresults);
+
+    ABEL_TEST("AbelL_runScript failed", nresults == 1);
+
+    tAbelV_fVec2 vec = AbelL_checkVec2(thread->L, -1);
+
+    ABEL_TEST("Vec2 Lua result failed", vec.x == 4 && vec.y == 6);
+
+    AbelL_releaseThread(thread);
+
+    AbelL_quit();
 }
 
 static void testMem(void)
@@ -34,6 +59,8 @@ int main(int argc, char **argv)
 {
     testVec2();
     testMem();
+    testLuaVec2();
 
+    printf("All tests passed!\n");
     return 0;
 }
