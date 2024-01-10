@@ -3,6 +3,7 @@
 #include "abel.h"
 #include "core/mem.h"
 #include "core/tasks.h"
+#include "types/vec2.h"
 
 typedef struct
 {
@@ -132,6 +133,7 @@ void AbelL_init(void)
 
     /* register API */
     lua_register(state.L, "wait", l_wait);
+    AbelL_registerVec2(state.L);
 }
 
 void AbelL_quit(void)
