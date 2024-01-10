@@ -76,7 +76,7 @@ static void onStep(const void *uData, const void *eventData)
     tAbelP_player *player = (tAbelP_player *)uData;
 
     /* normalize direction, and multiply by the walkspeed to get the velocity */
-    tAbelV_fVec2 vel = tAbelV_normalizefVec2(AbelV_newfVec2(player->selectedXDir, player->selectedYDir));
+    tAbelV_fVec2 vel = AbelV_normalizefVec2(AbelV_newfVec2(player->selectedXDir, player->selectedYDir));
     vel = AbelV_mulfVec2(vel, AbelV_newfVec2(player->walkSpeed, player->walkSpeed));
     AbelE_setVelocity(&player->entity, vel);
 

@@ -102,7 +102,7 @@ static inline tAbelV_fVec2 AbelV_i2fVec(tAbelV_iVec2 v)
 }
 
 /* normalizes a vector against a magnitude of 1 */
-static inline tAbelV_fVec2 tAbelV_normalizefVec2(tAbelV_fVec2 v)
+static inline tAbelV_fVec2 AbelV_normalizefVec2(tAbelV_fVec2 v)
 {
     if (v.x == 0 && v.y == 0)
         return AbelV_newfVec2(0, 0);
