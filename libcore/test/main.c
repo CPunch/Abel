@@ -57,8 +57,8 @@ static void testMem(void)
 
 int main(int argc, char **argv)
 {
-    testVec2();
     testMem();
+    testVec2();
     testLuaVec2();
 
     printf("All tests passed!\n");
