@@ -20,7 +20,8 @@ typedef struct _tAbelVM_thread
 void AbelL_init(void);
 void AbelL_quit(void);
 
-tAbelVM_thread *AbelL_startScript(const char *path);
+tAbelVM_thread *AbelL_startScript(const char *path, int *nresults);
+tAbelVM_thread *AbelL_runScript(const char *script, int *nresults);
 void AbelL_releaseThread(tAbelVM_thread *thread);
 
 tAbelVM_thread *AbelL_getThread(lua_State *L);

@@ -17,17 +17,16 @@ static void freeThread(tAbelVM_thread *thread);
 static void freeThreadWrapper(tAbelM_refCount *refCount);
 
 /* returns next delay (if 0, task will not be scheduled) */
-static int runThread(tAbelVM_thread *thread, int args)
+static int runThread(tAbelVM_thread *thread, int args, int *nresults)
 {
-    int nresults;
     lua_State *L = thread->L;
 
-    switch (thread->status = lua_resume(L, state.L, args, &nresults)) {
+    switch (thread->status = lua_resume(L, state.L, args, nresults)) {
     case LUA_OK:
         break;
     case LUA_YIELD:
         /* ??? */
-        if (nresults != 1) {
+        if (*nresults != 1) {
             luaL_error(L, "Invalid number of results from yield");
             break;
         }
@@ -51,9 +50,12 @@ static uint32_t wakeupTask(uint32_t delta, void *data)
 {
     tAbelVM_thread *thread = data;
     lua_State *L = thread->L;
+    int nresults;
 
     lua_pushnumber(L, delta / 1000.f);
-    return runThread(thread, 1);
+    uint32_t delay = runThread(thread, 1, &nresults);
+    lua_pop(L, nresults);
+    return delay;
 }
 
 static void setThreadLookup(lua_State *L, tAbelVM_thread *thread)
@@ -157,7 +159,7 @@ void AbelL_quit(void)
     state.L = NULL;
 }
 
-tAbelVM_thread *AbelL_startScript(const char *path)
+tAbelVM_thread *AbelL_startScript(const char *path, int *nresults)
 {
     lua_State *L = lua_newthread(state.L);
     tAbelVM_thread *thread = newThread(L);
@@ -165,8 +167,21 @@ tAbelVM_thread *AbelL_startScript(const char *path)
 
     /* load script */
     luaL_loadfile(L, path);
-    AbelT_scheduleTask(thread->task, runThread(thread, 0));
-    lua_pop(L, 1);
+    AbelT_scheduleTask(thread->task, runThread(thread, 0, nresults));
+    lua_pop(state.L, 1); /* pop lua thread */
+    return thread;
+}
+
+tAbelVM_thread *AbelL_runScript(const char *script, int *nresults)
+{
+    lua_State *L = lua_newthread(state.L);
+    tAbelVM_thread *thread = newThread(L);
+    AbelM_retainRef(&thread->refCount);
+
+    /* load script */
+    luaL_loadstring(L, script);
+    AbelT_scheduleTask(thread->task, runThread(thread, 0, nresults));
+    lua_pop(state.L, 1); /* pop lua thread */
     return thread;
 }
 
@@ -198,6 +213,6 @@ tAbelVM_thread *AbelL_newThread(tAbelVM_thread *parent)
 
     thread->parent = parent;
     AbelM_retainRef(&parent->refCount);
-    lua_pop(L, 1); /* pop lua thread */
+    lua_pop(parent->L, 1); /* pop lua thread */
     return thread;
 }
