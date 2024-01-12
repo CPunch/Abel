@@ -42,3 +42,11 @@ Now compile the target:
 ```sh
 $ cmake --build build
 ```
+
+## Running unit tests
+
+After building the project, you can run the unit tests with:
+
+```sh
+ctest --test-dir build
+```

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(Abel LANGUAGES C)
 
+include(CTest)
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
@@ -27,6 +29,8 @@ endif()
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+
+enable_testing()
 
 add_subdirectory(vendor)
 add_subdirectory(libcore)
