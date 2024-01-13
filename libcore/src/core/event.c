@@ -2,25 +2,14 @@
 
 #include "core/mem.h"
 
-tAbelVM_eventConnection *AbelVM_connectEvent(tAbelVM_eventConnection **head, tEventCallback callback, const void *uData)
+static void disconnect(tAbelVM_eventConnection *event)
 {
-    tAbelVM_eventConnection *conn = (tAbelVM_eventConnection *)AbelM_malloc(sizeof(tAbelVM_eventConnection));
-    conn->callback = callback;
-    conn->uData = uData;
-    conn->next = *head;
-
-    *head = conn;
-    return conn;
-}
-
-void AbelVM_disconnectEvent(tAbelVM_eventConnection **head, tAbelVM_eventConnection *event)
-{
-    tAbelVM_eventConnection *curr = *head, *last;
+    tAbelVM_eventConnection *curr = *event->head, *last;
 
     /* set the head */
-    if (*head == event) {
-        *head = NULL;
-        goto _freeEvent;
+    if (*event->head == event) {
+        *event->head = NULL;
+        return;
     }
 
     while (curr && curr != event) {
@@ -30,14 +19,40 @@ void AbelVM_disconnectEvent(tAbelVM_eventConnection **head, tAbelVM_eventConnect
 
     /* event is already unscheduled */
     if (curr == NULL)
-        goto _freeEvent;
+        return;
 
     /* remove from list */
     if (last)
         last->next = event->next;
+}
 
-_freeEvent:
+static void freeEventConnection(tAbelM_refCount *refCount)
+{
+    tAbelVM_eventConnection *event = (tAbelVM_eventConnection *)refCount;
+
+    printf("freeEventConnection %p\n", event);
+    /* remove from list */
+    disconnect(event);
     AbelM_free(event);
+}
+
+tAbelVM_eventConnection *AbelVM_connectEvent(tAbelVM_eventConnection **head, tEventCallback callback, const void *uData)
+{
+    tAbelVM_eventConnection *conn = (tAbelVM_eventConnection *)AbelM_malloc(sizeof(tAbelVM_eventConnection));
+    conn->callback = callback;
+    conn->uData = uData;
+    conn->next = *head;
+    conn->head = head;
+    AbelM_initRef(&conn->refCount, freeEventConnection);
+
+    *head = conn;
+    return conn;
+}
+
+void AbelVM_disconnectEvent(tAbelVM_eventConnection *event)
+{
+    disconnect(event);
+    AbelM_releaseRef(&event->refCount);
 }
 
 void AbelVM_clearEventList(tAbelVM_eventConnection **head)
@@ -46,7 +61,7 @@ void AbelVM_clearEventList(tAbelVM_eventConnection **head)
 
     while (curr) {
         next = curr->next;
-        AbelM_free(curr);
+        AbelM_releaseRef(&curr->refCount);
         curr = next;
     }
 

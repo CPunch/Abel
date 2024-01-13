@@ -18,7 +18,6 @@ typedef struct _tAbelW_cell
 void AbelW_init(void);
 void AbelW_quit(void);
 tAbelVM_eventConnection *AbelW_onStepConnect(tEventCallback callback, const void *uData);
-void AbelW_onStepDisconnect(tAbelVM_eventConnection *event);
 
 /* chunk */
 tAbelC_chunk *AbelW_getChunk(tAbelV_iVec2 chunkPos);

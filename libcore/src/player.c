@@ -11,9 +11,9 @@ static void freePlayer(tAbelM_refCount *ptr)
     tAbelP_player *player = (tAbelP_player *)ptr;
 
     AbelE_cleanupEntity(&player->entity);
-    AbelI_onKeyDownDisconnect(player->onKeyDown);
-    AbelI_onKeyUpDisconnect(player->onKeyUp);
-    AbelW_onStepDisconnect(player->onStep);
+    AbelVM_disconnectEvent(player->onKeyDown);
+    AbelVM_disconnectEvent(player->onKeyUp);
+    AbelVM_disconnectEvent(player->onStep);
     AbelM_free(player);
 }
 

@@ -114,11 +114,6 @@ tAbelVM_eventConnection *AbelW_onStepConnect(tEventCallback callback, const void
     return AbelVM_connectEvent(&AbelW_state.onStep, callback, uData);
 }
 
-void AbelW_onStepDisconnect(tAbelVM_eventConnection *event)
-{
-    AbelVM_disconnectEvent(&AbelW_state.onStep, event);
-}
-
 /* ===================================[[ Helper Functions ]]==================================== */
 
 static void insertRenderOrder(tAbelE_entity *entity)
