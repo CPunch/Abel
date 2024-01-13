@@ -1,8 +1,7 @@
-#include "abel.h"
 #include "core/mem.h"
-#include "core/serror.h"
 #include "core/vec2.h"
 #include "script.h"
+#include "tests.h"
 #include "types/vec2.h"
 
 static void testVec2(void)
@@ -29,7 +28,7 @@ static void testLuaVec2(void)
     tAbelVM_thread *thread = AbelL_runScript("local vec = Vec2.New(1, 2)\n"
                                              "local vec2 = Vec2.New(3, 4)\n"
                                              "local vec3 = vec:Add(vec2)\n"
-                                             // "print(\"result: \" .. tostring(vec3))\n"
+                                             "print(\"result: \" .. tostring(vec3))\n"
                                              "return vec3\n",
                                              &nresults);
 
@@ -55,11 +54,16 @@ static void testMem(void)
     ABEL_TEST("AbelM_realloc failed", ptr == NULL);
 }
 
+#define RUN_TEST(test)                                                                                                                                         \
+    printf("- %s...\n", #test);                                                                                                                                \
+    test();
+
 int main(int argc, char **argv)
 {
-    testMem();
-    testVec2();
-    testLuaVec2();
+    RUN_TEST(testMem);
+    RUN_TEST(testEvents);
+    RUN_TEST(testVec2);
+    RUN_TEST(testLuaVec2);
 
     printf("All tests passed!\n");
     return 0;
