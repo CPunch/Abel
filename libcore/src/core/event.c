@@ -4,6 +4,9 @@
 
 static void disconnect(tAbelVM_eventConnection *event)
 {
+    if (event->head == NULL)
+        return;
+
     tAbelVM_eventConnection *curr = *event->head, *last;
 
     /* set the head */
@@ -24,6 +27,8 @@ static void disconnect(tAbelVM_eventConnection *event)
     /* remove from list */
     if (last)
         last->next = event->next;
+
+    event->head = NULL;
 }
 
 static void freeEventConnection(tAbelM_refCount *refCount)
@@ -61,6 +66,7 @@ void AbelVM_clearEventList(tAbelVM_eventConnection **head)
 
     while (curr) {
         next = curr->next;
+        curr->head = NULL;
         AbelM_releaseRef(&curr->refCount);
         curr = next;
     }
