@@ -98,7 +98,9 @@ uint32_t AbelT_pollTasks(void)
             scheduleTask(task, nextDelay, currTick);
     }
 
-    return curr ? curr->schedule - currTick : MAX_POLLRATE;
+    /* return delay until next task, or 0 if the delay would be negative */
+    int64_t delay = curr ? curr->schedule - currTick : 0;
+    return delay <= 0 ? 0 : (uint32_t)delay;
 }
 
 void AbelT_scheduleTask(tAbelT_task *task, uint32_t delay)
