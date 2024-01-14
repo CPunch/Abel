@@ -4,3 +4,6 @@
 [submodule "vendor/lua"]
 	path = vendor/lua
 	url = https://github.com/walterschell/Lua.git
+[submodule "vendor/vcpkg"]
+	path = vendor/vcpkg
+	url = git@github.com:microsoft/vcpkg.git

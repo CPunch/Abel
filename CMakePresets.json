@@ -1,0 +1,69 @@
+{
+  "version": 8,
+  "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 21,
+      "patch": 0
+  },
+  "configurePresets": [
+      {
+          "name": "vcpkg",
+          "displayName": "vcpkg",
+          "description": "Use vcpkg to configure the project",
+          "binaryDir": "${sourceDir}/build/${presetName}",
+          "cacheVariables": {
+              "CMAKE_TOOLCHAIN_FILE": {
+                  "type": "FILEPATH",
+                  "value": "${sourceDir}/vendor/vcpkg/scripts/buildsystems/vcpkg.cmake"
+              }
+          }
+      }
+  ],
+  "buildPresets": [
+      {
+          "name": "debug",
+          "configurePreset": "vcpkg",
+          "displayName": "Build (Debug)",
+          "description": "Build with vcpkg (Debug)",
+          "configuration": "Debug"
+      },
+      {
+          "name": "release",
+          "configurePreset": "vcpkg",
+          "displayName": "Build (Release)",
+          "description": "Build with vcpkg (Release)",
+          "configuration": "Release"
+      },
+      {
+          "name": "vcpkg",
+          "configurePreset": "vcpkg",
+          "displayName": "Build",
+          "description": "Build with vcpkg"
+      }
+  ],
+  "testPresets": [
+      {
+          "name": "test-vcpkg",
+          "configurePreset": "vcpkg",
+          "hidden": true
+      },
+      {
+          "name": "test-debug",
+          "description": "Test (Debug)",
+          "displayName": "Test (Debug)",
+          "configuration": "Debug",
+          "inherits": [
+              "test-vcpkg"
+          ]
+      },
+      {
+          "name": "test-release",
+          "description": "Test (Release)",
+          "displayName": "Test (Release)",
+          "configuration": "Release",
+          "inherits": [
+              "test-vcpkg"
+          ]
+      }
+  ]
+}
