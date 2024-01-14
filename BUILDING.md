@@ -1,4 +1,4 @@
-# Building the Abel game engine
+# Building Abel
 
 The following libraries and tools are required:
 - CMake (>=3.16)
@@ -7,25 +7,22 @@ The following libraries and tools are required:
 - SDL2_ttf
 - SDL2_audio
 
-## Windows
+## Cross-platform: Using vcpkg
 
-I personally use Visual Studio 2022 && exclusively the developer command prompt. However I don't use Windows as my main development environment and only periodically use a vm to verify builds.
-
-Make sure to [install vcpkg](https://vcpkg.io/en/getting-started.html), and then install the relevant libraries while in the root repo directory with:
-```batch
-vcpkg install --triplet x64-windows
+[vcpkg](https://vcpkg.io/en/) will take care of downloading and installing it's own copies of the required libraries.
+If you don't care for the slight bloat, you can `git pull` the `vendor/vcpkg` submodule and use the `vcpkg` preset instead.
+```bash
+cmake --preset vcpkg
 ```
-> Make sure you've integrated vcpkg using `vcpkg integrate install` beforehand
 
-Then, generate a Visual Studio .sln with:
-```batch
-cmake -B build -A x64 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake
+and compile the target with:
 ```
-> Be sure to set VCPKG_ROOT in your environment variables if you haven't
+cmake --build --preset release --config 
+```
 
-Finally, you should be able to compile the project normally with:
-```batch
-cmake --build build --config Release
+You can even run the testsuite:
+```bash
+ctest --preset test-release
 ```
 
 ## Linux and other unix-like OSes
