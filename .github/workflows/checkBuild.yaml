@@ -1,10 +1,10 @@
-name: Build and test
+name: Tests
 
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
   job:
-    name: ${{ matrix.os }}-${{ github.workflow }}
+    name: "${{ matrix.os }}: ${{ github.workflow }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -18,11 +18,12 @@ jobs:
       - name: Restore from cache and setup vcpkg executable and data files
         uses: lukka/run-vcpkg@v11
         with:
-          vcpkgJsonGlob: 'vcpkg.json'
+          vcpkgDirectory: "${{ github.workspace }}/vendor/vcpkg"
+          vcpkgJsonGlob: "${{ github.workspace }}/vcpkg.json"
 
       - name: Build and test
         uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'vcpkg'
-          buildPreset: 'release'
-          testPreset: 'test-release'
+          configurePreset: "vcpkg"
+          buildPreset: "release"
+          testPreset: "test-release"
