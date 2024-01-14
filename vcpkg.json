@@ -1,5 +1,6 @@
 {
     "name": "abel",
     "version": "0.0.1",
-    "dependencies": ["sdl2", "sdl2-image", "sdl2-ttf"]
+    "dependencies": ["sdl2", "sdl2-image", "sdl2-ttf"],
+    "builtin-baseline": "53bef8994c541b6561884a8395ea35715ece75db"
 }
