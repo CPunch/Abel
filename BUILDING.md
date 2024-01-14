@@ -24,26 +24,3 @@ You can even run the testsuite:
 ```bash
 ctest --preset test-release
 ```
-
-## Linux and other unix-like OSes
-
-Simply generate the Abel makefiles using CMake:
-
-```sh
-$ cmake -B build
-```
-> If you're missing any libraries, CMake will complain!
-
-Now compile the target:
-
-```sh
-$ cmake --build build
-```
-
-## Running unit tests
-
-After building the project, you can run the unit tests with:
-
-```sh
-ctest --test-dir build
-```

@@ -29,10 +29,19 @@ if(USE_ASAN)
 endif()
 
 # add include directory
-target_include_directories(libcore PUBLIC ${INCLUDEDIR} ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
+target_include_directories(libcore
+  PUBLIC
+  ${INCLUDEDIR}
+)
 
 # link libraries
-target_link_libraries(libcore PUBLIC ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} vendorlibs)
+target_link_libraries(libcore PUBLIC
+  $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+  $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+  $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
+  $<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+  vendorlibs
+)
 
 add_subdirectory(test)
 add_test(NAME libcore COMMAND "$<TARGET_FILE:libcoretest>")
