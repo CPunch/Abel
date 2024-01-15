@@ -3,6 +3,7 @@
 #include "abel.h"
 #include "core/mem.h"
 #include "core/tasks.h"
+#include "types/texture.h"
 #include "types/vec2.h"
 
 typedef struct
@@ -17,7 +18,7 @@ static void freeThread(tAbelVM_thread *thread);
 static void freeThreadWrapper(tAbelM_refCount *refCount);
 
 /* returns next delay (if 0, task will not be scheduled) */
-static int runThread(tAbelVM_thread *thread, int args, int *nresults)
+static uint32_t runThread(tAbelVM_thread *thread, int args, int *nresults)
 {
     lua_State *L = thread->L;
 
@@ -136,6 +137,7 @@ void AbelL_init(void)
     /* register API */
     lua_register(state.L, "wait", l_wait);
     AbelL_registerVec2(state.L);
+    AbelL_registerTexture(state.L);
 }
 
 void AbelL_quit(void)
