@@ -57,7 +57,7 @@ void AbelL_registerTexture(lua_State *L)
     luaL_newmetatable(L, ABEL_TEXTURE_METATABLE);
     luaL_setfuncs(L, textureMetaMethods, 0);
 
-    // set texture methods
+    /* set texture methods */
     lua_newtable(L);
     luaL_setfuncs(L, textureMethods, 0);
     lua_setfield(L, -2, "__index");

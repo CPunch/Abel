@@ -28,8 +28,8 @@ typedef struct _tAbelS_animationStates
 
 typedef struct _tAbelS_sprite
 {
-    tAbelV_fVec2 pos;
     tAbelS_animationStates animations;
+    tAbelV_fVec2 pos;
     tAbelR_texture *tileSet;
 } tAbelS_sprite;
 

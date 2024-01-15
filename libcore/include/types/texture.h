@@ -1,5 +1,5 @@
-#ifndef ABEL_TYPES_EVENT_H
-#define ABEL_TYPES_EVENT_H
+#ifndef ABEL_TYPES_TEXTURE_H
+#define ABEL_TYPES_TEXTURE_H
 
 #include "abel.h"
 #include "render.h"
