@@ -62,7 +62,7 @@ static uint32_t worldStepTask(uint32_t delta, void *uData)
     }
 
     AbelW_state.lastStepTime = SDL_GetTicks();
-    return WORLD_STEP_INTERVAL - (delta - WORLD_STEP_INTERVAL);
+    return WORLD_STEP_INTERVAL;
 }
 
 static void reset()
