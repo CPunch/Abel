@@ -24,15 +24,12 @@ static void testLuaVec2(void)
 {
     AbelL_init();
 
-    int nresults;
     tAbelVM_thread *thread = AbelL_runScript("local vec = Vec2.New(1, 2)\n"
                                              "local vec2 = Vec2.New(3, 4)\n"
                                              "local vec3 = vec:Add(vec2)\n"
                                              "print(\"result: \" .. tostring(vec3))\n"
                                              "return vec3\n",
-                                             &nresults);
-
-    ABEL_TEST("AbelL_runScript failed", nresults == 1);
+                                             1);
 
     tAbelV_fVec2 vec = AbelL_checkVec2(thread->L, -1);
 

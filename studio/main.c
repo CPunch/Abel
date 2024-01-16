@@ -7,9 +7,7 @@ int main()
 {
     Abel_init();
 
-    int nresults;
-    tAbelVM_thread *thread = AbelL_loadScript("main.lua", &nresults);
-    lua_pop(thread->L, nresults);
+    tAbelVM_thread *thread = AbelL_loadScript("main.lua", 0);
 
     /* run 'game' (ew) */
     AbelG_run();
