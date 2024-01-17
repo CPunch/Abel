@@ -7,6 +7,7 @@
 #include "types/entity.h"
 #include "types/texture.h"
 #include "types/vec2.h"
+#include "types/world.h"
 
 typedef struct
 {
@@ -36,6 +37,7 @@ static void removeLuaTask(tAbelVM_luaTask *userData)
 
 static void freeLuaTask(tAbelVM_luaTask *userData)
 {
+    printf("freeing task\n");
     removeLuaTask(userData);
     AbelT_freeTask(userData->task);
     AbelM_free(userData);
@@ -128,6 +130,7 @@ static void freeThread(tAbelVM_thread *thread)
 
     thread->L = NULL;
     AbelM_free(thread->runningTasks);
+    AbelM_free(thread->events);
     AbelM_free(thread);
     printf("thread freed\n");
 }
@@ -246,6 +249,7 @@ void AbelL_connectEvent(tAbelVM_thread *thread, tAbelVM_eventConnection **event,
     userData->callback = callback;
     userData->event = AbelVM_connectEvent(event, eventCallback, (const void *)userData);
     userData->thread = thread;
+    luaL_setmetatable(L, ABEL_EVENT_METATABLE);
 
     AbelM_pushVector(tAbelVM_eventConnection *, userData->thread->events, userData->event);
 }
@@ -269,6 +273,7 @@ void AbelL_init(void)
     AbelL_registerVec2(state.L);
     AbelL_registerTexture(state.L);
     AbelL_registerEntity(state.L);
+    AbelL_registerWorld(state.L);
 }
 
 void AbelL_quit(void)
