@@ -6,7 +6,7 @@ function step()
 
   -- return a random number of milliseconds
   -- to wait before calling this function again
-  return math.random(1000)
+  return 0
 end
 
 -- starts 5 tasks
@@ -14,3 +14,8 @@ for i = 1, 5 do
   -- schedule this function to be (almost) immediately called
   startTask(step, 1)
 end
+
+evnt = World.onStep(function()
+  print("onStep")
+  evnt:disconnect()
+end)
