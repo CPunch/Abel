@@ -19,7 +19,6 @@
 
 #define START_SCREEN_WIDTH  1024
 #define START_SCREEN_HEIGHT 512
-#define TILESET_SIZE        16
 #define TARGET_FPS          60
 #define RENDER_INTERVAL     1000 / TARGET_FPS
 
@@ -53,7 +52,7 @@ uint32_t AbelR_getFPS(void);
 void AbelR_setScale(tAbelV_iVec2 scale);
 void AbelR_setCameraSize(tAbelV_iVec2 size);
 void AbelR_setCameraPos(tAbelV_iVec2 pos);
-void AbelR_setFollow(tAbelE_entity *entity); /* will retain new entity, and release old one*/
+void AbelR_setFollow(tAbelE_entity *entity); /* will retain new entity, and release old one */
 
 bool AbelR_isVisible(tAbelV_iVec2 pos, tAbelV_iVec2 size);
 void AbelR_zoomCamera(int zoom);
