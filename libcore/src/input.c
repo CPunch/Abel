@@ -43,6 +43,16 @@ tAbelVM_eventConnection *AbelI_onKeyUpConnect(tEventCallback callback, const voi
     return AbelVM_connectEvent(&state.onKeyUp, callback, uData);
 }
 
+tAbelVM_eventConnection **AbelI_onKeyDownHead(void)
+{
+    return &state.onKeyDown;
+}
+
+tAbelVM_eventConnection **AbelI_onKeyUpHead(void)
+{
+    return &state.onKeyUp;
+}
+
 void AbelI_pollEvents(void)
 {
     SDL_Event evnt;

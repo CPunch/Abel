@@ -5,6 +5,7 @@
 #include "core/mem.h"
 #include "core/tasks.h"
 #include "types/entity.h"
+#include "types/input.h"
 #include "types/texture.h"
 #include "types/vec2.h"
 #include "types/world.h"
@@ -273,6 +274,7 @@ void AbelL_init(void)
     AbelL_registerVec2(state.L);
     AbelL_registerTexture(state.L);
     AbelL_registerEntity(state.L);
+    AbelL_registerInput(state.L);
     AbelL_registerWorld(state.L);
 }
 
