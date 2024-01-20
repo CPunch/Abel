@@ -2,8 +2,14 @@
 
 #include "core/mem.h"
 #include "types/vec2.h"
+#include "assets.h"
 
 static const char *ABEL_TEXTURE_METATABLE = "Texture";
+
+#define CHECK_SIZE(size, tileSize) \
+    if (size.x % tileSize.x != 0 || size.y % tileSize.y != 0) { \
+        luaL_error(L, "Texture size must be evenly divisible by tileSize"); \
+    }
 
 static int textureGC(lua_State *L)
 {
@@ -36,10 +42,8 @@ static int textureSetTileSize(lua_State *L)
     tAbelR_texture *t = AbelL_toTexture(L, 1);
     tAbelV_iVec2 tileSize = AbelV_f2iVec(AbelL_checkVec2(L, 2));
 
-    /* make sure size is evenly divisible by new tileSize */
-    if (t->size.x % tileSize.x != 0 || t->size.y % tileSize.y != 0) {
-        luaL_error(L, "Texture size must be evenly divisible by new tileSize");
-    }
+    /* sanity check tileset size */
+    CHECK_SIZE(t->size, t->tileSize);
 
     t->tileSize = tileSize;
     return 0;
@@ -52,6 +56,24 @@ static luaL_Reg textureMethods[] = {
     {         NULL,               NULL}
 };
 
+static int textureLoad(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    tAbelV_iVec2 tileSize = AbelV_f2iVec(AbelL_checkVec2(L, 2));
+    tAbelR_texture *t = AbelA_getTexture(path, tileSize);
+
+    /* sanity check tileset size */
+    CHECK_SIZE(t->size, t->tileSize);
+
+    AbelL_pushTexture(L, t);
+    return 1;
+}
+
+static luaL_Reg textureFunctions[] = {
+    {"Load", textureLoad},
+    {  NULL,         NULL}
+};
+
 void AbelL_registerTexture(lua_State *L)
 {
     luaL_newmetatable(L, ABEL_TEXTURE_METATABLE);
@@ -62,6 +84,11 @@ void AbelL_registerTexture(lua_State *L)
     luaL_setfuncs(L, textureMethods, 0);
     lua_setfield(L, -2, "__index");
     lua_pop(L, 1);
+
+    /* register texture functions */
+    lua_newtable(L);
+    luaL_setfuncs(L, textureFunctions, 0);
+    lua_setglobal(L, "Texture");
 }
 
 void AbelL_pushTexture(lua_State *L, tAbelR_texture *t)
