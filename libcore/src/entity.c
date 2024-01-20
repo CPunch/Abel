@@ -9,6 +9,13 @@
 #include "sprite.h"
 #include "world.h"
 
+void AbelE_defaultFree(tAbelM_refCount *ptr)
+{
+    tAbelE_entity *entity = (tAbelE_entity *)ptr;
+    AbelE_cleanupEntity(entity);
+    AbelM_free(entity);
+}
+
 void AbelE_initEntity(tAbelE_entity *entity, tAbelR_texture *tileSet, tAbelV_fVec2 pos, void (*free)(tAbelM_refCount *ptr))
 {
     entity->velocity = AbelV_newfVec2(0, 0);

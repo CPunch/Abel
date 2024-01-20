@@ -16,6 +16,8 @@ typedef struct _tAbelE_entity
     struct _tAbelE_entity *nextRender; /* used to compute render order */
 } tAbelE_entity;
 
+void AbelE_defaultFree(tAbelM_refCount *ptr);
+
 /* TODO: maybe accept a collider here as well? */
 void AbelE_initEntity(tAbelE_entity *entity, tAbelR_texture *tileSet, tAbelV_fVec2 pos, void (*free)(tAbelM_refCount *ptr));
 void AbelE_cleanupEntity(tAbelE_entity *entity);

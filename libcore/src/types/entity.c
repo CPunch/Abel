@@ -132,6 +132,23 @@ static luaL_Reg entityMethods[] = {
     {           NULL,                NULL}
 };
 
+/* creates a new default entity */
+static int entityNew(lua_State *L)
+{
+    tAbelE_entity *e = AbelM_malloc(sizeof(tAbelE_entity));
+    tAbelR_texture *tileSet = AbelL_toTexture(L, 1);
+    tAbelV_fVec2 pos = AbelL_checkVec2(L, 2);
+
+    AbelE_initEntity(e, tileSet, pos, AbelE_defaultFree);
+    AbelL_pushEntity(L, e);
+    return 1;
+}
+
+static luaL_Reg entityFunctions[] = {
+    {"New", entityNew},
+    { NULL,      NULL}
+};
+
 void AbelL_registerEntity(lua_State *L)
 {
     luaL_newmetatable(L, ABEL_ENTITY_METATABLE);
@@ -142,6 +159,11 @@ void AbelL_registerEntity(lua_State *L)
     luaL_setfuncs(L, entityMethods, 0);
     lua_setfield(L, -2, "__index");
     lua_pop(L, 1);
+
+    /* register entity functions */
+    lua_newtable(L);
+    luaL_setfuncs(L, entityFunctions, 0);
+    lua_setglobal(L, "Entity");
 }
 
 void AbelL_pushEntity(lua_State *L, tAbelE_entity *e)
