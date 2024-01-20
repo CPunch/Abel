@@ -1,6 +1,7 @@
 #include "types/entity.h"
 
 #include "entity.h"
+#include "world.h"
 #include "types/texture.h"
 #include "types/vec2.h"
 
@@ -23,6 +24,22 @@ static luaL_Reg entityMetaMethods[] = {
     {"__gc", entityGC},
     {  NULL,     NULL}
 };
+
+static int entityAdd(lua_State *L)
+{
+    tAbelE_entity *e = AbelL_toEntity(L, 1);
+
+    AbelW_addEntity(e);
+    return 0;
+}
+
+static int entityRemove(lua_State *L)
+{
+    tAbelE_entity *e = AbelL_toEntity(L, 1);
+
+    AbelW_rmvEntity(e);
+    return 0;
+}
 
 static int entityGetVelocity(lua_State *L)
 {
@@ -100,6 +117,8 @@ static int spriteStopAnimation(lua_State *L)
 }
 
 static luaL_Reg entityMethods[] = {
+    {          "Add",           entityAdd},
+    {       "Remove",        entityRemove},
     {     "Velocity",   entityGetVelocity},
     {  "SetVelocity",   entitySetVelocity},
     {          "Pos",        entityGetPos},
