@@ -18,7 +18,7 @@ static void reset()
     state.onKeyUp = NULL;
 }
 
-void AbelI_init(void)
+void AbelI_init(uint32_t initFlags)
 {
     reset();
 }

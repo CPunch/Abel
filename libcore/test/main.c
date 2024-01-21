@@ -22,7 +22,7 @@ static void testVec2(void)
 
 static void testLuaVec2(void)
 {
-    AbelL_init();
+    AbelL_init(0);
 
     tAbelVM_thread *thread = AbelL_runScript("local vec = Vec2.New(1, 2)\n"
                                              "local vec2 = Vec2.New(3, 4)\n"

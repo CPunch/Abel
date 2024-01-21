@@ -78,7 +78,7 @@ static void reset()
     AbelW_state.lastStepTime = SDL_GetTicks();
 }
 
-void AbelW_init(void)
+void AbelW_init(uint32_t initFlags)
 {
     reset();
     AbelW_state.stepTimer = AbelT_newTask(WORLD_STEP_INTERVAL, worldStepTask, NULL);

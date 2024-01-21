@@ -107,7 +107,7 @@ static void reset()
     AbelR_state.follow = NULL;
 }
 
-void AbelR_init(void)
+void AbelR_init(uint32_t initFlags)
 {
     reset();
 

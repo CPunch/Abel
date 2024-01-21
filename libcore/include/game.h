@@ -5,7 +5,7 @@
 #include "core/vec2.h"
 
 /* initializers */
-void AbelG_init(void);
+void AbelG_init(uint32_t initFlags);
 void AbelG_quit(void);
 
 void AbelG_run(void);

@@ -35,7 +35,7 @@ typedef struct _tAbelVM_thread
     AbelM_newVector(tAbelVM_eventConnection *, events);
 } tAbelVM_thread;
 
-void AbelL_init(void);
+void AbelL_init(uint32_t initFlags);
 void AbelL_quit(void);
 
 tAbelVM_thread *AbelL_loadScript(const char *path, int nresults);

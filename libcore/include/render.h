@@ -37,7 +37,7 @@ typedef struct _tAbelR_camera
 } tAbelR_camera;
 
 /* initializers */
-void AbelR_init(void);
+void AbelR_init(uint32_t initFlags);
 void AbelR_quit(void);
 
 SDL_Renderer *AbelR_getRenderer(void);

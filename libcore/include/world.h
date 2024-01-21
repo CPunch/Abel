@@ -15,7 +15,7 @@ typedef struct _tAbelW_cell
 } tAbelW_cell;
 
 /* initalizers */
-void AbelW_init(void);
+void AbelW_init(uint32_t initFlags);
 void AbelW_quit(void);
 tAbelVM_eventConnection *AbelW_onStepConnect(tEventCallback callback, const void *uData);
 tAbelVM_eventConnection **AbelW_onStepHead(void);

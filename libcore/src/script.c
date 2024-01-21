@@ -257,7 +257,7 @@ void AbelL_connectEvent(tAbelVM_thread *thread, tAbelVM_eventConnection **event,
 
 /* =======================================[[ Script API ]]======================================= */
 
-void AbelL_init(void)
+void AbelL_init(uint32_t initFlags)
 {
     state.L = luaL_newstate();
     luaL_openlibs(state.L);

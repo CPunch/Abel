@@ -5,7 +5,7 @@
 #include "core/vec2.h"
 #include "render.h"
 
-void AbelA_init(void)
+void AbelA_init(uint32_t initFlags)
 {
 }
 

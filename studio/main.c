@@ -5,7 +5,7 @@
 
 int main()
 {
-    Abel_init();
+    Abel_init(ABEL_INIT_DEFAULT);
 
     tAbelVM_thread *thread = AbelL_loadScript("main.lua", 0);
 

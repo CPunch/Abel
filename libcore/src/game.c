@@ -22,7 +22,7 @@ static tAbelG_state state;
 
 /* =====================================[[ Initializers ]]====================================== */
 
-void AbelG_init(void)
+void AbelG_init(uint32_t initFlags)
 {
     int i, x, y;
     tAbelR_texture *tileSet = AbelA_getTexture("res/tileset.png", AbelV_newiVec2(16, 16));

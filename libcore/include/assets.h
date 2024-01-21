@@ -5,7 +5,7 @@
 #include "core/vec2.h"
 
 /* initalizers */
-void AbelA_init(void);
+void AbelA_init(uint32_t initFlags);
 void AbelA_quit(void);
 
 tAbelR_texture *AbelA_getTexture(const char *path, tAbelV_iVec2 tileSize);
