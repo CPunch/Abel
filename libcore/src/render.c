@@ -3,13 +3,13 @@
 #include "render.h"
 
 #include "chunk.h"
-#include "core/mem.h"
 #include "core/init.h"
+#include "core/mem.h"
 #include "core/serror.h"
 #include "core/tasks.h"
 #include "core/vec2.h"
-#include "res/kongtext.h"
 #include "entity.h"
+#include "res/kongtext.h"
 #include "world.h"
 
 #define SDL_IMG_FLAGS IMG_INIT_PNG
@@ -46,7 +46,8 @@ static void openRenderer(int width, int height, uint32_t flags)
         AbelR_state.renderer = SDL_CreateSoftwareRenderer(AbelR_state.rendererSurface);
     } else {
         /* open window */
-        AbelR_state.window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+        AbelR_state.window =
+            SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
         if (AbelR_state.window == NULL)
             ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 

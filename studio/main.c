@@ -1,10 +1,11 @@
 #include <abel.h>
+#include <assets.h>
 #include <core/init.h>
 #include <game.h>
+#include <player.h>
+#include <render.h>
 #include <script.h>
 #include <world.h>
-#include <player.h>
-#include <assets.h>
 
 #define PLAYER_SPEED 32
 #define TESTMAP_SIZE 64

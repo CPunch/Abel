@@ -1,6 +1,6 @@
+#include "core/init.h"
 #include "core/mem.h"
 #include "core/vec2.h"
-#include "core/init.h"
 #include "script.h"
 #include "tests.h"
 #include "types/vec2.h"
