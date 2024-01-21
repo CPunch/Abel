@@ -4,9 +4,11 @@
 
 #include "chunk.h"
 #include "core/mem.h"
+#include "core/init.h"
 #include "core/serror.h"
 #include "core/tasks.h"
 #include "core/vec2.h"
+#include "res/kongtext.h"
 #include "entity.h"
 #include "world.h"
 
@@ -18,6 +20,7 @@ typedef struct _tAbelR_State
     tAbelR_camera camera;
     tAbelV_iVec2 scale;
     SDL_Window *window;
+    SDL_Surface *rendererSurface;
     SDL_Renderer *renderer;
     struct nk_context *nkCtx;
     tAbelT_task *resetFPSTask;
@@ -27,9 +30,10 @@ typedef struct _tAbelR_State
     uint32_t currFPS;
 } tAbelR_state;
 
+static const char WINDOW_TITLE[] = "Abel";
 static tAbelR_state AbelR_state = {0};
 
-static void openWindow(int width, int height)
+static void openRenderer(int width, int height, uint32_t flags)
 {
     AbelR_setScale(AbelV_newiVec2(2, 2));
 
@@ -37,15 +41,20 @@ static void openWindow(int width, int height)
     AbelR_state.camera.pos = AbelV_newiVec2(0, 0);
     AbelR_state.camera.size = AbelV_newiVec2(width, height);
 
-    /* open window */
-    AbelR_state.window = SDL_CreateWindow("Abel", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if (AbelR_state.window == NULL)
-        ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
+    if (flags & ABEL_INIT_NOGUI) {
+        AbelR_state.rendererSurface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+        AbelR_state.renderer = SDL_CreateSoftwareRenderer(AbelR_state.rendererSurface);
+    } else {
+        /* open window */
+        AbelR_state.window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+        if (AbelR_state.window == NULL)
+            ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 
-    /* create & set rendering target */
-    AbelR_state.renderer = SDL_CreateRenderer(AbelR_state.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    if (AbelR_state.renderer == NULL)
-        ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
+        /* create & set rendering target */
+        AbelR_state.renderer = SDL_CreateRenderer(AbelR_state.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+        if (AbelR_state.renderer == NULL)
+            ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
+    }
 
     SDL_SetRenderTarget(AbelR_state.renderer, NULL);
 }
@@ -100,6 +109,7 @@ static uint32_t renderTask(uint32_t delta, void *uData)
 static void reset()
 {
     AbelR_state.window = NULL;
+    AbelR_state.rendererSurface = NULL;
     AbelR_state.renderer = NULL;
     AbelR_state.nkCtx = NULL;
     AbelR_state.resetFPSTask = NULL;
@@ -123,7 +133,7 @@ void AbelR_init(uint32_t initFlags)
     if (TTF_Init() != 0)
         ABEL_ERROR("Failed to initialize: SDL_TTF: %s\n", TTF_GetError());
 
-    openWindow(START_SCREEN_WIDTH, START_SCREEN_HEIGHT);
+    openRenderer(START_SCREEN_WIDTH, START_SCREEN_HEIGHT, initFlags);
 
     /* setup nuklear ui */
     AbelR_state.nkCtx = nk_sdl_init(AbelR_state.window, AbelR_state.renderer);
@@ -134,7 +144,10 @@ void AbelR_init(uint32_t initFlags)
         struct nk_font *font;
 
         nk_sdl_font_stash_begin(&atlas);
-        font = nk_font_atlas_add_from_file(atlas, "res/kongtext.ttf", 14, &config);
+
+        /* load default font */
+        font = nk_font_atlas_add_from_memory(atlas, ABEL_KONGTEXTBLOB, sizeof(ABEL_KONGTEXTBLOB), 14, &config);
+        /* font = nk_font_atlas_add_from_file(atlas, "res/kongtext.ttf", 14, &config); */
         nk_sdl_font_stash_end();
 
         nk_style_set_font(AbelR_state.nkCtx, &font->handle);
@@ -151,6 +164,7 @@ void AbelR_quit(void)
 
     nk_sdl_shutdown();
     SDL_DestroyRenderer(AbelR_state.renderer);
+    SDL_FreeSurface(AbelR_state.rendererSurface);
     SDL_DestroyWindow(AbelR_state.window);
 
     if (AbelR_state.follow)

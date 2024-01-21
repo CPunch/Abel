@@ -1,5 +1,6 @@
 #include "core/mem.h"
 #include "core/vec2.h"
+#include "core/init.h"
 #include "script.h"
 #include "tests.h"
 #include "types/vec2.h"
@@ -22,7 +23,7 @@ static void testVec2(void)
 
 static void testLuaVec2(void)
 {
-    AbelL_init(0);
+    Abel_init(ABEL_INIT_NOGUI);
 
     tAbelVM_thread *thread = AbelL_runScript("local vec = Vec2.New(1, 2)\n"
                                              "local vec2 = Vec2.New(3, 4)\n"
@@ -37,7 +38,7 @@ static void testLuaVec2(void)
 
     AbelL_releaseThread(thread);
 
-    AbelL_quit();
+    Abel_quit();
 }
 
 static void testMem(void)
