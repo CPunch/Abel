@@ -88,7 +88,7 @@ static luaL_Reg worldFunctions[] = {
     { "SetFollow",  worldSetFollow},
     {   "SetCell",    worldSetCell},
     {   "GetCell",    worldGetCell},
-    {    "onStep",          onStep},
+    {    "OnStep",          onStep},
     {        NULL,            NULL}
 };
 

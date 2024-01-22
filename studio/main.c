@@ -47,18 +47,13 @@ int main(int argc, char *argv[])
     randMap();
 
     tAbelVM_thread *thread = AbelL_loadScript("main.lua", 0);
-    tAbelP_player *plr = AbelP_newPlayer(AbelV_newfVec2(32 * 6, 32 * 6));
 
     AbelW_updateActiveDistance(1);
-    AbelW_addEntity(&plr->entity);
-    AbelR_setFollow(&plr->entity);
 
     /* run 'game' (ew) */
     AbelG_run();
 
     /* cleanup */
-    AbelR_setFollow(NULL);
-    AbelP_releasePlayer(plr);
     AbelL_releaseThread(thread);
     Abel_quit();
     return 0;
