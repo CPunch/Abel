@@ -32,7 +32,7 @@ typedef struct _tAbelVM_thread
     lua_State *L;
     int status;
     AbelM_newVector(tAbelVM_luaTask *, runningTasks);
-    AbelM_newVector(tAbelVM_eventConnection *, events);
+    AbelM_newVector(tAbelVM_luaEvent *, events);
 } tAbelVM_thread;
 
 void AbelL_init(uint32_t initFlags);

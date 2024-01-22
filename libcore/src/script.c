@@ -120,7 +120,7 @@ static void freeThread(tAbelVM_thread *thread)
 
     /* free events */
     for (int i = 0; i < AbelM_countVector(thread->events); i++) {
-        AbelVM_disconnectEvent(thread->events[i]);
+        freeLuaTask(thread->events[i]);
     }
 
     /* remove from threadLookup */
@@ -244,15 +244,16 @@ void AbelL_connectEvent(tAbelVM_thread *thread, tAbelVM_eventConnection **event,
     int callbackRef = luaL_ref(L, LUA_REGISTRYINDEX);
 
     /* create event */
-    tAbelVM_luaEvent *userData = lua_newuserdata(L, sizeof(tAbelVM_luaEvent));
+    tAbelVM_luaEvent *userData = AbelM_malloc(sizeof(tAbelVM_luaEvent));
     userData->uData = uData;
     userData->callbackRef = callbackRef;
     userData->callback = callback;
     userData->event = AbelVM_connectEvent(event, eventCallback, (const void *)userData);
     userData->thread = thread;
+    lua_pushlightuserdata(L, userData);
     luaL_setmetatable(L, ABEL_EVENT_METATABLE);
 
-    AbelM_pushVector(tAbelVM_eventConnection *, userData->thread->events, userData->event);
+    AbelM_pushVector(tAbelVM_luaEvent *, userData->thread->events, userData);
 }
 
 /* =======================================[[ Script API ]]======================================= */
