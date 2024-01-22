@@ -3,6 +3,7 @@
 
 #include "script.h"
 #include "types/vec2.h"
+#include "types/entity.h"
 #include "world.h"
 
 static void lua_onStep(const void *uData, const void *eventData)
@@ -65,11 +66,26 @@ static int worldGetCell(lua_State *L)
     return 2;
 }
 
-static luaL_Reg worldMethods[] = {
+static int worldSetFollow(lua_State *L)
+{
+    tAbelE_entity *e = AbelL_toEntity(L, 1);
+    AbelR_setFollow(e);
+    return 0;
+}
+
+static int worldGetFollow(lua_State *L)
+{
+    AbelL_pushEntity(L, AbelR_getFollow());
+    return 1;
+}
+
+static luaL_Reg worldFunctions[] = {
     { "PosToGrid",  worldPosToGrid},
     { "GridToPos",  worldGridToPos},
     {"SetTileSet", worldSetTileSet},
     {"GetTileSet", worldGetTileSet},
+    {    "Follow",  worldGetFollow},
+    { "SetFollow",  worldSetFollow},
     {   "SetCell",    worldSetCell},
     {   "GetCell",    worldGetCell},
     {    "onStep",          onStep},
@@ -79,6 +95,6 @@ static luaL_Reg worldMethods[] = {
 void AbelL_registerWorld(lua_State *L)
 {
     lua_newtable(L);
-    luaL_setfuncs(L, worldMethods, 0);
+    luaL_setfuncs(L, worldFunctions, 0);
     lua_setglobal(L, "World");
 }
