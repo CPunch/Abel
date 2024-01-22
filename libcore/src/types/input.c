@@ -8,7 +8,7 @@ static void lua_onKeyDown(const void *uData, const void *eventData)
     tAbelVM_luaEvent *userData = (tAbelVM_luaEvent *)uData;
     SDL_Event *evnt = (SDL_Event *)eventData;
 
-    lua_pushinteger(userData->thread->L, evnt->key.keysym.sym);
+    lua_pushfstring(userData->thread->L, "%s", SDL_GetKeyName(evnt->key.keysym.sym));
     AbelL_callFunction(userData->thread, 1, 0);
 }
 
@@ -17,7 +17,7 @@ static void lua_onKeyUp(const void *uData, const void *eventData)
     tAbelVM_luaEvent *userData = (tAbelVM_luaEvent *)uData;
     SDL_Event *evnt = (SDL_Event *)eventData;
 
-    lua_pushinteger(userData->thread->L, evnt->key.keysym.sym);
+    lua_pushfstring(userData->thread->L, "%s", SDL_GetKeyName(evnt->key.keysym.sym));
     AbelL_callFunction(userData->thread, 1, 0);
 }
 
@@ -34,8 +34,8 @@ static int onKeyUp(lua_State *L)
 }
 
 static luaL_Reg inputMethods[] = {
-    {  "onKeyUp",   onKeyUp},
-    {"onKeyDown", onKeyDown},
+    {  "OnKeyUp",   onKeyUp},
+    {"OnKeyDown", onKeyDown},
     {       NULL,      NULL}
 };
 
