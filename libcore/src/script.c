@@ -120,7 +120,8 @@ static void freeThread(tAbelVM_thread *thread)
 
     /* free events */
     for (int i = 0; i < AbelM_countVector(thread->events); i++) {
-        freeLuaTask(thread->events[i]);
+        printf("event %p refcount: %d\n", thread->events[i], thread->events[i]->refCount.refCount);
+        AbelM_releaseRef(&thread->events[i]->refCount);
     }
 
     /* remove from threadLookup */
@@ -178,8 +179,9 @@ static void removeLuaEvent(tAbelVM_luaEvent *userData)
 
     /* search for event and remove */
     for (int i = 0; i < AbelM_countVector(thread->events); i++) {
-        if (thread->events[i] == userData->event) {
+        if (thread->events[i] == userData) {
             AbelM_rmvVector(thread->events, i, 1);
+            AbelM_releaseRef(&userData->refCount);
             return;
         }
     }
@@ -187,7 +189,7 @@ static void removeLuaEvent(tAbelVM_luaEvent *userData)
 
 static tAbelVM_luaEvent *toEventUserData(lua_State *L, int index)
 {
-    return (tAbelVM_luaEvent *)luaL_checkudata(L, index, ABEL_EVENT_METATABLE);
+    return *(tAbelVM_luaEvent **)luaL_checkudata(L, index, ABEL_EVENT_METATABLE);
 }
 
 static int eventDisconnect(lua_State *L)
@@ -195,16 +197,26 @@ static int eventDisconnect(lua_State *L)
     tAbelVM_luaEvent *userData = toEventUserData(L, 1);
 
     if (userData->event) {
-        removeLuaEvent(userData);
         AbelVM_disconnectEvent(userData->event);
     }
 
+    removeLuaEvent(userData);
     userData->event = NULL;
     return 0;
 }
 
+static int eventGC(lua_State *L)
+{
+    tAbelVM_luaEvent *userData = toEventUserData(L, 1);
+
+    printf("event %p gc refCount: %d\n", userData, userData->refCount.refCount);
+    AbelM_releaseRef(&userData->refCount);
+    return 0;
+}
+
 static luaL_Reg eventMetaMethods[] = {
-    {NULL, NULL}
+    {"__gc", eventGC},
+    {  NULL,    NULL}
 };
 
 static luaL_Reg eventMethods[] = {
@@ -235,25 +247,48 @@ static void eventCallback(const void *uData, const void *eventData)
     userData->callback(userData, eventData);
 }
 
+static void freeEvent(tAbelM_refCount *ref)
+{
+    tAbelVM_luaEvent *userData = (tAbelVM_luaEvent *)ref;
+    lua_State *L = userData->thread->L;
+
+    /* free callback */
+    luaL_unref(L, LUA_REGISTRYINDEX, userData->callbackRef);
+
+    /* free event */
+    if (userData->event) {
+        AbelVM_disconnectEvent(userData->event);
+    }
+
+    AbelM_free(userData);
+    printf("event freed\n");
+}
+
 void AbelL_connectEvent(tAbelVM_thread *thread, tAbelVM_eventConnection **event, tEventCallback callback, const void *uData)
 {
     lua_State *L = thread->L;
     luaL_checktype(L, 1, LUA_TFUNCTION);
 
     /* register function */
+    lua_pushvalue(L, 1);
     int callbackRef = luaL_ref(L, LUA_REGISTRYINDEX);
 
     /* create event */
     tAbelVM_luaEvent *userData = AbelM_malloc(sizeof(tAbelVM_luaEvent));
+    AbelM_initRef(&userData->refCount, freeEvent);
     userData->uData = uData;
     userData->callbackRef = callbackRef;
     userData->callback = callback;
     userData->event = AbelVM_connectEvent(event, eventCallback, (const void *)userData);
     userData->thread = thread;
-    lua_pushlightuserdata(L, userData);
+
+    /* push to lua */
+    tAbelVM_luaEvent **ud = lua_newuserdata(L, sizeof(tAbelVM_luaEvent *));
+    *ud = userData;
     luaL_setmetatable(L, ABEL_EVENT_METATABLE);
 
-    AbelM_pushVector(tAbelVM_luaEvent *, userData->thread->events, userData);
+    AbelM_pushVector(tAbelVM_luaEvent *, thread->events, userData);
+    AbelM_retainRef(&userData->refCount);
 }
 
 /* =======================================[[ Script API ]]======================================= */

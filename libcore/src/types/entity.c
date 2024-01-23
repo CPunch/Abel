@@ -1,9 +1,9 @@
 #include "types/entity.h"
 
 #include "entity.h"
-#include "world.h"
 #include "types/texture.h"
 #include "types/vec2.h"
+#include "world.h"
 
 static const char *ABEL_ENTITY_METATABLE = "Sprite";
 
@@ -171,8 +171,7 @@ void AbelL_pushEntity(lua_State *L, tAbelE_entity *e)
     tAbelE_entity **ud = lua_newuserdata(L, sizeof(tAbelE_entity *));
     *ud = e;
 
-    luaL_getmetatable(L, ABEL_ENTITY_METATABLE);
-    lua_setmetatable(L, -2);
+    luaL_setmetatable(L, ABEL_ENTITY_METATABLE);
     AbelM_retainRef(&e->refCount);
 }
 

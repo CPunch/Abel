@@ -19,6 +19,7 @@ typedef struct
 
 typedef struct
 {
+    tAbelM_refCount refCount;
     tAbelVM_eventConnection *event;
     tAbelVM_thread *thread;
     tEventCallback callback;

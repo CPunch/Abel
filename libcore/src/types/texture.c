@@ -1,14 +1,14 @@
 #include "types/texture.h"
 
+#include "assets.h"
 #include "core/mem.h"
 #include "types/vec2.h"
-#include "assets.h"
 
 static const char *ABEL_TEXTURE_METATABLE = "Texture";
 
-#define CHECK_SIZE(size, tileSize) \
-    if (size.x % tileSize.x != 0 || size.y % tileSize.y != 0) { \
-        luaL_error(L, "Texture size must be evenly divisible by tileSize"); \
+#define CHECK_SIZE(size, tileSize)                                                                                                                             \
+    if (size.x % tileSize.x != 0 || size.y % tileSize.y != 0) {                                                                                                \
+        luaL_error(L, "Texture size must be evenly divisible by tileSize");                                                                                    \
     }
 
 static int textureGC(lua_State *L)
@@ -71,7 +71,7 @@ static int textureLoad(lua_State *L)
 
 static luaL_Reg textureFunctions[] = {
     {"Load", textureLoad},
-    {  NULL,         NULL}
+    {  NULL,        NULL}
 };
 
 void AbelL_registerTexture(lua_State *L)
@@ -96,8 +96,7 @@ void AbelL_pushTexture(lua_State *L, tAbelR_texture *t)
     tAbelR_texture **ud = lua_newuserdata(L, sizeof(tAbelR_texture *));
     *ud = t;
 
-    luaL_getmetatable(L, ABEL_TEXTURE_METATABLE);
-    lua_setmetatable(L, -2);
+    luaL_setmetatable(L, ABEL_TEXTURE_METATABLE);
     AbelM_retainRef(&t->refCount);
 }
 

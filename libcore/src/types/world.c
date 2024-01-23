@@ -1,9 +1,9 @@
 #include "types/world.h"
-#include "types/texture.h"
 
 #include "script.h"
-#include "types/vec2.h"
 #include "types/entity.h"
+#include "types/texture.h"
+#include "types/vec2.h"
 #include "world.h"
 
 static void lua_onStep(const void *uData, const void *eventData)

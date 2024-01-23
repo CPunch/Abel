@@ -120,7 +120,7 @@ void AbelL_registerVec2(lua_State *L)
 
 void AbelL_pushVec2(lua_State *L, tAbelV_fVec2 v)
 {
-    tAbelV_fVec2 *vec = lua_newuserdatauv(L, sizeof(tAbelV_fVec2), 0);
+    tAbelV_fVec2 *vec = lua_newuserdata(L, sizeof(tAbelV_fVec2));
     *vec = v;
     luaL_setmetatable(L, ABEL_VEC2_METATABLE);
 }

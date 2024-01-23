@@ -8,23 +8,9 @@
 #include "world.h"
 
 /* DO NOT REORGANIZE */
-tAbel_initFunc initializers[] = {
-    AbelR_init,
-    AbelI_init,
-    AbelA_init,
-    AbelW_init,
-    AbelG_init,
-    AbelL_init
-};
+tAbel_initFunc initializers[] = {AbelR_init, AbelI_init, AbelA_init, AbelW_init, AbelG_init, AbelL_init};
 
-tAbel_quitFunc deinitializers[] = {
-    AbelL_quit,
-    AbelG_quit,
-    AbelW_quit,
-    AbelA_quit,
-    AbelI_quit,
-    AbelR_quit
-};
+tAbel_quitFunc deinitializers[] = {AbelL_quit, AbelG_quit, AbelW_quit, AbelA_quit, AbelI_quit, AbelR_quit};
 
 void Abel_init(uint32_t initFlags)
 {
