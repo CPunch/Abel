@@ -5,7 +5,6 @@
 #include "core/tasks.h"
 #include "entity.h"
 #include "input.h"
-#include "player.h"
 #include "render.h"
 #include "sprite.h"
 #include "world.h"

@@ -2,7 +2,6 @@
 #include <assets.h>
 #include <core/init.h>
 #include <game.h>
-#include <player.h>
 #include <render.h>
 #include <script.h>
 #include <world.h>
@@ -54,7 +53,8 @@ int main(int argc, char *argv[])
     AbelG_run();
 
     /* cleanup */
-    AbelL_releaseThread(thread);
+    if (thread)
+        AbelL_releaseThread(thread);
     Abel_quit();
     return 0;
 }

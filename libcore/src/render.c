@@ -147,7 +147,7 @@ void AbelR_init(uint32_t initFlags)
         nk_sdl_font_stash_begin(&atlas);
 
         /* load default font */
-        font = nk_font_atlas_add_from_memory(atlas, ABEL_KONGTEXTBLOB, sizeof(ABEL_KONGTEXTBLOB), 14, &config);
+        font = nk_font_atlas_add_from_memory(atlas, (void *)ABEL_KONGTEXTBLOB, sizeof(ABEL_KONGTEXTBLOB), 14, &config);
         /* font = nk_font_atlas_add_from_file(atlas, "res/kongtext.ttf", 14, &config); */
         nk_sdl_font_stash_end();
 
