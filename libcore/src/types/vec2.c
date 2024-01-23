@@ -54,12 +54,30 @@ static int vec2ToString(lua_State *L)
     return 1;
 }
 
+static int vec2SetX(lua_State *L)
+{
+    tAbelV_fVec2 *v = luaL_checkudata(L, 1, ABEL_VEC2_METATABLE);
+    lua_Number x = luaL_checknumber(L, 2);
+
+    v->x = x;
+    return 0;
+}
+
 static int vec2GetX(lua_State *L)
 {
     tAbelV_fVec2 v = AbelL_checkVec2(L, 1);
 
     lua_pushnumber(L, v.x);
     return 1;
+}
+
+static int vec2SetY(lua_State *L)
+{
+    tAbelV_fVec2 *v = luaL_checkudata(L, 1, ABEL_VEC2_METATABLE);
+    lua_Number y = luaL_checknumber(L, 2);
+
+    v->y = y;
+    return 0;
 }
 
 static int vec2GetY(lua_State *L)
@@ -87,6 +105,8 @@ static luaL_Reg vec2Methods[] = {
     {"Normalize", vec2Normalize},
     {        "X",      vec2GetX},
     {        "Y",      vec2GetY},
+    {     "SetX",      vec2SetX},
+    {     "SetY",      vec2SetY},
     {       NULL,          NULL}
 };
 

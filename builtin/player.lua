@@ -17,25 +17,25 @@ function export:createPlayer()
 
     Input.OnKeyUp(function(key)
         if key == "W" or key == "Up" and selectedDir:Y() == -1 then
-            selectedDir = Vec2.New(selectedDir:X(), 0)
+            selectedDir:SetY(0)
         elseif key == "S" or key == "Down" and selectedDir:Y() == 1 then
-            selectedDir = Vec2.New(selectedDir:X(), 0)
+            selectedDir:SetY(0)
         elseif key == "A" or key == "Left" and selectedDir:X() == -1 then
-            selectedDir = Vec2.New(0, selectedDir:Y())
+            selectedDir:SetX(0)
         elseif key == "D" or key == "Right" and selectedDir:X() == 1 then
-            selectedDir = Vec2.New(0, selectedDir:Y())
+            selectedDir:SetX(0)
         end
     end)
 
     Input.OnKeyDown(function(key)
         if key == "W" or key == "Up" then
-            selectedDir = Vec2.New(selectedDir:X(), -1)
+            selectedDir:SetY(-1)
         elseif key == "S" or key == "Down" then
-            selectedDir = Vec2.New(selectedDir:X(), 1)
+            selectedDir:SetY(1)
         elseif key == "A" or key == "Left" then
-            selectedDir = Vec2.New(-1, selectedDir:Y())
+            selectedDir:SetX(-1)
         elseif key == "D" or key == "Right" then
-            selectedDir = Vec2.New(1, selectedDir:Y())
+            selectedDir:SetX(1)
         end
     end)
 
