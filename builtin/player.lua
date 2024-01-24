@@ -9,7 +9,7 @@ local function createAnim(plr, startTileID)
     return id
 end
 
-function export:createPlayer(texture)
+function export.createPlayer(texture)
     local plr = Entity.New(texture, Vec2.New(32 * 6, 32 * 6))
     local selectedDir = Vec2.New(0, 0)
     local walkSpeed = Vec2.New(64, 64)
