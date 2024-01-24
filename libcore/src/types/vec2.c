@@ -46,6 +46,23 @@ static int vec2Normalize(lua_State *L)
     return 1;
 }
 
+static int vec2Dot(lua_State *L)
+{
+    tAbelV_fVec2 a = AbelL_checkVec2(L, 1);
+    tAbelV_fVec2 b = AbelL_checkVec2(L, 2);
+
+    lua_pushnumber(L, a.x * b.x + a.y * b.y);
+    return 1;
+}
+
+static int vec2Length(lua_State *L)
+{
+    tAbelV_fVec2 a = AbelL_checkVec2(L, 1);
+
+    lua_pushnumber(L, sqrt(a.x * a.x + a.y * a.y));
+    return 1;
+}
+
 static int vec2ToString(lua_State *L)
 {
     tAbelV_fVec2 v = AbelL_checkVec2(L, 1);
@@ -88,26 +105,59 @@ static int vec2GetY(lua_State *L)
     return 1;
 }
 
+static int vec2Equal(lua_State *L)
+{
+    tAbelV_fVec2 a = AbelL_checkVec2(L, 1);
+    tAbelV_fVec2 b = AbelL_checkVec2(L, 2);
+
+    printf("vec2Equal : %f, %f == %f, %f\n", a.x, a.y, b.x, b.y);
+    lua_pushboolean(L, a.x == b.x && a.y == b.y);
+    return 1;
+}
+
+static int vec2LessThan(lua_State *L)
+{
+    tAbelV_fVec2 a = AbelL_checkVec2(L, 1);
+    tAbelV_fVec2 b = AbelL_checkVec2(L, 2);
+
+    lua_pushboolean(L, a.x < b.x && a.y < b.y);
+    return 1;
+}
+
+static int vec2LessThanEqual(lua_State *L)
+{
+    tAbelV_fVec2 a = AbelL_checkVec2(L, 1);
+    tAbelV_fVec2 b = AbelL_checkVec2(L, 2);
+
+    lua_pushboolean(L, a.x <= b.x && a.y <= b.y);
+    return 1;
+}
+
 static luaL_Reg vec2MetaMethods[] = {
-    {     "__add",      vec2Add},
-    {     "__sub",      vec2Sub},
-    {     "__mul",      vec2Mul},
-    {     "__div",      vec2Div},
-    {"__tostring", vec2ToString},
-    {        NULL,         NULL}
+    {      "__eq",         vec2Equal},
+    {      "__lt",      vec2LessThan},
+    {      "__le", vec2LessThanEqual},
+    {     "__add",           vec2Add},
+    {     "__sub",           vec2Sub},
+    {     "__mul",           vec2Mul},
+    {     "__div",           vec2Div},
+    {"__tostring",      vec2ToString},
+    {        NULL,              NULL}
 };
 
 static luaL_Reg vec2Methods[] = {
-    {      "Add",       vec2Add},
-    {      "Sub",       vec2Sub},
-    {      "Mul",       vec2Mul},
-    {      "Div",       vec2Div},
-    {"Normalize", vec2Normalize},
-    {        "X",      vec2GetX},
-    {        "Y",      vec2GetY},
-    {     "SetX",      vec2SetX},
-    {     "SetY",      vec2SetY},
-    {       NULL,          NULL}
+    {       "Add",       vec2Add},
+    {       "Sub",       vec2Sub},
+    {       "Mul",       vec2Mul},
+    {       "Div",       vec2Div},
+    { "Normalize", vec2Normalize},
+    {"DotProduct",       vec2Dot},
+    {    "Length",    vec2Length},
+    {         "X",      vec2GetX},
+    {         "Y",      vec2GetY},
+    {      "SetX",      vec2SetX},
+    {      "SetY",      vec2SetY},
+    {        NULL,          NULL}
 };
 
 static int vec2New(lua_State *L)

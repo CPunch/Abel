@@ -5,7 +5,7 @@
 #include "core/event.h"
 #include "core/vec2.h"
 
-/* every 50ms, step all world physic events */
+/* every 10ms, step all world physic events */
 #define WORLD_STEP_INTERVAL 10
 
 typedef struct _tAbelW_cell
