@@ -192,5 +192,5 @@ void AbelS_drawSprite(tAbelS_sprite *sprite)
         return;
 
     dest = (SDL_Rect){.x = (pos.x * scale.x) + offset.x, .y = (pos.y * scale.y) + offset.y, .w = clip.w * scale.x, .h = clip.h * scale.y};
-    SDL_RenderCopy(AbelR_getRenderer(), sprite->tileSet->texture, &clip, &dest);
+    AbelR_renderTexture(sprite->tileSet, &clip, &dest);
 }
