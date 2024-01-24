@@ -17,8 +17,8 @@ function export.load(tileSet)
     print(tileSet)
     World.SetTileSet(tileSet)
 
-    for i = 0, MapSize do
-        for j = 0, MapSize do
+    for i = 0, MapSize-1 do
+        for j = 0, MapSize-1 do
             createRandomCell(i, j)
         end
     end
