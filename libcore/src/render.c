@@ -35,6 +35,7 @@ static tAbelR_state AbelR_state = {0};
 
 static void openRenderer(int width, int height, uint32_t flags)
 {
+    SDL_Renderer *renderer;
     AbelR_setScale(AbelV_newiVec2(2, 2));
 
     /* init camera */
@@ -43,7 +44,7 @@ static void openRenderer(int width, int height, uint32_t flags)
 
     if (flags & ABEL_INIT_NOGUI) {
         AbelR_state.rendererSurface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
-        AbelR_state.renderer = SDL_CreateSoftwareRenderer(AbelR_state.rendererSurface);
+        renderer = SDL_CreateSoftwareRenderer(AbelR_state.rendererSurface);
     } else {
         /* open window */
         AbelR_state.window =
@@ -52,12 +53,13 @@ static void openRenderer(int width, int height, uint32_t flags)
             ABEL_ERROR("Failed to open window: %s\n", SDL_GetError());
 
         /* create & set rendering target */
-        AbelR_state.renderer = SDL_CreateRenderer(AbelR_state.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-        if (AbelR_state.renderer == NULL)
+        renderer = SDL_CreateRenderer(AbelR_state.window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+        if (renderer == NULL)
             ABEL_ERROR("Failed to create renderer target: %s\n", SDL_GetError());
     }
 
-    SDL_SetRenderTarget(AbelR_state.renderer, NULL);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    AbelR_state.renderer = renderer;
 }
 
 static void drawRealtimeStats(void)

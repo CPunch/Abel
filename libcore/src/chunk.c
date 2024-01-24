@@ -82,7 +82,7 @@ static void drawTileClip(tAbelC_chunk *chunk, int id, tAbelV_iVec2 pos, LAYER_ID
     }
 
     /* draw clipped texture */
-    AbelR_renderTexture(chunk->tileSet, &src, &dest);
+    SDL_RenderCopy(AbelR_getRenderer(), chunk->tileSet->texture, &src, &dest);
     SDL_SetRenderTarget(AbelR_getRenderer(), NULL);
 }
 
@@ -113,10 +113,10 @@ void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
     }
 
     /* draw red debug chunk line */
-    SDL_SetRenderDrawColor(AbelR_getRenderer(), 255, 0, 0, 255);
-    SDL_RenderDrawLine(AbelR_getRenderer(), dest.x, dest.y, dest.x + dest.w, dest.y);
-    SDL_RenderDrawLine(AbelR_getRenderer(), dest.x, dest.y, dest.x, dest.y + dest.h);
-    SDL_SetRenderDrawColor(AbelR_getRenderer(), 0, 0, 0, 255);
+    // SDL_SetRenderDrawColor(AbelR_getRenderer(), 255, 0, 0, 255);
+    // SDL_RenderDrawLine(AbelR_getRenderer(), dest.x, dest.y, dest.x + dest.w, dest.y);
+    // SDL_RenderDrawLine(AbelR_getRenderer(), dest.x, dest.y, dest.x, dest.y + dest.h);
+    // SDL_SetRenderDrawColor(AbelR_getRenderer(), 0, 0, 0, 255);
 }
 
 void AbelC_drawTile(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer)
