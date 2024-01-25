@@ -28,8 +28,6 @@ tAbelC_chunk *AbelC_newChunk(tAbelR_texture *tileSet, tAbelV_iVec2 position)
     tAbelC_chunk *chunk = (tAbelC_chunk *)AbelM_malloc(sizeof(tAbelC_chunk));
     tAbelV_iVec2 textureSize = AbelV_muliVec2(AbelC_chunkSize, tileSet->tileSize);
 
-    chunk->bgFrame = AbelR_newBlankTexture(textureSize, tileSet->tileSize);
-    chunk->fgFrame = AbelR_newBlankTexture(textureSize, tileSet->tileSize);
     chunk->cellMap = (tAbelW_cell *)AbelM_malloc(sizeof(tAbelW_cell) * AbelC_chunkSize.x * AbelC_chunkSize.y);
     chunk->tileSet = tileSet;
     chunk->pos = position;
@@ -48,8 +46,6 @@ void AbelC_freeChunk(tAbelC_chunk *chunk)
         }
     }
 
-    AbelR_releaseTexture(chunk->bgFrame);
-    AbelR_releaseTexture(chunk->fgFrame);
     AbelR_releaseTexture(chunk->tileSet);
     AbelM_free(chunk->cellMap);
     AbelM_free(chunk->entities);
@@ -58,58 +54,48 @@ void AbelC_freeChunk(tAbelC_chunk *chunk)
 
 /* ========================================[[ Drawing ]]======================================== */
 
-static void drawTileClip(tAbelC_chunk *chunk, int id, tAbelV_iVec2 pos, LAYER_ID layer)
+static void drawTileClip(tAbelC_chunk *chunk, int id, tAbelV_iVec2 cellPos)
 {
     SDL_Rect dest, src;
+    tAbelV_iVec2 offset, scale; 
+    int posX, posY;
+
+    if (id == TILE_NIL)
+        return; /* do nothing */
+
+    /* get camera offset and scale */
+    offset = AbelR_getCameraOffset();
+    scale = AbelR_getScale();
 
     /* get tileset clip */
     src = AbelR_getTileClip(chunk->tileSet, id);
 
     /* get clip of render target */
+    posX = (chunk->pos.x * AbelC_chunkSize.x) + cellPos.x;
+    posY = (chunk->pos.y * AbelC_chunkSize.y) + cellPos.y;
     dest = (SDL_Rect){
-        .x = pos.x * chunk->tileSet->tileSize.x, .y = pos.y * chunk->tileSet->tileSize.y, .w = chunk->tileSet->tileSize.x, .h = chunk->tileSet->tileSize.y};
+        .x = (posX * chunk->tileSet->tileSize.x) * scale.x + offset.x,
+        .y = (posY * chunk->tileSet->tileSize.y) * scale.y + offset.y,
+        .w = chunk->tileSet->tileSize.x * scale.x,
+        .h = chunk->tileSet->tileSize.y * scale.y
+    };
 
-    /* render */
-    switch (layer) {
-    case LAYER_BG:
-        SDL_SetRenderTarget(AbelR_getRenderer(), chunk->bgFrame->texture);
-        break;
-    case LAYER_FG:
-        SDL_SetRenderTarget(AbelR_getRenderer(), chunk->fgFrame->texture);
-        break;
-    default:
-        ABEL_ERROR("Invalid layer id: %d\n", layer);
-    }
-
-    /* draw clipped texture */
+    /* draw clipped tile */
     SDL_RenderCopy(AbelR_getRenderer(), chunk->tileSet->texture, &src, &dest);
-    SDL_SetRenderTarget(AbelR_getRenderer(), NULL);
 }
 
 /* renders selected layer into AbelR_getRenderer() */
 void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
 {
-    SDL_Rect dest, src;
-    tAbelV_iVec2 offset = AbelR_getCameraOffset(), scale = AbelR_getScale();
-
-    src = (SDL_Rect){.x = 0, .y = 0, .w = AbelC_chunkSize.x * chunk->tileSet->tileSize.x, .h = AbelC_chunkSize.y * chunk->tileSet->tileSize.y};
-
-    /* get clip of render target */
-    dest = (SDL_Rect){.x = (((chunk->pos.x * chunk->tileSet->tileSize.x) * AbelC_chunkSize.x) * scale.x) + offset.x,
-                      .y = (((chunk->pos.y * chunk->tileSet->tileSize.y) * AbelC_chunkSize.y) * scale.y) + offset.y,
-                      .w = chunk->tileSet->tileSize.x * AbelC_chunkSize.x * scale.x,
-                      .h = chunk->tileSet->tileSize.y * AbelC_chunkSize.y * scale.y};
-
-    /* render */
-    switch (layer) {
-    case LAYER_BG:
-        AbelR_renderTexture(chunk->bgFrame, &src, &dest);
-        break;
-    case LAYER_FG:
-        AbelR_renderTexture(chunk->fgFrame, &src, &dest);
-        break;
-    default:
-        ABEL_ERROR("Invalid layer id: %d\n", layer);
+    for (int y = 0; y < AbelC_chunkSize.y; y++) {
+        for (int x = 0; x < AbelC_chunkSize.x; x++) {
+            tAbelW_cell cell = AbelC_getCell(chunk, AbelV_newiVec2(x, y));
+            if (layer == LAYER_BG) {
+                drawTileClip(chunk, cell.bgID, AbelV_newiVec2(x, y));
+            } else if (layer == LAYER_FG) {
+                drawTileClip(chunk, cell.fgID, AbelV_newiVec2(x, y));
+            }
+        }
     }
 
     /* draw red debug chunk line */
@@ -119,21 +105,16 @@ void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer)
     // SDL_SetRenderDrawColor(AbelR_getRenderer(), 0, 0, 0, 255);
 }
 
-void AbelC_drawTile(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer)
-{
-    drawTileClip(chunk, id, pos, layer);
-}
-
 /* =========================================[[ Cells ]]========================================= */
 
-void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
+void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID bg, TILE_ID fg, bool isSolid)
 {
     /* validation */
     int indx = (AbelC_chunkSize.x * pos.y) + pos.x;
     if (indx >= AbelC_chunkSize.x * AbelC_chunkSize.y)
         return; /* do nothing */
 
-    chunk->cellMap[indx] = (tAbelW_cell){.id = id, .isSolid = isSolid};
+    chunk->cellMap[indx] = (tAbelW_cell){.fgID = fg, .bgID = bg, .isSolid = isSolid};
 }
 
 tAbelW_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos)
@@ -141,7 +122,7 @@ tAbelW_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos)
     /* validation */
     int indx = (AbelC_chunkSize.x * pos.y) + pos.x;
     if (indx >= AbelC_chunkSize.x * AbelC_chunkSize.y)
-        return (tAbelW_cell){.id = 0, .isSolid = true}; /* if cell doesn't exist, return default cell */
+        return (tAbelW_cell){.fgID = TILE_NIL, .bgID = TILE_NIL, .isSolid = true}; /* if cell doesn't exist, return default cell */
 
     return chunk->cellMap[indx];
 }

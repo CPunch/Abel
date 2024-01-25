@@ -10,8 +10,9 @@
 
 typedef struct _tAbelW_cell
 {
+    TILE_ID bgID;
+    TILE_ID fgID;
     bool isSolid;
-    TILE_ID id;
 } tAbelW_cell;
 
 /* initalizers */
@@ -32,7 +33,7 @@ tAbelV_iVec2 AbelW_posToGrid(tAbelV_iVec2 pos);
 
 /* cells */
 void AbelW_setTileSet(tAbelR_texture *tileSet);
-void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
+void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID bg, TILE_ID fg, bool isSolid);
 tAbelR_texture *AbelW_getTileSet(void);
 tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos);
 

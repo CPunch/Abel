@@ -46,13 +46,23 @@ static int worldGetTileSet(lua_State *L)
     return 1;
 }
 
+static TILE_ID checkTileID(lua_State *L, int index)
+{
+    if (lua_type(L, index) == LUA_TNIL) {
+        return TILE_NIL;
+    } else {
+        return luaL_checkinteger(L, index);
+    }
+}
+
 static int worldSetCell(lua_State *L)
 {
     tAbelV_iVec2 pos = AbelV_f2iVec(AbelL_checkVec2(L, 1));
-    TILE_ID id = luaL_checkinteger(L, 2);
-    bool isSolid = lua_toboolean(L, 3);
+    TILE_ID bg = checkTileID(L, 2);
+    TILE_ID fg = checkTileID(L, 3);
+    bool isSolid = lua_toboolean(L, 4);
 
-    AbelW_setCell(pos, id, isSolid);
+    AbelW_setCell(pos, bg, fg, isSolid);
     return 0;
 }
 
@@ -61,7 +71,8 @@ static int worldGetCell(lua_State *L)
     tAbelV_iVec2 pos = AbelV_f2iVec(AbelL_checkVec2(L, 1));
     tAbelW_cell cell = AbelW_getCell(pos);
 
-    lua_pushinteger(L, cell.id);
+    lua_pushinteger(L, cell.bgID);
+    lua_pushinteger(L, cell.fgID);
     lua_pushboolean(L, cell.isSolid);
     return 2;
 }

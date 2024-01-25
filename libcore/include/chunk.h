@@ -16,8 +16,6 @@ enum _LAYER_ID
 
 typedef struct _tAbelC_chunk
 {
-    tAbelR_texture *bgFrame;
-    tAbelR_texture *fgFrame;
     tAbelW_cell *cellMap;
     tAbelR_texture *tileSet;
     AbelM_newVector(tAbelE_entity *, entities);
@@ -31,12 +29,10 @@ typedef struct _tAbelC_chunk
 tAbelC_chunk *AbelC_newChunk(tAbelR_texture *tileSet, tAbelV_iVec2 position);
 void AbelC_freeChunk(tAbelC_chunk *chunk);
 
-/* drawing */
 void AbelC_renderChunk(tAbelC_chunk *chunk, LAYER_ID layer);
-void AbelC_drawTile(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, LAYER_ID layer);
 
 /* cells */
-void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID id, bool isSolid);
+void AbelC_setCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos, TILE_ID bg, TILE_ID fg, bool isSolid);
 tAbelW_cell AbelC_getCell(tAbelC_chunk *chunk, tAbelV_iVec2 pos);
 
 /* entities */

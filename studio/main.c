@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     Abel_init(ABEL_INIT_DEFAULT);
-    AbelW_updateActiveDistance(1);
+    AbelW_updateActiveDistance(2);
 
     {
         tAbelVM_thread *thread = AbelL_loadScript("main.lua", 0);

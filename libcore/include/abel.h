@@ -30,6 +30,7 @@ typedef struct _tAbelW_cell tAbelW_cell;
 typedef uint16_t ASSET_ID;
 typedef uint8_t LAYER_ID;
 typedef uint16_t TILE_ID;
+#define TILE_NIL 0xFFFF
 
 #define ABEL_ASSERT(expr) assert(expr)
 #define ABEL_TEST(message, expr)                                                                                                                               \

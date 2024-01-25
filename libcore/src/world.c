@@ -346,15 +346,14 @@ void AbelW_setTileSet(tAbelR_texture *tileSet)
     AbelW_state.tileSet = tileSet;
 }
 
-void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID id, bool isSolid)
+void AbelW_setCell(tAbelV_iVec2 pos, TILE_ID bg, TILE_ID fg, bool isSolid)
 {
     /* update chunk */
     tAbelV_iVec2 chunkPos = AbelW_getChunkPos(pos), localPos;
     tAbelC_chunk *chunk = grabChunk(chunkPos);
 
     localPos = AbelC_gridPosToLocalPos(chunk, pos);
-    AbelC_drawTile(chunk, localPos, id, LAYER_BG);
-    AbelC_setCell(chunk, localPos, id, isSolid);
+    AbelC_setCell(chunk, localPos, bg, fg, isSolid);
 }
 
 tAbelR_texture *AbelW_getTileSet(void)
@@ -369,7 +368,7 @@ tAbelW_cell AbelW_getCell(tAbelV_iVec2 pos)
 
     /* if chunk doesn't exist, return default cell */
     if (chunk == NULL)
-        return (tAbelW_cell){.id = 0, .isSolid = true};
+        return (tAbelW_cell){.fgID = TILE_NIL, .bgID = TILE_NIL, .isSolid = true};
 
     tAbelV_iVec2 localPos = AbelC_gridPosToLocalPos(chunk, pos);
     return AbelC_getCell(chunk, localPos);
