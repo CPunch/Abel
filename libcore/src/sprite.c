@@ -90,10 +90,16 @@ static void playAnimation(tAbelS_animationStates *states, int animationID)
     states->animationID = animationID;
     animation->animationFrame = 0;
 
+    if (AbelM_countVector(animation->frames) == 0)
+        return; /* no frames in animation */
+
     /* if the timer is NOT running, start our timer (if we have more than 1 frame) */
-    if (states->animationTask == NULL && AbelM_countVector(animation->frames) > 1) {
+    if (states->animationTask == NULL) {
         /* start the timer at the *next* frame */
         states->animationTask = AbelT_newTask(animationTask(0, (void *)states), animationTask, (void *)states);
+    } else {
+        /* reschedule task */
+        AbelT_scheduleTask(states->animationTask, animation->frames[animation->animationFrame].delay);
     }
 }
 

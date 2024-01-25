@@ -4,13 +4,14 @@ local function createAnim(plr, startTileID)
     local moving = plr:AddAnimation()
     local idle = plr:AddAnimation()
 
-    -- 1 frame, lasting 250ms (we match the duration of the moving animation)
-    plr:AddFrame(idle, startTileID, 250)
+    -- 2 frames
+    plr:AddFrame(idle, startTileID, 1500)
+    plr:AddFrame(idle, startTileID + 1, 100)
 
     -- 4 frames, each lasting 250ms
-    plr:AddFrame(moving, startTileID + 1, 250)
-    plr:AddFrame(moving, startTileID, 250)
     plr:AddFrame(moving, startTileID + 2, 250)
+    plr:AddFrame(moving, startTileID, 250)
+    plr:AddFrame(moving, startTileID + 3, 250)
     plr:AddFrame(moving, startTileID, 250)
     return {
         moving = moving,
@@ -65,17 +66,16 @@ function export.createPlayer(texture)
     -- animations
     local animationLookupTable = {
         [vecLookup(0, 1)] = createAnim(plr, 0),
-        [vecLookup(-1, 1)] = createAnim(plr, 3),
-        [vecLookup(1, 1)] = createAnim(plr, 6),
-        [vecLookup(-1, 0)] = createAnim(plr, 9),
-        [vecLookup(1, 0)] = createAnim(plr, 12),
+        [vecLookup(-1, 1)] = createAnim(plr, 4),
+        [vecLookup(1, 1)] = createAnim(plr, 8),
+        [vecLookup(-1, 0)] = createAnim(plr, 12),
         [vecLookup(0, -1)] = createAnim(plr, 16),
-        [vecLookup(1, -1)] = createAnim(plr, 19),
-        [vecLookup(-1, -1)] = createAnim(plr, 22),
+        [vecLookup(1, -1)] = createAnim(plr, 20),
+        [vecLookup(-1, -1)] = createAnim(plr, 24),
+        [vecLookup(1, 0)] = createAnim(plr, 28),
     }
 
-    local idleAnim = plr:AddAnimation()
-    plr:AddFrame(idleAnim, 0, 250)
+    local idleAnim = animationLookupTable[vecLookup(0, 1)].idle
     World.OnStep(function()
         -- update velocity
         local vel = selectedDir:Normalize() * walkSpeed
