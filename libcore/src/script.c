@@ -7,6 +7,7 @@
 #include "types/entity.h"
 #include "types/input.h"
 #include "types/texture.h"
+#include "types/sound.h"
 #include "types/vec2.h"
 #include "types/world.h"
 
@@ -312,6 +313,7 @@ void AbelL_init(uint32_t initFlags)
     AbelL_registerEntity(state.L);
     AbelL_registerInput(state.L);
     AbelL_registerWorld(state.L);
+    AbelL_registerSound(state.L);
 }
 
 void AbelL_quit(void)

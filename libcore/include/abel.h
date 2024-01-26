@@ -15,6 +15,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
 /* broadly used types */
 typedef struct _tAbelT_task tAbelT_task;
@@ -26,6 +27,7 @@ typedef struct _tAbelR_texture tAbelR_texture;
 typedef struct _tAbelS_sprite tAbelS_sprite;
 typedef struct _tAbelE_entity tAbelE_entity;
 typedef struct _tAbelW_cell tAbelW_cell;
+typedef struct _tAbelR_sound tAbelR_sound;
 
 typedef uint16_t ASSET_ID;
 typedef uint8_t LAYER_ID;
