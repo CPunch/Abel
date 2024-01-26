@@ -66,6 +66,7 @@ static int textureLoad(lua_State *L)
     CHECK_SIZE(t->size, t->tileSize);
 
     AbelL_pushTexture(L, t);
+    AbelR_releaseTexture(t);
     return 1;
 }
 
