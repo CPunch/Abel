@@ -169,6 +169,7 @@ void AbelR_quit(void)
     AbelT_freeTask(AbelR_state.renderTask);
 
     nk_sdl_shutdown();
+    Mix_CloseAudio();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_FreeSurface(AbelR_state.rendererSurface);
     SDL_DestroyWindow(AbelR_state.window);
@@ -184,6 +185,7 @@ void AbelR_quit(void)
     // make sure to define ABEL_ASAN.
     // referencing https://old.reddit.com/r/C_Programming/comments/9kkxax/using_addresssanitizer_with_leaking_libraries/
 #ifndef ABEL_ASAN
+    Mix_Quit();
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
