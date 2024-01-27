@@ -13,9 +13,9 @@
 /* SDL includes */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
 
 /* broadly used types */
 typedef struct _tAbelT_task tAbelT_task;
@@ -32,7 +32,7 @@ typedef struct _tAbelR_sound tAbelR_sound;
 typedef uint16_t ASSET_ID;
 typedef uint8_t LAYER_ID;
 typedef uint16_t TILE_ID;
-#define TILE_NIL 0xFFFF
+#define TILE_NIL          0xFFFF
 
 #define ABEL_ASSERT(expr) assert(expr)
 #define ABEL_TEST(message, expr)                                                                                                                               \

@@ -136,7 +136,7 @@ void AbelR_init(uint32_t initFlags)
     if (TTF_Init() != 0)
         ABEL_ERROR("Failed to initialize: SDL_TTF: %s\n", TTF_GetError());
 
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    if (!(initFlags & ABEL_INIT_NOAUDIO) && Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
         ABEL_ERROR("Failed to initialize SDL_MIXER: %s\n", Mix_GetError());
 
     openRenderer(START_SCREEN_WIDTH, START_SCREEN_HEIGHT, initFlags);

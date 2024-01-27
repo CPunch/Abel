@@ -57,7 +57,7 @@ void AbelC_freeChunk(tAbelC_chunk *chunk)
 static void drawTileClip(tAbelC_chunk *chunk, int id, tAbelV_iVec2 cellPos)
 {
     SDL_Rect dest, src;
-    tAbelV_iVec2 offset, scale; 
+    tAbelV_iVec2 offset, scale;
     int posX, posY;
 
     if (id == TILE_NIL)
@@ -73,12 +73,10 @@ static void drawTileClip(tAbelC_chunk *chunk, int id, tAbelV_iVec2 cellPos)
     /* get clip of render target */
     posX = (chunk->pos.x * AbelC_chunkSize.x) + cellPos.x;
     posY = (chunk->pos.y * AbelC_chunkSize.y) + cellPos.y;
-    dest = (SDL_Rect){
-        .x = (posX * chunk->tileSet->tileSize.x) * scale.x + offset.x,
-        .y = (posY * chunk->tileSet->tileSize.y) * scale.y + offset.y,
-        .w = chunk->tileSet->tileSize.x * scale.x,
-        .h = chunk->tileSet->tileSize.y * scale.y
-    };
+    dest = (SDL_Rect){.x = (posX * chunk->tileSet->tileSize.x) * scale.x + offset.x,
+                      .y = (posY * chunk->tileSet->tileSize.y) * scale.y + offset.y,
+                      .w = chunk->tileSet->tileSize.x * scale.x,
+                      .h = chunk->tileSet->tileSize.y * scale.y};
 
     /* draw clipped tile */
     SDL_RenderCopy(AbelR_getRenderer(), chunk->tileSet->texture, &src, &dest);

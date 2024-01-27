@@ -6,8 +6,8 @@
 #include "core/tasks.h"
 #include "types/entity.h"
 #include "types/input.h"
-#include "types/texture.h"
 #include "types/sound.h"
+#include "types/texture.h"
 #include "types/vec2.h"
 #include "types/world.h"
 

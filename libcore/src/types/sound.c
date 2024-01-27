@@ -1,4 +1,5 @@
 #include "sound.h"
+
 #include "types/sound.h"
 
 static const char *ABEL_SOUND_METATABLE = "Sound";
@@ -12,7 +13,7 @@ static int soundGC(lua_State *L)
 
 static luaL_Reg soundMetaMethods[] = {
     {"__gc", soundGC},
-    {  NULL,      NULL}
+    {  NULL,    NULL}
 };
 
 static int soundPlay(lua_State *L)
@@ -25,7 +26,7 @@ static int soundPlay(lua_State *L)
 
 static luaL_Reg soundMethods[] = {
     {"Play", soundPlay},
-    {  NULL,        NULL}
+    {  NULL,      NULL}
 };
 
 static int soundLoad(lua_State *L)
