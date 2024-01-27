@@ -45,6 +45,7 @@
       {
           "name": "test-vcpkg",
           "configurePreset": "vcpkg",
+          "output": {"outputOnFailure": true},
           "hidden": true
       },
       {
