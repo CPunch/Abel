@@ -20,9 +20,34 @@ static tAbelS_sprite *toSprite(lua_State *L, int index)
     return &(*ud)->sprite;
 }
 
+static int entityIndex(lua_State *L)
+{
+    tAbelE_entity *e = AbelL_toEntity(L, 1);
+    int ref = AbelE_getRef(e);
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+    lua_pushvalue(L, 2);
+    lua_gettable(L, -2);
+    return 1;
+}
+
+static int entityNewIndex(lua_State *L)
+{
+    tAbelE_entity *e = AbelL_toEntity(L, 1);
+    int ref = AbelE_getRef(e);
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+    lua_pushvalue(L, 2);
+    lua_pushvalue(L, 3);
+    lua_settable(L, -3);
+    return 0;
+}
+
 static luaL_Reg entityMetaMethods[] = {
-    {"__gc", entityGC},
-    {  NULL,     NULL}
+    {      "__gc",       entityGC},
+    {   "__index",    entityIndex},
+    {"__newindex", entityNewIndex},
+    {        NULL,           NULL}
 };
 
 static int entityAdd(lua_State *L)
@@ -141,6 +166,7 @@ static int entityNew(lua_State *L)
 
     AbelE_initEntity(e, tileSet, pos, AbelE_defaultFree);
     AbelL_pushEntity(L, e);
+    AbelM_releaseRef(&e->refCount);
     return 1;
 }
 
@@ -154,10 +180,9 @@ void AbelL_registerEntity(lua_State *L)
     luaL_newmetatable(L, ABEL_ENTITY_METATABLE);
     luaL_setfuncs(L, entityMetaMethods, 0);
 
-    /* set entity methods */
-    lua_newtable(L);
-    luaL_setfuncs(L, entityMethods, 0);
-    lua_setfield(L, -2, "__index");
+    /* lock entity metatable */
+    lua_pushstring(L, "This metatable is locked");
+    lua_setfield(L, -2, "__metatable");
     lua_pop(L, 1);
 
     /* register entity functions */
@@ -170,6 +195,17 @@ void AbelL_pushEntity(lua_State *L, tAbelE_entity *e)
 {
     tAbelE_entity **ud = lua_newuserdata(L, sizeof(tAbelE_entity *));
     *ud = e;
+
+    /* setup userdata table, since lua scripts expect it.
+        we don't do this until now to avoid creating a table
+        for every entity if it's never passed to lua
+     */
+    int ref = AbelE_getRef(e);
+    if (ref == LUA_NOREF) {
+        lua_newtable(L);
+        luaL_setfuncs(L, entityMethods, 0);
+        AbelE_setRef(e, luaL_ref(L, LUA_REGISTRYINDEX));
+    }
 
     luaL_setmetatable(L, ABEL_ENTITY_METATABLE);
     AbelM_retainRef(&e->refCount);

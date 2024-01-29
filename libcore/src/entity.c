@@ -6,6 +6,7 @@
 #include "core/vec2.h"
 #include "game.h"
 #include "render.h"
+#include "script.h"
 #include "sprite.h"
 #include "world.h"
 
@@ -22,6 +23,7 @@ void AbelE_initEntity(tAbelE_entity *entity, tAbelR_texture *tileSet, tAbelV_fVe
     entity->collider = AbelV_newiVec2(tileSet->tileSize.x - 1, tileSet->tileSize.y - 1);
     entity->currentChunk = NULL;
     entity->nextRender = NULL;
+    entity->luaRef = LUA_NOREF;
 
     AbelS_initSprite(&entity->sprite, tileSet, pos);
     AbelM_initRef(&entity->refCount, free);
@@ -30,6 +32,12 @@ void AbelE_initEntity(tAbelE_entity *entity, tAbelR_texture *tileSet, tAbelV_fVe
 void AbelE_cleanupEntity(tAbelE_entity *entity)
 {
     AbelS_cleanupSprite(&entity->sprite);
+
+    /* clear userdata from registry */
+    lua_State *L = AbelL_globalState();
+    if (L && entity->luaRef != LUA_NOREF) {
+        luaL_unref(L, LUA_REGISTRYINDEX, entity->luaRef);
+    }
 }
 
 /* ========================================[[ Setters ]]======================================== */
@@ -73,6 +81,11 @@ void AbelE_setChunk(tAbelE_entity *entity, tAbelC_chunk *chunk)
     entity->currentChunk = chunk;
 }
 
+void AbelE_setRef(tAbelE_entity *entity, int ref)
+{
+    entity->luaRef = ref;
+}
+
 /* ========================================[[ Getters ]]======================================== */
 
 tAbelV_fVec2 AbelE_getPosition(tAbelE_entity *entity)
@@ -93,6 +106,11 @@ tAbelV_iVec2 AbelE_getCollider(tAbelE_entity *entity)
 tAbelC_chunk *AbelE_getChunk(tAbelE_entity *entity)
 {
     return entity->currentChunk;
+}
+
+int AbelE_getRef(tAbelE_entity *entity)
+{
+    return entity->luaRef;
 }
 
 static bool checkCell(tAbelV_iVec2 worldPos)
