@@ -122,6 +122,7 @@ static void freeThread(tAbelVM_thread *thread)
     /* free events */
     for (int i = 0; i < AbelM_countVector(thread->events); i++) {
         printf("event %p refcount: %d\n", thread->events[i], thread->events[i]->refCount.refCount);
+        thread->events[i]->thread = NULL;
         AbelM_releaseRef(&thread->events[i]->refCount);
     }
 
@@ -183,6 +184,7 @@ static void removeLuaEvent(tAbelVM_luaEvent *userData)
         if (thread->events[i] == userData) {
             AbelM_rmvVector(thread->events, i, 1);
             AbelM_releaseRef(&userData->refCount);
+            userData->thread = NULL;
             return;
         }
     }
@@ -221,7 +223,7 @@ static luaL_Reg eventMetaMethods[] = {
 };
 
 static luaL_Reg eventMethods[] = {
-    {"disconnect", eventDisconnect},
+    {"Disconnect", eventDisconnect},
     {        NULL,            NULL}
 };
 
@@ -251,10 +253,14 @@ static void eventCallback(const void *uData, const void *eventData)
 static void freeEvent(tAbelM_refCount *ref)
 {
     tAbelVM_luaEvent *userData = (tAbelVM_luaEvent *)ref;
-    lua_State *L = userData->thread->L;
 
-    /* free callback */
-    luaL_unref(L, LUA_REGISTRYINDEX, userData->callbackRef);
+    /* remove from thread */
+    if (userData->thread) {
+        lua_State *L = userData->thread->L;
+
+        /* free callback */
+        luaL_unref(L, LUA_REGISTRYINDEX, userData->callbackRef);
+    }
 
     /* free event */
     if (userData->event) {
@@ -319,17 +325,17 @@ void AbelL_init(uint32_t initFlags)
 void AbelL_quit(void)
 {
     /* release all yielded threads */
-    lua_rawgeti(state.L, LUA_REGISTRYINDEX, state.threadLookupRef);
-    lua_pushnil(state.L);
-    while (lua_next(state.L, -2)) {
-        tAbelVM_thread *thread = lua_touserdata(state.L, -1);
-        if (thread->status == LUA_YIELD) {
-            AbelL_releaseThread(thread);
-        }
+    // lua_rawgeti(state.L, LUA_REGISTRYINDEX, state.threadLookupRef);
+    // lua_pushnil(state.L);
+    // while (lua_next(state.L, -2)) {
+    //     tAbelVM_thread *thread = lua_touserdata(state.L, -1);
+    //     if (thread->status == LUA_YIELD) {
+    //         AbelL_releaseThread(thread);
+    //     }
 
-        lua_pop(state.L, 1);
-    }
-    lua_pop(state.L, 1);
+    //     lua_pop(state.L, 1);
+    // }
+    // lua_pop(state.L, 1);
 
     luaL_unref(state.L, LUA_REGISTRYINDEX, state.threadLookupRef);
 
