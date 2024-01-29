@@ -343,6 +343,11 @@ void AbelL_quit(void)
     state.L = NULL;
 }
 
+lua_State *AbelL_globalState(void)
+{
+    return state.L;
+}
+
 tAbelVM_thread *AbelL_loadScript(const char *path, int nresults)
 {
     lua_State *L = lua_newthread(state.L);

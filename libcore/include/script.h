@@ -39,6 +39,8 @@ typedef struct _tAbelVM_thread
 void AbelL_init(uint32_t initFlags);
 void AbelL_quit(void);
 
+lua_State *AbelL_globalState(void);
+
 tAbelVM_thread *AbelL_loadScript(const char *path, int nresults);
 tAbelVM_thread *AbelL_runScript(const char *script, int nresults);
 void AbelL_releaseThread(tAbelVM_thread *thread);
