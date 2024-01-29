@@ -79,6 +79,11 @@ static int worldGetCell(lua_State *L)
 
 static int worldSetFollow(lua_State *L)
 {
+    if (lua_type(L, 1) == LUA_TNIL) {
+        AbelR_setFollow(NULL);
+        return 0;
+    }
+
     tAbelE_entity *e = AbelL_toEntity(L, 1);
     AbelR_setFollow(e);
     return 0;
