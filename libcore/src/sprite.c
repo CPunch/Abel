@@ -21,6 +21,17 @@ static void freeAnimation(tAbelS_animation *animation)
     AbelM_free(animation->frames);
 }
 
+/* make sure to validate animationID exists and has > 0 frames */
+static uint32_t getAnimationDelay(tAbelS_animationStates *states, int animationID)
+{
+    /* grab current animation */
+    tAbelS_animation *animation;
+    animation = &states->animations[animationID];
+
+    /* return delay */
+    return animation->frames[animation->animationFrame].delay / states->multiplier;
+}
+
 static uint32_t animationTask(uint32_t tick, void *uData)
 {
     tAbelS_animationStates *states = (tAbelS_animationStates *)uData;
@@ -31,7 +42,7 @@ static uint32_t animationTask(uint32_t tick, void *uData)
         animation->animationFrame = 0;
 
     /* delay until *next* frame */
-    return animation->frames[animation->animationFrame].delay;
+    return getAnimationDelay(states, states->animationID);
 }
 
 static int addAnimation(tAbelS_animationStates *states)
@@ -99,7 +110,7 @@ static void playAnimation(tAbelS_animationStates *states, int animationID)
         states->animationTask = AbelT_newTask(animationTask(0, (void *)states), animationTask, (void *)states);
     } else {
         /* reschedule task */
-        AbelT_scheduleTask(states->animationTask, animation->frames[animation->animationFrame].delay);
+        AbelT_scheduleTask(states->animationTask, getAnimationDelay(states, animationID));
     }
 }
 
@@ -107,6 +118,9 @@ static void stopAnimation(tAbelS_animationStates *states)
 {
     if (states->animationTask != NULL)
         AbelT_freeTask(states->animationTask);
+
+    states->animationTask = NULL;
+    states->animationID = -1;
 }
 
 static SDL_Rect getCurrentClip(tAbelS_animationStates *states)
@@ -125,6 +139,7 @@ static tAbelS_animationStates newAState()
 {
     tAbelS_animationStates states = (tAbelS_animationStates){.animationID = -1, .animationTask = NULL};
     AbelM_initVector(states.animations, 2);
+    states.multiplier = 1;
     return states;
 }
 
@@ -178,6 +193,23 @@ void AbelS_playAnimation(tAbelS_sprite *sprite, int animationID)
 void AbelS_stopAnimation(tAbelS_sprite *sprite)
 {
     stopAnimation(&sprite->animations);
+}
+
+void AbelS_speedUpAnimation(tAbelS_sprite *sprite, int multiplier)
+{
+    if (multiplier < 1)
+        ABEL_ERROR("Invalid multiplier: %d\n", multiplier);
+
+    if (multiplier == sprite->animations.multiplier)
+        return; /* already at this speed */
+
+    sprite->animations.multiplier = multiplier;
+
+    /* reschedule task */
+    int currentAnimation = sprite->animations.animationID;
+    if (sprite->animations.animationTask != NULL && currentAnimation != -1) {
+        AbelT_scheduleTask(sprite->animations.animationTask, getAnimationDelay(&sprite->animations, currentAnimation));
+    }
 }
 
 void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbelV_fVec2 pos)

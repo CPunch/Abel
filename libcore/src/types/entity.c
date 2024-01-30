@@ -141,20 +141,30 @@ static int spriteStopAnimation(lua_State *L)
     return 0;
 }
 
+static int spriteSetAnimationSpeed(lua_State *L)
+{
+    tAbelS_sprite *s = toSprite(L, 1);
+    int multiplier = luaL_checknumber(L, 2);
+
+    AbelS_speedUpAnimation(s, multiplier);
+    return 0;
+}
+
 static luaL_Reg entityMethods[] = {
-    {          "Add",           entityAdd},
-    {       "Remove",        entityRemove},
-    {     "Velocity",   entityGetVelocity},
-    {  "SetVelocity",   entitySetVelocity},
-    {          "Pos",        entityGetPos},
-    {       "SetPos",        entitySetPos},
+    {              "Add",               entityAdd},
+    {           "Remove",            entityRemove},
+    {         "Velocity",       entityGetVelocity},
+    {      "SetVelocity",       entitySetVelocity},
+    {              "Pos",            entityGetPos},
+    {           "SetPos",            entitySetPos},
  /* sprite methods */
-    {      "TileSet",    spriteGetTileSet},
-    { "AddAnimation",  spriteAddAnimation},
-    {     "AddFrame",      spriteAddFrame},
-    {"PlayAnimation", spritePlayAnimation},
-    {"StopAnimation", spriteStopAnimation},
-    {           NULL,                NULL}
+    {          "TileSet",        spriteGetTileSet},
+    {     "AddAnimation",      spriteAddAnimation},
+    {         "AddFrame",          spriteAddFrame},
+    {    "PlayAnimation",     spritePlayAnimation},
+    {    "StopAnimation",     spriteStopAnimation},
+    {"SetAnimationSpeed", spriteSetAnimationSpeed},
+    {               NULL,                    NULL}
 };
 
 /* creates a new default entity */

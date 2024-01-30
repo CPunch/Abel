@@ -96,6 +96,8 @@ function export.createPlayer(texture)
             else
                 plr:PlayAnimation(idleAnim)
             end
+
+            plr:SetAnimationSpeed(plr.isSprinting and 2 or 1)
         end)
 
         oldAdd(self)

@@ -24,6 +24,7 @@ typedef struct _tAbelS_animationStates
     AbelM_newVector(tAbelS_animation, animations);
     int animationID; /* which animation is playing */
     tAbelT_task *animationTask;
+    int multiplier;
 } tAbelS_animationStates;
 
 typedef struct _tAbelS_sprite
@@ -40,6 +41,7 @@ void AbelS_addFrame(tAbelS_sprite *sprite, int animationID, TILE_ID id, uint32_t
 int AbelS_addAnimation(tAbelS_sprite *sprite);
 void AbelS_playAnimation(tAbelS_sprite *sprite, int animationID);
 void AbelS_stopAnimation(tAbelS_sprite *sprite);
+void AbelS_speedUpAnimation(tAbelS_sprite *sprite, int multiplier);
 void AbelS_setSpritePos(tAbelS_sprite *sprite, tAbelV_fVec2 pos);
 
 void AbelS_drawSprite(tAbelS_sprite *sprite);
