@@ -5,18 +5,6 @@
 #include "core/mem.h"
 #include "core/vec2.h"
 
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-/* clang-format off */
-#include "nuklear.h"
-#include "nuklear_sdl_renderer.h"
-/* clang-format on */
-
 #define START_SCREEN_WIDTH  1024
 #define START_SCREEN_HEIGHT 512
 #define TARGET_FPS          60
@@ -41,7 +29,6 @@ void AbelR_init(uint32_t initFlags);
 void AbelR_quit(void);
 
 SDL_Renderer *AbelR_getRenderer(void);
-struct nk_context *AbelR_getNuklearCtx(void);
 tAbelV_iVec2 AbelR_getCameraSize(void);
 tAbelV_iVec2 AbelR_getCameraPos(void);
 tAbelV_iVec2 AbelR_getCameraOffset(void);

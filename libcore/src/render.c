@@ -1,5 +1,3 @@
-#define NK_IMPLEMENTATION
-#define NK_SDL_RENDERER_IMPLEMENTATION
 #include "render.h"
 
 #include "chunk.h"
@@ -22,7 +20,6 @@ typedef struct _tAbelR_State
     SDL_Window *window;
     SDL_Surface *rendererSurface;
     SDL_Renderer *renderer;
-    struct nk_context *nkCtx;
     tAbelT_task *resetFPSTask;
     tAbelT_task *renderTask;
     tAbelE_entity *follow;
@@ -64,18 +61,7 @@ static void openRenderer(int width, int height, uint32_t flags)
 
 static void drawRealtimeStats(void)
 {
-    struct nk_context *ctx = AbelR_getNuklearCtx();
-
-    /* windowless watermark for realtime stats */
-    nk_style_push_style_item(ctx, &ctx->style.window.fixed_background, nk_style_item_hide());
-    if (nk_begin(ctx, "DEBUG", nk_rect(0, 0, 210, 120), NK_WINDOW_NO_SCROLLBAR)) {
-        nk_layout_row_static(ctx, 13, 150, 1);
-        nk_labelf(ctx, NK_TEXT_LEFT, "ABEL v0.1");
-        nk_layout_row_static(ctx, 13, 200, 1);
-        nk_labelf(ctx, NK_TEXT_LEFT, "FPS: %d", AbelR_getFPS());
-    }
-    nk_end(ctx);
-    nk_style_pop_style_item(ctx);
+    // stubbed
 }
 
 static uint32_t resetFPSTask(uint32_t delta, void *uData)
@@ -98,7 +84,6 @@ static uint32_t renderTask(uint32_t delta, void *uData)
 
     /* render chunks */
     AbelW_render();
-    nk_sdl_render(NK_ANTI_ALIASING_ON);
 
     /* present to window */
     SDL_RenderPresent(AbelR_state.renderer);
@@ -114,7 +99,6 @@ static void reset()
     AbelR_state.window = NULL;
     AbelR_state.rendererSurface = NULL;
     AbelR_state.renderer = NULL;
-    AbelR_state.nkCtx = NULL;
     AbelR_state.resetFPSTask = NULL;
     AbelR_state.renderTask = NULL;
     AbelR_state.follow = NULL;
@@ -141,24 +125,6 @@ void AbelR_init(uint32_t initFlags)
 
     openRenderer(START_SCREEN_WIDTH, START_SCREEN_HEIGHT, initFlags);
 
-    /* setup nuklear ui */
-    AbelR_state.nkCtx = nk_sdl_init(AbelR_state.window, AbelR_state.renderer);
-
-    {
-        struct nk_font_atlas *atlas;
-        struct nk_font_config config = nk_font_config(0);
-        struct nk_font *font;
-
-        nk_sdl_font_stash_begin(&atlas);
-
-        /* load default font */
-        font = nk_font_atlas_add_from_memory(atlas, (void *)ABEL_KONGTEXTBLOB, sizeof(ABEL_KONGTEXTBLOB), 14, &config);
-        /* font = nk_font_atlas_add_from_file(atlas, "res/kongtext.ttf", 14, &config); */
-        nk_sdl_font_stash_end();
-
-        nk_style_set_font(AbelR_state.nkCtx, &font->handle);
-    }
-
     AbelR_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
     AbelR_state.renderTask = AbelT_newTask(RENDER_INTERVAL, renderTask, NULL);
 }
@@ -168,7 +134,6 @@ void AbelR_quit(void)
     AbelT_freeTask(AbelR_state.resetFPSTask);
     AbelT_freeTask(AbelR_state.renderTask);
 
-    nk_sdl_shutdown();
     Mix_CloseAudio();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_FreeSurface(AbelR_state.rendererSurface);
@@ -195,11 +160,6 @@ void AbelR_quit(void)
 SDL_Renderer *AbelR_getRenderer(void)
 {
     return AbelR_state.renderer;
-}
-
-struct nk_context *AbelR_getNuklearCtx(void)
-{
-    return AbelR_state.nkCtx;
 }
 
 tAbelV_iVec2 AbelR_getCameraPos(void)

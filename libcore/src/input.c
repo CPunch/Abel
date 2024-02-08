@@ -56,10 +56,8 @@ tAbelVM_eventConnection **AbelI_onKeyUpHead(void)
 void AbelI_pollEvents(void)
 {
     SDL_Event evnt;
-    struct nk_context *ctx = AbelR_getNuklearCtx();
 
     /* handle SDL events */
-    nk_input_begin(ctx);
     while (SDL_PollEvent(&evnt) != 0) {
         switch (evnt.type) {
         case SDL_QUIT:
@@ -89,7 +87,5 @@ void AbelI_pollEvents(void)
         default:
             break;
         }
-        nk_sdl_handle_event(&evnt);
     }
-    nk_input_end(ctx);
 }
