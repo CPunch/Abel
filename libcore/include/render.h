@@ -48,7 +48,10 @@ void AbelR_zoomCamera(int zoom);
 tAbelR_texture *AbelR_newTexture(SDL_Texture *texture, tAbelV_iVec2 tileSize);
 void AbelR_releaseTexture(tAbelR_texture *texture);
 void AbelR_retainTexture(tAbelR_texture *texture);
+
+/* if font is NULL, the default font will be used */
 tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text);
+tAbelV_iVec2 AbelR_getTextSize(TTF_Font *font, const char *text);
 
 void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest);
 tAbelR_texture *AbelR_newBlankTexture(tAbelV_iVec2 size, tAbelV_iVec2 tileSize);

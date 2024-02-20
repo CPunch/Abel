@@ -8,6 +8,7 @@
 #include "core/vec2.h"
 #include "entity.h"
 #include "res/kongtext.h"
+#include "ui.h"
 #include "world.h"
 
 #define SDL_IMG_FLAGS IMG_INIT_PNG
@@ -20,6 +21,8 @@ typedef struct _tAbelR_State
     SDL_Window *window;
     SDL_Surface *rendererSurface;
     SDL_Renderer *renderer;
+    TTF_Font *font;
+    tAbelU_Label *debugLabel;
     tAbelT_task *resetFPSTask;
     tAbelT_task *renderTask;
     tAbelE_entity *follow;
@@ -61,7 +64,7 @@ static void openRenderer(int width, int height, uint32_t flags)
 
 static void drawRealtimeStats(void)
 {
-    // stubbed
+    AbelU_setLabelTextf(AbelR_state.debugLabel, "ABEL v0.1\nFPS: %d", AbelR_getFPS());
 }
 
 static uint32_t resetFPSTask(uint32_t delta, void *uData)
@@ -85,6 +88,9 @@ static uint32_t renderTask(uint32_t delta, void *uData)
     /* render chunks */
     AbelW_render();
 
+    /* render debug label */
+    AbelU_renderWidget(&AbelR_state.debugLabel->widget);
+
     /* present to window */
     SDL_RenderPresent(AbelR_state.renderer);
     AbelR_state.currFPS++;
@@ -99,6 +105,8 @@ static void reset()
     AbelR_state.window = NULL;
     AbelR_state.rendererSurface = NULL;
     AbelR_state.renderer = NULL;
+    AbelR_state.font = NULL;
+    AbelR_state.debugLabel = NULL;
     AbelR_state.resetFPSTask = NULL;
     AbelR_state.renderTask = NULL;
     AbelR_state.follow = NULL;
@@ -125,6 +133,13 @@ void AbelR_init(uint32_t initFlags)
 
     openRenderer(START_SCREEN_WIDTH, START_SCREEN_HEIGHT, initFlags);
 
+    /* setup default font */
+    {
+        SDL_RWops *rw = SDL_RWFromMem((void *)ABEL_KONGTEXTBLOB, sizeof(ABEL_KONGTEXTBLOB));
+        AbelR_state.font = TTF_OpenFontRW(rw, 1, 14);
+    }
+
+    AbelR_state.debugLabel = AbelU_newLabel(AbelV_newiVec2(0, 0), AbelV_newiVec2(200, 200), (SDL_Color){255, 255, 255, 255}, "ABEL v0.1\nFPS: 0");
     AbelR_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
     AbelR_state.renderTask = AbelT_newTask(RENDER_INTERVAL, renderTask, NULL);
 }
@@ -133,7 +148,9 @@ void AbelR_quit(void)
 {
     AbelT_freeTask(AbelR_state.resetFPSTask);
     AbelT_freeTask(AbelR_state.renderTask);
+    AbelU_releaseWidget(&AbelR_state.debugLabel->widget);
 
+    TTF_CloseFont(AbelR_state.font);
     Mix_CloseAudio();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_FreeSurface(AbelR_state.rendererSurface);
@@ -288,10 +305,24 @@ tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text)
     SDL_Texture *texture;
     SDL_Color textColor = {255, 255, 255, 0};
 
+    if (font == NULL)
+        font = AbelR_state.font;
+
     surface = TTF_RenderText_Solid(font, text, textColor);
     texture = SDL_CreateTextureFromSurface(AbelR_state.renderer, surface);
     SDL_FreeSurface(surface);
     return AbelR_newTexture(texture, AbelV_newiVec2(0, 0));
+}
+
+tAbelV_iVec2 AbelR_getTextSize(TTF_Font *font, const char *text)
+{
+    tAbelV_iVec2 size;
+
+    if (font == NULL)
+        font = AbelR_state.font;
+
+    TTF_SizeText(font, text, &size.x, &size.y);
+    return size;
 }
 
 void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest)
