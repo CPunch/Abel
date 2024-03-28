@@ -5,7 +5,7 @@
 #include "types/vec2.h"
 #include "world.h"
 
-static const char *ABEL_ENTITY_METATABLE = "Sprite";
+static const char *ABEL_ENTITY_METATABLE = "Entity";
 
 static int entityGC(lua_State *L)
 {
