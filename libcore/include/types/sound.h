@@ -10,7 +10,7 @@
 
 void AbelL_registerSound(lua_State *L);
 
-void AbelL_pushSound(lua_State *L, tAbelR_sound *t);
-tAbelR_sound *AbelL_toSound(lua_State *L, int index);
+void AbelL_pushSound(lua_State *L, tAbelK_sound *t);
+tAbelK_sound *AbelL_toSound(lua_State *L, int index);
 
 #endif

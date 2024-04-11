@@ -128,9 +128,6 @@ void AbelR_init(uint32_t initFlags)
     if (TTF_Init() != 0)
         ABEL_ERROR("Failed to initialize: SDL_TTF: %s\n", TTF_GetError());
 
-    if (!(initFlags & ABEL_INIT_NOAUDIO) && Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-        ABEL_ERROR("Failed to initialize SDL_MIXER: %s\n", Mix_GetError());
-
     openRenderer(START_SCREEN_WIDTH, START_SCREEN_HEIGHT, initFlags);
 
     /* setup default font */
@@ -139,9 +136,16 @@ void AbelR_init(uint32_t initFlags)
         AbelR_state.font = TTF_OpenFontRW(rw, 1, 14);
     }
 
-    AbelR_state.debugLabel = AbelU_newLabel(AbelV_newiVec2(0, 0), AbelV_newiVec2(200, 200), (SDL_Color){255, 255, 255, 255}, "ABEL v0.1\nFPS: 0");
-    AbelR_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
-    AbelR_state.renderTask = AbelT_newTask(RENDER_INTERVAL, renderTask, NULL);
+    /* setup debug stats */
+    {
+        AbelR_state.debugLabel = AbelU_newLabel(AbelV_newiVec2(0, 0), AbelV_newiVec2(200, 200), (SDL_Color){255, 255, 255, 255}, "ABEL v0.1\nFPS: 0");
+    }
+
+    /* setup tasks */
+    {
+        AbelR_state.resetFPSTask = AbelT_newTask(1000, resetFPSTask, NULL);
+        AbelR_state.renderTask = AbelT_newTask(RENDER_INTERVAL, renderTask, NULL);
+    }
 }
 
 void AbelR_quit(void)
@@ -151,7 +155,6 @@ void AbelR_quit(void)
     AbelU_releaseWidget(&AbelR_state.debugLabel->widget);
 
     TTF_CloseFont(AbelR_state.font);
-    Mix_CloseAudio();
     SDL_DestroyRenderer(AbelR_state.renderer);
     SDL_FreeSurface(AbelR_state.rendererSurface);
     SDL_DestroyWindow(AbelR_state.window);

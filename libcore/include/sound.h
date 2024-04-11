@@ -4,14 +4,17 @@
 #include "abel.h"
 #include "core/mem.h"
 
-typedef struct _tAbelR_sound
+typedef struct _tAbelK_sound
 {
     tAbelM_refCount refCount;
     Mix_Chunk *chunk;
-} tAbelR_sound;
+} tAbelK_sound;
 
-tAbelR_sound *AbelR_newSound(Mix_Chunk *chunk);
-void AbelR_releaseSound(tAbelR_sound *sound);
-void AbelR_playSound(tAbelR_sound *sound, int loops);
+void AbelK_init(uint32_t);
+void AbelK_quit(void);
+
+tAbelK_sound *AbelK_newSound(Mix_Chunk *chunk);
+void AbelK_releaseSound(tAbelK_sound *sound);
+void AbelK_playSound(tAbelK_sound *sound, int loops);
 
 #endif

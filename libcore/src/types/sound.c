@@ -7,8 +7,8 @@ static const char *ABEL_SOUND_METATABLE = "Sound";
 
 static int soundGC(lua_State *L)
 {
-    tAbelR_sound *t = AbelL_toSound(L, 1);
-    AbelR_releaseSound(t);
+    tAbelK_sound *t = AbelL_toSound(L, 1);
+    AbelK_releaseSound(t);
     return 0;
 }
 
@@ -19,9 +19,9 @@ static luaL_Reg soundMetaMethods[] = {
 
 static int soundPlay(lua_State *L)
 {
-    tAbelR_sound *t = AbelL_toSound(L, 1);
+    tAbelK_sound *t = AbelL_toSound(L, 1);
     int loops = luaL_optinteger(L, 2, -1);
-    AbelR_playSound(t, loops);
+    AbelK_playSound(t, loops);
     return 0;
 }
 
@@ -33,9 +33,9 @@ static luaL_Reg soundMethods[] = {
 static int soundLoad(lua_State *L)
 {
     const char *path = luaL_checkstring(L, 1);
-    tAbelR_sound *t = AbelA_getSound(path);
+    tAbelK_sound *t = AbelA_getSound(path);
     AbelL_pushSound(L, t);
-    AbelR_releaseSound(t);
+    AbelK_releaseSound(t);
     return 1;
 }
 
@@ -55,16 +55,16 @@ void AbelL_registerSound(lua_State *L)
     lua_setglobal(L, "Sound");
 }
 
-void AbelL_pushSound(lua_State *L, tAbelR_sound *t)
+void AbelL_pushSound(lua_State *L, tAbelK_sound *t)
 {
-    tAbelR_sound **u = lua_newuserdata(L, sizeof(tAbelR_sound *));
+    tAbelK_sound **u = lua_newuserdata(L, sizeof(tAbelK_sound *));
     *u = t;
     luaL_setmetatable(L, ABEL_SOUND_METATABLE);
     AbelM_retainRef(&t->refCount);
 }
 
-tAbelR_sound *AbelL_toSound(lua_State *L, int index)
+tAbelK_sound *AbelL_toSound(lua_State *L, int index)
 {
-    tAbelR_sound **u = luaL_checkudata(L, index, ABEL_SOUND_METATABLE);
+    tAbelK_sound **u = luaL_checkudata(L, index, ABEL_SOUND_METATABLE);
     return *u;
 }
