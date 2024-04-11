@@ -1,6 +1,7 @@
-#include "sound.h"
-
 #include "types/sound.h"
+
+#include "assets.h"
+#include "sound.h"
 
 static const char *ABEL_SOUND_METATABLE = "Sound";
 
@@ -32,7 +33,7 @@ static luaL_Reg soundMethods[] = {
 static int soundLoad(lua_State *L)
 {
     const char *path = luaL_checkstring(L, 1);
-    tAbelR_sound *t = AbelR_loadSound(path);
+    tAbelR_sound *t = AbelA_getSound(path);
     AbelL_pushSound(L, t);
     AbelR_releaseSound(t);
     return 1;

@@ -9,5 +9,6 @@ void AbelA_init(uint32_t initFlags);
 void AbelA_quit(void);
 
 tAbelR_texture *AbelA_getTexture(const char *path, tAbelV_iVec2 tileSize);
+tAbelR_sound *AbelA_getSound(const char *path);
 
 #endif

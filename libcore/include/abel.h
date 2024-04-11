@@ -24,10 +24,10 @@ typedef struct _tAbelVM_thread tAbelVM_thread;
 typedef struct _tAbelG_game tAbelG_game;
 typedef struct _tAbelC_chunk tAbelC_chunk;
 typedef struct _tAbelR_texture tAbelR_texture;
+typedef struct _tAbelR_sound tAbelR_sound;
 typedef struct _tAbelS_sprite tAbelS_sprite;
 typedef struct _tAbelE_entity tAbelE_entity;
 typedef struct _tAbelW_cell tAbelW_cell;
-typedef struct _tAbelR_sound tAbelR_sound;
 
 typedef uint16_t ASSET_ID;
 typedef uint8_t LAYER_ID;

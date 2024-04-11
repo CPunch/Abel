@@ -10,9 +10,8 @@ typedef struct _tAbelR_sound
     Mix_Chunk *chunk;
 } tAbelR_sound;
 
-tAbelR_sound *AbelR_loadSound(const char *path);
+tAbelR_sound *AbelR_newSound(Mix_Chunk *chunk);
 void AbelR_releaseSound(tAbelR_sound *sound);
-
 void AbelR_playSound(tAbelR_sound *sound, int loops);
 
 #endif

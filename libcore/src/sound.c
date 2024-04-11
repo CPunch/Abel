@@ -8,15 +8,12 @@ static void freeSound(tAbelM_refCount *refCount)
     AbelM_free(sound);
 }
 
-tAbelR_sound *AbelR_loadSound(const char *path)
+tAbelR_sound *AbelR_newSound(Mix_Chunk *chunk)
 {
     tAbelR_sound *sound = AbelM_malloc(sizeof(tAbelR_sound));
     AbelM_initRef(&sound->refCount, freeSound);
-    sound->chunk = Mix_LoadWAV(path);
-    if (!sound->chunk) {
-        printf("failed to load sound %s: %s\n", path, Mix_GetError());
-    }
 
+    sound->chunk = chunk;
     return sound;
 }
 
