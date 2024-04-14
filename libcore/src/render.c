@@ -302,7 +302,7 @@ void AbelR_retainTexture(tAbelR_texture *texture)
     AbelM_retainRef(&texture->refCount);
 }
 
-tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text)
+tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text, uint32_t maxWidth)
 {
     SDL_Surface *surface;
     SDL_Texture *texture;
@@ -311,7 +311,7 @@ tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text)
     if (font == NULL)
         font = AbelR_state.font;
 
-    surface = TTF_RenderText_Solid(font, text, textColor);
+    surface = TTF_RenderText_Solid_Wrapped(font, text, textColor, maxWidth);
     texture = SDL_CreateTextureFromSurface(AbelR_state.renderer, surface);
     SDL_FreeSurface(surface);
     return AbelR_newTexture(texture, AbelV_newiVec2(0, 0));

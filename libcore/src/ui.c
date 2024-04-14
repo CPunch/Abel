@@ -168,7 +168,7 @@ void AbelU_setLabelText(tAbelU_Label *label, char *text, int keepsrc)
     /* render new texture */
     if (label->texture)
         AbelR_releaseTexture(label->texture);
-    label->texture = AbelR_createText(NULL, text);
+    label->texture = AbelR_createText(NULL, text, label->widget.size.x);
     label->widget.size = label->texture->size;
 }
 

@@ -50,7 +50,7 @@ void AbelR_releaseTexture(tAbelR_texture *texture);
 void AbelR_retainTexture(tAbelR_texture *texture);
 
 /* if font is NULL, the default font will be used */
-tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text);
+tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text, uint32_t maxWidth);
 tAbelV_iVec2 AbelR_getTextSize(TTF_Font *font, const char *text);
 
 void AbelR_renderTexture(tAbelR_texture *texture, SDL_Rect *src, SDL_Rect *dest);
