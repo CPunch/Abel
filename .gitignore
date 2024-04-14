@@ -1,6 +1,7 @@
 .vscode
 build
 debug
+aconf.h
 res/*.kra
 res/*~
 vcpkg_installed

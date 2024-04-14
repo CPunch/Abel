@@ -64,7 +64,7 @@ static void openRenderer(int width, int height, uint32_t flags)
 
 static void drawRealtimeStats(void)
 {
-    AbelU_setLabelTextf(state.debugLabel, "ABEL v0.1\nFPS: %d", AbelR_getFPS());
+    AbelU_setLabelTextf(state.debugLabel, ABEL_VERSION "\nFPS: %d", AbelR_getFPS());
 }
 
 static uint32_t resetFPSTask(uint32_t delta, void *uData)
@@ -131,7 +131,7 @@ void AbelR_init(uint32_t initFlags)
 
     /* setup debug stats */
     {
-        state.debugLabel = AbelU_newLabel(AbelV_newiVec2(0, 0), AbelV_newiVec2(200, 200), (SDL_Color){255, 255, 255, 255}, "ABEL v0.1\nFPS: 0");
+        state.debugLabel = AbelU_newLabel(AbelV_newiVec2(0, 0), AbelV_newiVec2(300, 200), (SDL_Color){255, 255, 255, 255}, "");
     }
 
     /* setup tasks */

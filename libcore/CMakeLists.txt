@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(libcore LANGUAGES C)
+project(libcore LANGUAGES C VERSION 0.1)
 
 # ======================================= [[ GLOB SOURCE ]] =======================================
 
@@ -27,6 +27,9 @@ endif()
 if(USE_ASAN)
   target_compile_definitions(libcore PUBLIC ABEL_ASAN)
 endif()
+
+# config
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/aconf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/aconf.h)
 
 # add include directory
 target_include_directories(libcore

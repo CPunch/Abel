@@ -1,6 +1,8 @@
 #ifndef ABEL_H
 #define ABEL_H
 
+#include "aconf.h"
+
 /* STL includes */
 #include <assert.h>
 #include <inttypes.h>
