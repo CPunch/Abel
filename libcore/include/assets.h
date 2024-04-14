@@ -8,6 +8,8 @@
 void AbelA_init(uint32_t initFlags);
 void AbelA_quit(void);
 
+bool AbelA_openArchive(const char *path);
+
 tAbelR_texture *AbelA_getTexture(const char *path, tAbelV_iVec2 tileSize);
 tAbelK_sound *AbelA_getSound(const char *path);
 
