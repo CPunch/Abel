@@ -17,7 +17,7 @@ cmake --preset vcpkg
 
 and compile the target with:
 ```
-cmake --build --preset release --config 
+cmake --build --preset release
 ```
 
 You can even run the testsuite:
