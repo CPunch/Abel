@@ -304,6 +304,12 @@ tAbelR_texture *AbelR_createText(TTF_Font *font, const char *text, uint32_t maxW
     if (font == NULL)
         font = state.font;
 
+    /* return a blank texture if nothing to render */
+    if (strlen(text) == 0) {
+        tAbelV_iVec2 size = AbelV_newiVec2(TTF_FontHeight(font), maxWidth);
+        return AbelR_newBlankTexture(size, size);
+    }
+
     surface = TTF_RenderText_Solid_Wrapped(font, text, textColor, maxWidth);
     texture = SDL_CreateTextureFromSurface(state.renderer, surface);
     SDL_FreeSurface(surface);
