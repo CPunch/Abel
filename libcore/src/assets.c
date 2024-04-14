@@ -74,7 +74,8 @@ static size_t _read(SDL_RWops *ctx, void *ptr, size_t size, size_t maxnum)
     /* try to read maxnum objects sizeof size*/
     for (int i = 0; i < maxnum; i++) {
         int read;
-        if ((read = zip_fread(file, ptr + (i * size), size)) != size) {
+        uint8_t *out = (uint8_t *)ptr + (i * size);
+        if ((read = zip_fread(file, (void *)out, size)) != size) {
             return i;
         }
     }
