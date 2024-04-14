@@ -147,7 +147,7 @@ void AbelU_releaseWidget(tAbelU_Widget *widget)
 void AbelU_setLabelText(tAbelU_Label *label, char *text, int keepsrc)
 {
     /* if the text is the same, don't do anything */
-    if (label->text && memcmp(label->text, text, strlen(text)) == 0) {
+    if (label->text && strcmp(label->text, text) == 0) {
         if (keepsrc)
             AbelM_free(text);
         return;
@@ -165,11 +165,13 @@ void AbelU_setLabelText(tAbelU_Label *label, char *text, int keepsrc)
         label->text = text;
     }
 
-    /* render new texture */
+    /* release old texture*/
     if (label->texture)
         AbelR_releaseTexture(label->texture);
+
+    /* render new texture */
     label->texture = AbelR_createText(NULL, text, label->widget.size.x);
-    label->widget.size = label->texture->size;
+    label->widget.size.y = label->texture->size.y;
 }
 
 void AbelU_setLabelTextf(tAbelU_Label *label, char *format, ...)
