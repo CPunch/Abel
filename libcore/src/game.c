@@ -20,7 +20,7 @@ static tAbelG_state state;
 
 void AbelG_init(uint32_t initFlags)
 {
-    int i, x, y;
+    state.quit = false;
 }
 
 void AbelG_quit(void)
